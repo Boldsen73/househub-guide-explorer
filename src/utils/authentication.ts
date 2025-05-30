@@ -16,7 +16,7 @@ export const authenticateUser = (email: string, password: string): User | null =
     return emailMatch && passwordMatch;
   });
   
-  console.log('Found user:', user);
+  console.log('Found user with address data:', user);
   
   if (user) {
     // Check if user is deactivated
@@ -25,7 +25,7 @@ export const authenticateUser = (email: string, password: string): User | null =
       return null; // Prevent login for deactivated users
     }
     
-    // Set as current user with all necessary data including separated address fields
+    // Set as current user with all necessary data including properly separated address fields
     const currentUser = {
       id: user.id,
       email: user.email,
@@ -34,12 +34,18 @@ export const authenticateUser = (email: string, password: string): User | null =
       agencyName: user.company,
       primaryRegion: user.primaryRegion,
       specialties: user.specialties,
-      address: user.address,
-      postalCode: user.postalCode,
-      city: user.city,
+      address: user.address || '',
+      postalCode: user.postalCode || '',
+      city: user.city || '',
       phone: user.phone,
       authorizationNumber: user.authorizationNumber
     };
+    
+    console.log('Setting currentUser with address fields:', {
+      address: currentUser.address,
+      postalCode: currentUser.postalCode,
+      city: currentUser.city
+    });
     
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     console.log('User authenticated successfully:', currentUser);

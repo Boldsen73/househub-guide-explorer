@@ -5,20 +5,24 @@ import { getUsers, addUser } from './userManagement';
 export const initializeSystem = () => {
   console.log('Initializing HouseHub system...');
   
-  // Initialize users with test data if none exist
-  const existingUsers = getUsers();
+  // Clear existing users to ensure fresh data from testUsers
+  localStorage.removeItem('users');
   
-  // Add test users if they don't already exist
+  // Initialize users with test data
+  const existingUsers = getUsers(); // This will now return only ADMIN_USER
+  
+  // Add all test users
   testUsers.forEach(testUser => {
-    const exists = existingUsers.find(u => u.email === testUser.email);
-    if (!exists) {
-      try {
-        addUser(testUser);
-        console.log('Added test user:', testUser.email);
-      } catch (error) {
-        // User might already exist, that's ok
-        console.log('Test user already exists:', testUser.email);
-      }
+    try {
+      addUser(testUser);
+      console.log('Added test user:', testUser.email, 'with address fields:', {
+        address: testUser.address,
+        postalCode: testUser.postalCode,
+        city: testUser.city
+      });
+    } catch (error) {
+      // User might already exist, that's ok
+      console.log('Test user already exists:', testUser.email);
     }
   });
   

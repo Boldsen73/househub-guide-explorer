@@ -30,13 +30,18 @@ const PropertyData = () => {
   // Indlæs brugerens adressedata ved komponent-mount
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    console.log('Loading user data for PropertyData:', currentUser);
+    
     if (currentUser) {
-      setFormData(prev => ({
-        ...prev,
+      const newFormData = {
+        ...formData,
         address: currentUser.address || '',
         postalCode: currentUser.postalCode || '',
         city: currentUser.city || ''
-      }));
+      };
+      
+      console.log('Setting form data:', newFormData);
+      setFormData(newFormData);
     }
   }, []);
 
