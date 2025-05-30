@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { getTestCasesForUser } from '@/utils/testData';
 import { getDisplayName } from '@/utils/userNameUtils';
+import { getCompleteCaseData } from '@/utils/caseManagement';
 
 interface DashboardCase {
   id: string;
@@ -14,6 +15,23 @@ interface DashboardCase {
   status: string;
   sellerId: string;
   sagsnummer: string;
+  // Enhanced fields
+  propertyType?: string;
+  expectedPrice?: string;
+  expectedPriceValue?: number;
+  timeframe?: number;
+  timeframeType?: string;
+  priorities?: {
+    speed: boolean;
+    price: boolean;
+    service: boolean;
+  };
+  specialRequests?: string;
+  notes?: string;
+  rooms?: string;
+  flexiblePrice?: boolean;
+  marketingBudget?: number;
+  freeIfNotSold?: boolean;
 }
 
 interface User {
@@ -53,23 +71,36 @@ export const useSellerDashboard = () => {
             const key = localStorage.key(i);
             if (key && key.startsWith('seller_case_')) {
               try {
-                const caseData = JSON.parse(localStorage.getItem(key) || '{}');
                 const caseId = key.replace('seller_case_', '');
+                const completeData = getCompleteCaseData(caseId);
                 
                 // STRICT check - only include if sellerId exactly matches current user AND not already seen
-                if (caseData && caseData.address && caseData.sellerId === user.id && !seenCaseIds.has(caseId)) {
+                if (completeData && completeData.address && completeData.sellerId === user.id && !seenCaseIds.has(caseId)) {
                   seenCaseIds.add(caseId);
                   userCreatedCases.push({
                     id: caseId,
-                    address: caseData.address,
-                    municipality: caseData.municipality || caseData.city || 'Ikke angivet',
-                    type: caseData.propertyType || 'Ikke angivet',
-                    size: `${caseData.size || 0} m²`,
-                    price: caseData.estimatedPrice || 'Ikke angivet',
-                    buildYear: caseData.buildYear || new Date().getFullYear(),
+                    address: completeData.address,
+                    municipality: completeData.municipality || completeData.city || 'Ikke angivet',
+                    type: completeData.propertyType || completeData.type || 'Ikke angivet',
+                    size: completeData.size ? `${completeData.size} m²` : 'Ikke angivet',
+                    price: completeData.expectedPrice || completeData.price || 'Ikke angivet',
+                    buildYear: completeData.buildYear || completeData.constructionYear || new Date().getFullYear(),
                     status: 'active',
-                    sellerId: caseData.sellerId,
-                    sagsnummer: `SAG-${caseId.substring(0, 6).toUpperCase()}`
+                    sellerId: completeData.sellerId,
+                    sagsnummer: `SAG-${caseId.substring(0, 6).toUpperCase()}`,
+                    // Enhanced fields
+                    propertyType: completeData.propertyType,
+                    expectedPrice: completeData.expectedPrice,
+                    expectedPriceValue: completeData.expectedPriceValue,
+                    timeframe: completeData.timeframe,
+                    timeframeType: completeData.timeframeType,
+                    priorities: completeData.priorities,
+                    specialRequests: completeData.specialRequests,
+                    notes: completeData.notes,
+                    rooms: completeData.rooms,
+                    flexiblePrice: completeData.flexiblePrice,
+                    marketingBudget: completeData.marketingBudget,
+                    freeIfNotSold: completeData.freeIfNotSold
                   });
                 }
               } catch {
@@ -85,7 +116,7 @@ export const useSellerDashboard = () => {
           );
           
           console.log('Loading cases for user:', user.id);
-          console.log('Found unique cases:', uniqueCases);
+          console.log('Found unique cases with complete data:', uniqueCases);
           setUserCases(uniqueCases);
         } else {
           console.log('No user ID found');

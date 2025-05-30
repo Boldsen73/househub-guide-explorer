@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useAgentCases } from '@/hooks/useAgentCases';
+import { getCompleteCaseData } from '@/utils/caseManagement';
 import HeaderNavigation from '@/components/agent/browseCases/HeaderNavigation';
 import MessageThread from '@/components/agent/MessageThread';
 import ShowingRegistration from '@/components/agent/ShowingRegistration';
@@ -64,17 +65,25 @@ const CaseDetailsPage = () => {
     );
   }
 
-  // Load detailed case data from seller's original case
+  // Load detailed case data from seller's original case with complete information
   const [detailedCaseData, setDetailedCaseData] = useState<any>(null);
   useEffect(() => {
     if (caseIdString) {
-      const sellerCase = localStorage.getItem(`seller_case_${caseIdString}`);
-      if (sellerCase) {
-        try {
-          const parsedCase = JSON.parse(sellerCase);
-          setDetailedCaseData(parsedCase);
-        } catch (error) {
-          console.error('Error parsing seller case data:', error);
+      // Use the enhanced function to get complete case data
+      const completeData = getCompleteCaseData(caseIdString);
+      if (completeData) {
+        setDetailedCaseData(completeData);
+        console.log('Loaded complete case data for agent view:', completeData);
+      } else {
+        // Fallback to old method
+        const sellerCase = localStorage.getItem(`seller_case_${caseIdString}`);
+        if (sellerCase) {
+          try {
+            const parsedCase = JSON.parse(sellerCase);
+            setDetailedCaseData(parsedCase);
+          } catch (error) {
+            console.error('Error parsing seller case data:', error);
+          }
         }
       }
     }
@@ -130,11 +139,11 @@ const CaseDetailsPage = () => {
         {/* Case Header */}
         <CaseHeader
           address={caseItem.address}
-          price={caseItem.price}
-          type={caseItem.type}
-          size={String(caseItem.size)}
-          rooms={String(caseItem.rooms)}
-          buildYear={caseItem.constructionYear}
+          price={detailedCaseData?.expectedPrice || caseItem.price}
+          type={detailedCaseData?.propertyType || caseItem.type}
+          size={String(detailedCaseData?.size || caseItem.size)}
+          rooms={String(detailedCaseData?.rooms || caseItem.rooms)}
+          buildYear={detailedCaseData?.buildYear || caseItem.constructionYear}
           municipality={caseItem.municipality}
           energyLabel={caseItem.energyLabel}
           timeRemaining={timeRemaining}
@@ -172,7 +181,7 @@ const CaseDetailsPage = () => {
           <MessageThread caseId={caseIdString} sellerName={caseItem.sellerName || "Sælger"} />
         )}
 
-        {/* Property Description with Seller's Comments */}
+        {/* Property Description with Enhanced Seller's Data */}
         <CasePropertyDescription
           detailedCaseData={detailedCaseData}
           fallbackDescription={caseItem.description}
