@@ -44,6 +44,23 @@ export interface Case {
   description?: string;
   energyLabel?: string;
   constructionYear?: number;
+  // Enhanced seller data fields
+  propertyType?: string;
+  expectedPrice?: string;
+  expectedPriceValue?: number;
+  timeframe?: number;
+  timeframeType?: string;
+  priorities?: {
+    speed: boolean;
+    price: boolean;
+    service: boolean;
+  };
+  specialRequests?: string;
+  notes?: string;
+  flexiblePrice?: boolean;
+  marketingBudget?: number;
+  freeIfNotSold?: boolean;
+  city?: string;
 }
 
 export interface Offer {

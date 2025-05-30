@@ -39,20 +39,18 @@ export const getCompleteCaseData = (caseId: string) => {
   // Get case-specific data
   const caseSpecificData = localStorage.getItem(`seller_case_${caseId}`);
 
-  let completeData = { ...case_ };
+  let completeData: any = { ...case_ };
 
   // Add property form data if it exists
   if (propertyData) {
     try {
       const parsed = JSON.parse(propertyData);
-      completeData = {
-        ...completeData,
-        propertyType: parsed.propertyType,
-        size: parsed.size,
-        buildYear: parsed.buildYear,
-        rooms: parsed.rooms,
-        notes: parsed.notes
-      };
+      completeData.propertyType = parsed.propertyType;
+      completeData.size = parsed.size;
+      completeData.buildYear = parsed.buildYear;
+      completeData.rooms = parsed.rooms;
+      completeData.notes = parsed.notes;
+      completeData.city = parsed.city;
     } catch (error) {
       console.error('Error parsing property data:', error);
     }
@@ -62,22 +60,19 @@ export const getCompleteCaseData = (caseId: string) => {
   if (salesPreferences) {
     try {
       const parsed = JSON.parse(salesPreferences);
-      completeData = {
-        ...completeData,
-        expectedPrice: parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : undefined,
-        expectedPriceValue: parsed.expectedPrice?.[0],
-        timeframe: parsed.timeframe?.[0],
-        timeframeType: parsed.timeframeType,
-        priorities: {
-          speed: parsed.prioritySpeed,
-          price: parsed.priorityPrice,
-          service: parsed.priorityService
-        },
-        specialRequests: parsed.specialRequests,
-        flexiblePrice: parsed.flexiblePrice,
-        marketingBudget: parsed.marketingBudget?.[0],
-        freeIfNotSold: parsed.freeIfNotSold
+      completeData.expectedPrice = parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : undefined;
+      completeData.expectedPriceValue = parsed.expectedPrice?.[0];
+      completeData.timeframe = parsed.timeframe?.[0];
+      completeData.timeframeType = parsed.timeframeType;
+      completeData.priorities = {
+        speed: parsed.prioritySpeed,
+        price: parsed.priorityPrice,
+        service: parsed.priorityService
       };
+      completeData.specialRequests = parsed.specialRequests;
+      completeData.flexiblePrice = parsed.flexiblePrice;
+      completeData.marketingBudget = parsed.marketingBudget?.[0];
+      completeData.freeIfNotSold = parsed.freeIfNotSold;
     } catch (error) {
       console.error('Error parsing sales preferences:', error);
     }
