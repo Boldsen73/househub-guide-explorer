@@ -1,4 +1,3 @@
-
 // Test users for the application
 export interface TestUser {
   id: string;
@@ -9,10 +8,12 @@ export interface TestUser {
   phone?: string;
   company?: string;
   address?: string;
+  postalCode?: string;
+  city?: string;
   isActive?: boolean;
 }
 
-// 10 test sellers
+// 10 test sellers with properly separated address fields
 const testSellers: TestUser[] = [
   {
     id: 'seller-1',
@@ -21,7 +22,9 @@ const testSellers: TestUser[] = [
     name: 'Lars Nielsen',
     role: 'seller',
     phone: '12 34 56 78',
-    address: 'Vesterbrogade 1, 1620 København V',
+    address: 'Vesterbrogade 1',
+    postalCode: '1620',
+    city: 'København V',
     isActive: true
   },
   {
@@ -31,7 +34,9 @@ const testSellers: TestUser[] = [
     name: 'Anne Andersen',
     role: 'seller',
     phone: '23 45 67 89',
-    address: 'Nørrebrogade 23, 2200 København N',
+    address: 'Nørrebrogade 23',
+    postalCode: '2200',
+    city: 'København N',
     isActive: true
   },
   {
@@ -41,7 +46,9 @@ const testSellers: TestUser[] = [
     name: 'Peter Hansen',
     role: 'seller',
     phone: '34 56 78 90',
-    address: 'Østerbrogade 45, 2100 København Ø',
+    address: 'Østerbrogade 45',
+    postalCode: '2100',
+    city: 'København Ø',
     isActive: true
   },
   {
@@ -51,7 +58,9 @@ const testSellers: TestUser[] = [
     name: 'Maria Christensen',
     role: 'seller',
     phone: '45 67 89 01',
-    address: 'Amager Boulevard 67, 2300 København S',
+    address: 'Amager Boulevard 67',
+    postalCode: '2300',
+    city: 'København S',
     isActive: true
   },
   {
@@ -61,7 +70,9 @@ const testSellers: TestUser[] = [
     name: 'Jens Johansen',
     role: 'seller',
     phone: '56 78 90 12',
-    address: 'Frederiksberg Allé 89, 1820 Frederiksberg',
+    address: 'Frederiksberg Allé 89',
+    postalCode: '1820',
+    city: 'Frederiksberg',
     isActive: true
   },
   {
@@ -71,7 +82,9 @@ const testSellers: TestUser[] = [
     name: 'Susanne Madsen',
     role: 'seller',
     phone: '67 89 01 23',
-    address: 'Trianglen 12, 2100 København Ø',
+    address: 'Trianglen 12',
+    postalCode: '2100',
+    city: 'København Ø',
     isActive: true
   },
   {
@@ -81,7 +94,9 @@ const testSellers: TestUser[] = [
     name: 'Michael Sørensen',
     role: 'seller',
     phone: '78 90 12 34',
-    address: 'Ryesgade 34, 2200 København N',
+    address: 'Ryesgade 34',
+    postalCode: '2200',
+    city: 'København N',
     isActive: true
   },
   {
@@ -91,7 +106,9 @@ const testSellers: TestUser[] = [
     name: 'Lotte Larsen',
     role: 'seller',
     phone: '89 01 23 45',
-    address: 'Istedgade 56, 1650 København V',
+    address: 'Istedgade 56',
+    postalCode: '1650',
+    city: 'København V',
     isActive: true
   },
   {
@@ -101,7 +118,9 @@ const testSellers: TestUser[] = [
     name: 'Thomas Thomsen',
     role: 'seller',
     phone: '90 12 34 56',
-    address: 'Islands Brygge 78, 2300 København S',
+    address: 'Islands Brygge 78',
+    postalCode: '2300',
+    city: 'København S',
     isActive: true
   },
   {
@@ -111,7 +130,9 @@ const testSellers: TestUser[] = [
     name: 'Camilla Rasmussen',
     role: 'seller',
     phone: '01 23 45 67',
-    address: 'Sankt Hans Gade 90, 2200 København N',
+    address: 'Sankt Hans Gade 90',
+    postalCode: '2200',
+    city: 'København N',
     isActive: true
   }
 ];

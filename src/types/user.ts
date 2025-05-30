@@ -12,6 +12,8 @@ export interface User {
   primaryRegion?: string;
   specialties?: string[];
   address?: string;
+  postalCode?: string;
+  city?: string;
   isActive?: boolean;
 }
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,7 @@ const PropertyData = () => {
   // Indlæs brugerens adressedata ved komponent-mount
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    if (currentUser && currentUser.address) {
+    if (currentUser) {
       setFormData(prev => ({
         ...prev,
         address: currentUser.address || '',

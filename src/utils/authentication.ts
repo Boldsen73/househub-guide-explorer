@@ -25,7 +25,7 @@ export const authenticateUser = (email: string, password: string): User | null =
       return null; // Prevent login for deactivated users
     }
     
-    // Set as current user with all necessary data
+    // Set as current user with all necessary data including separated address fields
     const currentUser = {
       id: user.id,
       email: user.email,
@@ -35,6 +35,8 @@ export const authenticateUser = (email: string, password: string): User | null =
       primaryRegion: user.primaryRegion,
       specialties: user.specialties,
       address: user.address,
+      postalCode: user.postalCode,
+      city: user.city,
       phone: user.phone,
       authorizationNumber: user.authorizationNumber
     };
