@@ -91,30 +91,33 @@ export const useSellerDashboard = () => {
       const processedCases: DashboardCase[] = userSpecificCases.map(case_ => {
         console.log('Processing case for dashboard:', case_.id, case_);
         
-        const processedCase = {
-          id: case_.id,
+        // Safely convert ID to string
+        const caseId = typeof case_.id === 'string' ? case_.id : case_.id.toString();
+        
+        const processedCase: DashboardCase = {
+          id: caseId,
           address: case_.address || 'Ingen adresse',
-          municipality: case_.municipality || case_.city || 'Ikke angivet',
-          type: case_.propertyType || case_.type || 'Ikke angivet',
+          municipality: case_.municipality || (case_ as any).city || 'Ikke angivet',
+          type: (case_ as any).propertyType || case_.type || 'Ikke angivet',
           size: case_.size ? `${case_.size} m²` : 'Ikke angivet',
-          price: case_.expectedPrice || case_.price || 'Ikke angivet',
-          buildYear: case_.buildYear || new Date().getFullYear(),
+          price: (case_ as any).expectedPrice || case_.price || 'Ikke angivet',
+          buildYear: (case_ as any).buildYear || case_.constructionYear || new Date().getFullYear(),
           status: case_.status || 'active',
-          sellerId: case_.sellerId,
-          sagsnummer: case_.sagsnummer || `SAG-${case_.id.substring(0, 6).toUpperCase()}`,
-          // Enhanced fields
-          propertyType: case_.propertyType,
-          expectedPrice: case_.expectedPrice,
-          expectedPriceValue: case_.expectedPriceValue,
-          timeframe: case_.timeframe,
-          timeframeType: case_.timeframeType,
-          priorities: case_.priorities,
-          specialRequests: case_.specialRequests,
-          notes: case_.notes,
+          sellerId: case_.sellerId || '',
+          sagsnummer: (case_ as any).sagsnummer || `SAG-${caseId.substring(0, 6).toUpperCase()}`,
+          // Enhanced fields with safe access
+          propertyType: (case_ as any).propertyType,
+          expectedPrice: (case_ as any).expectedPrice,
+          expectedPriceValue: (case_ as any).expectedPriceValue,
+          timeframe: (case_ as any).timeframe,
+          timeframeType: (case_ as any).timeframeType,
+          priorities: (case_ as any).priorities,
+          specialRequests: (case_ as any).specialRequests,
+          notes: (case_ as any).notes,
           rooms: case_.rooms,
-          flexiblePrice: case_.flexiblePrice,
-          marketingBudget: case_.marketingBudget,
-          freeIfNotSold: case_.freeIfNotSold
+          flexiblePrice: (case_ as any).flexiblePrice,
+          marketingBudget: (case_ as any).marketingBudget,
+          freeIfNotSold: (case_ as any).freeIfNotSold
         };
         
         console.log('Processed case for dashboard:', processedCase);

@@ -1,5 +1,5 @@
 
-import { Case } from '@/types/user';
+import { Case } from '@/types/case';
 import { 
   getAllCases, 
   saveCaseToStorage, 
@@ -76,12 +76,12 @@ export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) =
         const parsed = JSON.parse(propertyData);
         updatedCase = {
           ...updatedCase,
-          propertyType: parsed.propertyType,
-          size: parsed.size,
-          buildYear: parsed.buildYear,
-          rooms: parsed.rooms,
-          notes: parsed.notes,
-          city: parsed.city || updatedCase.municipality
+          type: parsed.propertyType || updatedCase.type,
+          size: parsed.size || updatedCase.size,
+          constructionYear: parsed.buildYear || updatedCase.constructionYear,
+          rooms: parsed.rooms || updatedCase.rooms,
+          description: parsed.notes || updatedCase.description,
+          municipality: parsed.city || updatedCase.municipality
         };
       } catch (error) {
         console.error('Error parsing property data:', error);
@@ -92,22 +92,10 @@ export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) =
     if (salesPreferences) {
       try {
         const parsed = JSON.parse(salesPreferences);
-        updatedCase = {
-          ...updatedCase,
-          expectedPrice: parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : updatedCase.price,
-          expectedPriceValue: parsed.expectedPrice?.[0] || updatedCase.priceValue,
-          timeframe: parsed.timeframe?.[0],
-          timeframeType: parsed.timeframeType,
-          priorities: {
-            speed: parsed.prioritySpeed || false,
-            price: parsed.priorityPrice || false,
-            service: parsed.priorityService || false
-          },
-          specialRequests: parsed.specialRequests,
-          flexiblePrice: parsed.flexiblePrice,
-          marketingBudget: parsed.marketingBudget?.[0],
-          freeIfNotSold: parsed.freeIfNotSold
-        };
+        if (parsed.expectedPrice && parsed.expectedPrice[0]) {
+          updatedCase.price = `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr`;
+          updatedCase.priceValue = parsed.expectedPrice[0];
+        }
       } catch (error) {
         console.error('Error parsing sales preferences:', error);
       }
@@ -196,7 +184,7 @@ export const getCaseById = (id: string): Case | null => {
 export const getCaseBySagsnummer = (sagsnummer: string): Case | null => {
   try {
     const cases = getCases();
-    return cases.find(c => c.sagsnummer === sagsnummer) || null;
+    return cases.find(c => (c as any).sagsnummer === sagsnummer) || null;
   } catch (error) {
     console.error('Error in getCaseBySagsnummer:', error);
     return null;
