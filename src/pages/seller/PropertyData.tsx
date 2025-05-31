@@ -73,9 +73,9 @@ const PropertyData = () => {
         postalCode: formData.postalCode,
         city: formData.city,
         propertyType: formData.boligtype,
-        size: formData.størrelse,
-        buildYear: formData.byggeår,
-        rooms: formData.rooms,
+        size: parseInt(formData.størrelse) || 0, // Tilføj parseInt for at sikre nummer
+        buildYear: parseInt(formData.byggeår) || new Date().getFullYear(), // Tilføj parseInt
+        rooms: parseInt(formData.rooms) || 0, // <--- RETTET TIL 'rooms' OG TILFØJET parseInt for at sikre nummer!
         notes: formData.notes
       };
 
