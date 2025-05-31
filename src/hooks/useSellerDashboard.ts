@@ -52,36 +52,42 @@ export const useSellerDashboard = () => {
   };
 
   const loadUserCases = () => {
-    console.log('=== LOADING USER CASES ===');
+    console.log('=== LOADING USER CASES IN DASHBOARD ===');
+    setIsLoading(true);
+    
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       try {
         const user = JSON.parse(savedUser);
-        console.log('Current user loaded:', user);
+        console.log('Current user loaded in dashboard:', user);
         setCurrentUser(user);
 
         if (user.id) {
           console.log('Loading cases for user ID:', user.id);
           
-          // Get ALL cases from central storage
+          // Get ALL cases from central storage with detailed logging
           const allCases = getCases();
-          console.log('All cases in system:', allCases.length, allCases);
+          console.log('Total cases in system:', allCases.length);
+          console.log('All cases data:', allCases);
           
           // Filter cases for this specific user
-          const userCases = allCases.filter(case_ => case_.sellerId === user.id);
-          console.log('Cases for user', user.id, ':', userCases.length, userCases);
+          const userCases = allCases.filter(case_ => {
+            const matches = case_.sellerId === user.id;
+            console.log(`Case ${case_.id} sellerId: ${case_.sellerId}, user.id: ${user.id}, matches: ${matches}`);
+            return matches;
+          });
           
-          const processedCases: DashboardCase[] = [];
+          console.log('Cases matching user', user.id, ':', userCases.length);
+          console.log('Matching cases:', userCases);
           
-          // Process user cases with complete data
-          userCases.forEach(case_ => {
-            console.log('Processing case:', case_.id, case_);
+          const processedCases: DashboardCase[] = userCases.map(case_ => {
+            console.log('Processing case for dashboard:', case_.id, case_);
             
             // Get complete case data including all seller inputs
             const completeData = getCompleteCaseData(case_.id) || case_;
-            console.log('Complete data for case:', case_.id, completeData);
+            console.log('Complete data for dashboard:', case_.id, completeData);
             
-            processedCases.push({
+            const processedCase = {
               id: case_.id,
               address: completeData.address || case_.address,
               municipality: completeData.municipality || completeData.city || case_.municipality || 'Ikke angivet',
@@ -105,7 +111,10 @@ export const useSellerDashboard = () => {
               flexiblePrice: completeData.flexiblePrice,
               marketingBudget: completeData.marketingBudget,
               freeIfNotSold: completeData.freeIfNotSold
-            });
+            };
+            
+            console.log('Processed case for dashboard:', processedCase);
+            return processedCase;
           });
           
           console.log('Final processed cases for dashboard:', processedCases.length, processedCases);
@@ -124,32 +133,44 @@ export const useSellerDashboard = () => {
       setCurrentUser(null);
       setUserCases([]);
     }
+    
     setIsLoading(false);
-    console.log('=== FINISHED LOADING USER CASES ===');
+    console.log('=== FINISHED LOADING USER CASES IN DASHBOARD ===');
   };
 
   useEffect(() => {
-    console.log('useSellerDashboard useEffect triggered');
+    console.log('=== useSellerDashboard useEffect triggered ===');
     
     // Initial load
     loadUserCases();
 
     // Enhanced event listeners for real-time updates
     const handleCaseEvent = (event?: Event) => {
-      console.log('Case event detected:', event?.type, event);
+      console.log('=== CASE EVENT DETECTED IN DASHBOARD ===');
+      console.log('Event type:', event?.type);
+      console.log('Event detail:', (event as any)?.detail);
+      
       // Small delay to ensure data is saved
       setTimeout(() => {
-        console.log('Reloading cases after event');
+        console.log('Reloading dashboard cases after event');
         loadUserCases();
       }, 100);
     };
 
     const handleStorageChange = (event: StorageEvent) => {
-      console.log('Storage event detected:', event.key, event);
+      console.log('=== STORAGE EVENT DETECTED IN DASHBOARD ===');
+      console.log('Storage key changed:', event.key);
+      
       if (event.key === 'cases' || event.key?.startsWith('seller_case_')) {
-        console.log('Storage changed for cases, reloading');
+        console.log('Cases storage changed, reloading dashboard');
         setTimeout(() => loadUserCases(), 100);
       }
+    };
+
+    const handleForcedRefresh = (event: Event) => {
+      console.log('=== FORCED DASHBOARD REFRESH ===');
+      console.log('Force refresh event:', event);
+      loadUserCases();
     };
 
     // Listen for all possible case update events
@@ -157,22 +178,42 @@ export const useSellerDashboard = () => {
     window.addEventListener('caseUpdated', handleCaseEvent);
     window.addEventListener('casesChanged', handleCaseEvent);
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('forceDashboardRefresh', handleForcedRefresh);
     
     // Also set up an interval to check for updates periodically as fallback
     const intervalId = setInterval(() => {
-      console.log('Periodic check for case updates');
-      loadUserCases();
-    }, 3000); // Check every 3 seconds
+      console.log('=== PERIODIC DASHBOARD CHECK ===');
+      
+      // Check if there are new cases since last load
+      const currentCaseCount = userCases.length;
+      const allCases = getCases();
+      const savedUser = localStorage.getItem('currentUser');
+      
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          const actualUserCases = allCases.filter(case_ => case_.sellerId === user.id);
+          
+          if (actualUserCases.length !== currentCaseCount) {
+            console.log(`Case count changed: ${currentCaseCount} -> ${actualUserCases.length}, reloading`);
+            loadUserCases();
+          }
+        } catch (error) {
+          console.error('Error in periodic check:', error);
+        }
+      }
+    }, 2000); // Check every 2 seconds
 
     return () => {
-      console.log('Cleaning up useSellerDashboard listeners');
+      console.log('=== CLEANING UP DASHBOARD LISTENERS ===');
       window.removeEventListener('caseCreated', handleCaseEvent);
       window.removeEventListener('caseUpdated', handleCaseEvent);
       window.removeEventListener('casesChanged', handleCaseEvent);
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('forceDashboardRefresh', handleForcedRefresh);
       clearInterval(intervalId);
     };
-  }, []);
+  }, [userCases.length]);
 
   return {
     userCases,

@@ -9,27 +9,44 @@ import {
 } from './caseStorageManager';
 
 export const getCases = (): Case[] => {
-  return getAllCases();
+  console.log('getCases called from caseManagement');
+  const cases = getAllCases();
+  console.log('getCases returning:', cases.length, 'cases');
+  return cases;
 };
 
 // Get cases for specific user only
 export const getCasesForUser = (userId: string): Case[] => {
-  return getStoredCasesForUser(userId);
+  console.log('getCasesForUser called for:', userId);
+  const cases = getStoredCasesForUser(userId);
+  console.log('getCasesForUser returning:', cases.length, 'cases for user', userId);
+  return cases;
 };
 
 export const saveCase = (case_: Case) => {
-  console.log('saveCase called with:', case_);
+  console.log('=== saveCase called in caseManagement ===');
+  console.log('Case to save:', case_);
   saveCaseToStorage(case_);
+  console.log('=== saveCase completed in caseManagement ===');
 };
 
 // Enhanced case creation that ensures all data is properly saved
 export const createCompleteCase = (caseId: string, basicCaseData: any) => {
-  return createStoredCompleteCase(caseId, basicCaseData);
+  console.log('=== createCompleteCase called in caseManagement ===');
+  console.log('Case ID:', caseId);
+  console.log('Basic case data:', basicCaseData);
+  
+  const result = createStoredCompleteCase(caseId, basicCaseData);
+  
+  console.log('=== createCompleteCase completed in caseManagement ===');
+  return result;
 };
 
 // Update existing case with complete data
 export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) => {
-  console.log('updateCaseWithCompleteData called for:', caseId);
+  console.log('=== updateCaseWithCompleteData called ===');
+  console.log('Case ID:', caseId);
+  console.log('Basic case data:', basicCaseData);
   
   const existingCase = getCaseById(caseId);
   if (!existingCase) {
@@ -91,11 +108,14 @@ export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) =
   localStorage.setItem(`seller_case_${caseId}`, JSON.stringify(updatedCase));
   
   console.log('Successfully updated complete case:', updatedCase);
+  console.log('=== updateCaseWithCompleteData completed ===');
   return updatedCase;
 };
 
 // Enhanced function to get complete case data including seller inputs
 export const getCompleteCaseData = (caseId: string) => {
+  console.log('getCompleteCaseData called for:', caseId);
+  
   // First try to get from central cases storage
   const case_ = getCaseById(caseId);
   if (case_) {
@@ -122,24 +142,27 @@ export const getCompleteCaseData = (caseId: string) => {
 };
 
 export const updateCaseStatus = (caseId: string, newStatus: Case['status']) => {
+  console.log('updateCaseStatus called for:', caseId, 'new status:', newStatus);
+  
   const cases = getCases();
   const updatedCases = cases.map(c => 
     c.id === caseId ? { ...c, status: newStatus } : c
   );
+  
   localStorage.setItem('cases', JSON.stringify(updatedCases));
   
   // Dispatch events to notify components
   window.dispatchEvent(new CustomEvent('caseUpdated'));
-  window.dispatchEvent(new StorageEvent('storage', {
-    key: 'cases',
-    newValue: JSON.stringify(updatedCases),
-    oldValue: null,
-    storageArea: localStorage
-  }));
+  window.dispatchEvent(new Event('storage'));
+  
+  console.log('Case status updated and events dispatched');
 };
 
 export const getCaseById = (id: string): Case | null => {
-  return getStoredCaseById(id);
+  console.log('getCaseById called for:', id);
+  const case_ = getStoredCaseById(id);
+  console.log('getCaseById result:', case_);
+  return case_;
 };
 
 export const getCaseBySagsnummer = (sagsnummer: string): Case | null => {

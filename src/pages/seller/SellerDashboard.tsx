@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import DiscreetInfoFooter from '../../components/seller/DiscreetInfoFooter';
@@ -9,12 +9,21 @@ import EmptyStateCard from '../../components/seller/EmptyStateCard';
 import { useSellerDashboard } from '@/hooks/useSellerDashboard';
 
 const SellerDashboard = () => {
-  const { userCases, isLoading, currentUser, getUserDisplayName } = useSellerDashboard();
+  const { userCases, isLoading, currentUser, getUserDisplayName, refreshCases } = useSellerDashboard();
+
+  // Force refresh when component mounts to ensure latest data
+  useEffect(() => {
+    console.log('SellerDashboard mounted, forcing refresh');
+    refreshCases();
+  }, []);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div>Indlæser...</div>
+        <div className="text-center">
+          <div className="text-lg">Indlæser dine sager...</div>
+          <div className="text-sm text-gray-600 mt-2">Dette kan tage et øjeblik</div>
+        </div>
       </div>
     );
   }
