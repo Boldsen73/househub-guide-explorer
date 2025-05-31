@@ -1,3 +1,4 @@
+
 import { getUsers, getCases, User, Case } from '@/utils/userData';
 
 interface ProcessedSellerCase {
@@ -41,12 +42,13 @@ export const loadCasesData = (): Case[] => {
   const allCases = getCases();
   console.log('Loaded cases from userData:', allCases);
   
-  // Ensure all cases have the required properties for the Case type from userData
+  // Ensure all cases have consistent id type (string) and handle missing properties
   const processedCases = allCases.map(caseItem => ({
     ...caseItem,
-    postnummer: caseItem.postnummer || '',
-    buildYear: caseItem.buildYear || caseItem.constructionYear || new Date().getFullYear()
-  }));
+    id: typeof caseItem.id === 'string' ? caseItem.id : String(caseItem.id),
+    postnummer: (caseItem as any).postnummer || '',
+    buildYear: (caseItem as any).buildYear || caseItem.constructionYear || new Date().getFullYear()
+  })) as Case[];
   
   return processedCases;
 };
