@@ -83,12 +83,47 @@ export const useSellerDashboard = () => {
       console.log('Total cases in system:', allCases.length);
       console.log('All cases data:', allCases);
       
+      // Also check seller-specific cases in localStorage
+      const sellerSpecificCases = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('seller_case_')) {
+          try {
+            const caseData = JSON.parse(localStorage.getItem(key) || '{}');
+            if (caseData && caseData.sellerId === user.id) {
+              const caseId = key.replace('seller_case_', '');
+              const caseStatus = localStorage.getItem(`seller_case_status_${caseId}`) || 'active';
+              
+              sellerSpecificCases.push({
+                ...caseData,
+                id: caseId,
+                status: caseStatus
+              });
+            }
+          } catch (error) {
+            console.error('Error parsing seller case:', error);
+          }
+        }
+      }
+      
+      console.log('Seller specific cases found:', sellerSpecificCases);
+      
       // Use the centralized function to get user cases
       const userSpecificCases = getCasesForUser(user.id);
       console.log('Cases for user', user.id, ':', userSpecificCases.length);
       console.log('User specific cases:', userSpecificCases);
       
-      const processedCases: DashboardCase[] = userSpecificCases.map(case_ => {
+      // Combine both sources of cases
+      const allUserCases = [...userSpecificCases, ...sellerSpecificCases];
+      
+      // Remove duplicates based on ID
+      const uniqueCases = allUserCases.filter((case_, index, array) => 
+        array.findIndex(c => c.id === case_.id) === index
+      );
+      
+      console.log('Combined unique cases:', uniqueCases);
+      
+      const processedCases: DashboardCase[] = uniqueCases.map(case_ => {
         console.log('Processing case for dashboard:', case_.id, case_);
         
         // Safely convert ID to string
