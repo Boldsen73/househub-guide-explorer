@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { getCasesForUser, getAllCases } from '@/utils/caseStorageManager';
 import { getDisplayName } from '@/utils/userNameUtils';
+import { useCaseDataLoader } from './useSellerDashboard/useCaseDataLoader';
+import { useCaseFormDataEnricher } from './useSellerDashboard/useCaseFormDataEnricher';
 
 interface DashboardCase {
   id: string;
@@ -14,7 +15,6 @@ interface DashboardCase {
   status: string;
   sellerId: string;
   sagsnummer: string;
-  // Enhanced fields
   propertyType?: string;
   expectedPrice?: string;
   expectedPriceValue?: number;
@@ -47,149 +47,11 @@ export const useSellerDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
+  const { loadAllUserCases } = useCaseDataLoader();
+  const { enrichCaseWithFormData } = useCaseFormDataEnricher();
+
   const getUserDisplayName = (user: User | null): string => {
     return getDisplayName(user);
-  };
-
-  // Helper function to get all form data for a specific case
-  const getCaseFormData = (caseId: string) => {
-    console.log('Getting form data for case:', caseId);
-    
-    // Try to get case-specific form data first
-    const caseSpecificPropertyForm = localStorage.getItem(`propertyForm_${caseId}`);
-    const caseSpecificSalePreferences = localStorage.getItem(`salePreferences_${caseId}`);
-    
-    // Fall back to global form data
-    const globalPropertyForm = localStorage.getItem('propertyForm');
-    const globalSalePreferences = localStorage.getItem('salePreferences');
-    
-    const propertyFormData = caseSpecificPropertyForm || globalPropertyForm;
-    const salePreferencesData = caseSpecificSalePreferences || globalSalePreferences;
-    
-    console.log('Property form data found:', propertyFormData);
-    console.log('Sale preferences data found:', salePreferencesData);
-    
-    return {
-      propertyForm: propertyFormData,
-      salePreferences: salePreferencesData
-    };
-  };
-
-  // Helper function to merge all form data for a case
-  const enrichCaseWithFormData = (caseData: any, caseId: string): DashboardCase => {
-    console.log('Enriching case with form data:', caseId, caseData);
-    
-    const { propertyForm, salePreferences } = getCaseFormData(caseId);
-    
-    let enrichedCase = { ...caseData };
-    
-    // Add property form data
-    if (propertyForm) {
-      try {
-        const parsed = JSON.parse(propertyForm);
-        console.log('Parsed property form:', parsed);
-        
-        enrichedCase = {
-          ...enrichedCase,
-          propertyType: parsed.propertyType || enrichedCase.propertyType || enrichedCase.type,
-          type: parsed.propertyType || enrichedCase.type || 'Ikke angivet',
-          size: parsed.size ? `${parsed.size} m²` : (enrichedCase.size || 'Ikke angivet'),
-          buildYear: parsed.buildYear || enrichedCase.buildYear || new Date().getFullYear(),
-          rooms: parsed.rooms || enrichedCase.rooms || 'Ikke angivet',
-          municipality: parsed.city || enrichedCase.municipality || 'Ikke angivet',
-          notes: parsed.notes || enrichedCase.notes || enrichedCase.specialRequests || ''
-        };
-      } catch (error) {
-        console.error('Error parsing property form:', error);
-      }
-    }
-    
-    // Add sales preferences
-    if (salePreferences) {
-      try {
-        const parsed = JSON.parse(salePreferences);
-        console.log('Parsed sale preferences:', parsed);
-        
-        let expectedPrice = enrichedCase.expectedPrice || enrichedCase.price;
-        let expectedPriceValue = enrichedCase.expectedPriceValue;
-        
-        if (parsed.expectedPrice && Array.isArray(parsed.expectedPrice) && parsed.expectedPrice[0]) {
-          expectedPriceValue = parsed.expectedPrice[0];
-          expectedPrice = `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr`;
-        }
-        
-        enrichedCase = {
-          ...enrichedCase,
-          expectedPrice: expectedPrice,
-          price: expectedPrice,
-          expectedPriceValue: expectedPriceValue,
-          timeframe: parsed.timeframe?.[0],
-          timeframeType: parsed.timeframeType,
-          priorities: {
-            speed: parsed.prioritySpeed || false,
-            price: parsed.priorityPrice || false,
-            service: parsed.priorityService || false
-          },
-          specialRequests: parsed.specialRequests || enrichedCase.notes || '',
-          flexiblePrice: parsed.flexiblePrice,
-          marketingBudget: parsed.marketingBudget?.[0],
-          freeIfNotSold: parsed.freeIfNotSold
-        };
-      } catch (error) {
-        console.error('Error parsing sales preferences:', error);
-      }
-    }
-    
-    // Also check for case-specific stored data
-    const caseSpecificData = localStorage.getItem(`seller_case_${caseId}`);
-    if (caseSpecificData) {
-      try {
-        const parsedCaseData = JSON.parse(caseSpecificData);
-        console.log('Found case-specific data:', parsedCaseData);
-        
-        // Merge case-specific data
-        enrichedCase = {
-          ...enrichedCase,
-          ...parsedCaseData,
-          // Preserve our enriched data
-          propertyType: enrichedCase.propertyType || parsedCaseData.propertyType,
-          rooms: enrichedCase.rooms || parsedCaseData.rooms,
-          notes: enrichedCase.notes || parsedCaseData.notes,
-          specialRequests: enrichedCase.specialRequests || parsedCaseData.specialRequests
-        };
-      } catch (error) {
-        console.error('Error parsing case-specific data:', error);
-      }
-    }
-    
-    // Ensure all required fields have values
-    const finalCase: DashboardCase = {
-      id: typeof enrichedCase.id === 'string' ? enrichedCase.id : enrichedCase.id.toString(),
-      address: enrichedCase.address || 'Ingen adresse',
-      municipality: enrichedCase.municipality || 'Ikke angivet',
-      type: enrichedCase.propertyType || enrichedCase.type || 'Ikke angivet',
-      size: enrichedCase.size || 'Ikke angivet',
-      price: enrichedCase.expectedPrice || enrichedCase.price || 'Ikke angivet',
-      buildYear: enrichedCase.buildYear || enrichedCase.constructionYear || new Date().getFullYear(),
-      status: enrichedCase.status || 'active',
-      sellerId: enrichedCase.sellerId || '',
-      sagsnummer: enrichedCase.sagsnummer || `SAG-${caseId.substring(0, 6).toUpperCase()}`,
-      propertyType: enrichedCase.propertyType,
-      expectedPrice: enrichedCase.expectedPrice,
-      expectedPriceValue: enrichedCase.expectedPriceValue,
-      timeframe: enrichedCase.timeframe,
-      timeframeType: enrichedCase.timeframeType,
-      priorities: enrichedCase.priorities,
-      specialRequests: enrichedCase.specialRequests,
-      notes: enrichedCase.notes,
-      rooms: enrichedCase.rooms || 'Ikke angivet',
-      flexiblePrice: enrichedCase.flexiblePrice,
-      marketingBudget: enrichedCase.marketingBudget,
-      freeIfNotSold: enrichedCase.freeIfNotSold
-    };
-    
-    console.log('Final enriched case:', finalCase);
-    return finalCase;
   };
 
   const loadUserCases = () => {
@@ -217,49 +79,7 @@ export const useSellerDashboard = () => {
         return;
       }
 
-      console.log('Loading cases for user ID:', user.id);
-      
-      // Get ALL cases from multiple sources
-      const allCases = getAllCases();
-      console.log('Cases from central storage:', allCases.length);
-      
-      const userSpecificCases = getCasesForUser(user.id);
-      console.log('User specific cases:', userSpecificCases.length);
-      
-      // Also check seller-specific cases in localStorage
-      const sellerSpecificCases = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('seller_case_')) {
-          try {
-            const caseData = JSON.parse(localStorage.getItem(key) || '{}');
-            if (caseData && caseData.sellerId === user.id) {
-              const caseId = key.replace('seller_case_', '');
-              const caseStatus = localStorage.getItem(`seller_case_status_${caseId}`) || 'active';
-              
-              sellerSpecificCases.push({
-                ...caseData,
-                id: caseId,
-                status: caseStatus
-              });
-            }
-          } catch (error) {
-            console.error('Error parsing seller case:', error);
-          }
-        }
-      }
-      
-      console.log('Seller specific cases found:', sellerSpecificCases);
-      
-      // Combine all sources of cases
-      const allUserCases = [...userSpecificCases, ...sellerSpecificCases];
-      
-      // Remove duplicates based on ID
-      const uniqueCases = allUserCases.filter((case_, index, array) => 
-        array.findIndex(c => c.id === case_.id) === index
-      );
-      
-      console.log('Combined unique cases:', uniqueCases);
+      const uniqueCases = loadAllUserCases(user.id);
       
       // Process each case and enrich with form data
       const processedCases: DashboardCase[] = uniqueCases.map(case_ => {
@@ -284,15 +104,12 @@ export const useSellerDashboard = () => {
   useEffect(() => {
     console.log('=== useSellerDashboard useEffect triggered ===');
     
-    // Initial load
     loadUserCases();
 
-    // Event listeners for real-time updates
     const handleCaseEvent = (event?: Event) => {
       console.log('=== CASE EVENT DETECTED IN DASHBOARD ===');
       console.log('Event type:', event?.type);
       
-      // Reload cases when events are detected
       setTimeout(() => {
         console.log('Reloading dashboard cases after event');
         loadUserCases();
@@ -309,7 +126,6 @@ export const useSellerDashboard = () => {
       }
     };
 
-    // Listen for all possible case update events
     window.addEventListener('caseCreated', handleCaseEvent);
     window.addEventListener('caseUpdated', handleCaseEvent);
     window.addEventListener('casesChanged', handleCaseEvent);
