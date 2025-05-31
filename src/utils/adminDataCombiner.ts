@@ -1,11 +1,11 @@
 
 import { Case } from '@/utils/userData';
 
-export const combineAllCases = (userDataCases: Case[], sellerCases: any[]): Case[] => {
+export const combineAllCases = (userDataCases: Case[], sellerCases: Case[]): Case[] => {
   // Ensure all cases have required properties and consistent types
-  const processedUserDataCases: Case[] = userDataCases.map(c => ({
+  const processedUserDataCases: Case[] = userDataCases.map((c: Case) => ({
     ...c,
-    id: typeof c.id === 'string' ? c.id : c.id.toString(),
+    id: typeof c.id === 'string' ? c.id : String(c.id),
     sellerName: c.sellerName || 'Ukendt sælger',
     sellerEmail: c.sellerEmail || 'Ikke angivet',
     sellerPhone: c.sellerPhone || 'Ikke angivet',
@@ -14,9 +14,9 @@ export const combineAllCases = (userDataCases: Case[], sellerCases: any[]): Case
   }));
 
   // Convert seller cases to proper Case format
-  const processedSellerCases: Case[] = sellerCases.map(sc => ({
+  const processedSellerCases: Case[] = sellerCases.map((sc: Case) => ({
     ...sc,
-    id: sc.id,
+    id: typeof sc.id === 'string' ? sc.id : String(sc.id),
     postnummer: sc.postnummer || '',
     buildYear: sc.buildYear || sc.constructionYear || new Date().getFullYear()
   }));

@@ -44,8 +44,8 @@ export const loadCasesData = (): Case[] => {
   return allCases;
 };
 
-export const loadSellerCasesFromStorage = (allUsers: User[]): ProcessedSellerCase[] => {
-  const sellerCases: ProcessedSellerCase[] = [];
+export const loadSellerCasesFromStorage = (allUsers: User[]): Case[] => {
+  const sellerCases: Case[] = [];
   const sellerKeys: string[] = [];
   
   // Find all seller case keys
@@ -95,7 +95,7 @@ export const loadSellerCasesFromStorage = (allUsers: User[]): ProcessedSellerCas
             }
           }
 
-          const processedCase: ProcessedSellerCase = {
+          const processedCase: Case = {
             id: caseId,
             sagsnummer: caseData.sagsnummer || `SAG-${caseId.slice(-6)}`,
             sellerId: caseData.sellerId || 'unknown',
