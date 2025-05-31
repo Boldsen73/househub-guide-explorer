@@ -83,7 +83,7 @@ export const useAgentCases = () => {
               sellerEmail: sellerInfo.email,
               sellerPhone: sellerInfo.phone,
               rooms: caseData.rooms || "Ikke angivet",
-              description: caseData.notes || caseData.sellerComments || `${caseData.type || caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
+              description: caseData.notes || caseData.sellerComments || caseData.comments || `${caseData.type || caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
               energyLabel: caseData.energyLabel || "C",
               agentStatus: 'active' as CaseStatus,
               deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -154,7 +154,7 @@ export const useAgentCases = () => {
                   sellerEmail: sellerInfo.email,
                   sellerPhone: sellerInfo.phone,
                   rooms: caseData.rooms || "Ikke angivet",
-                  description: caseData.notes || caseData.sellerComments || `${caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
+                  description: caseData.notes || caseData.sellerComments || caseData.comments || `${caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
                   energyLabel: caseData.energyLabel || "C",
                   agentStatus: 'active' as CaseStatus,
                   deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
