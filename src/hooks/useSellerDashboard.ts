@@ -52,33 +52,34 @@ export const useSellerDashboard = () => {
   };
 
   const loadUserCases = () => {
-    console.log('Loading user cases...');
+    console.log('=== LOADING USER CASES ===');
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       try {
         const user = JSON.parse(savedUser);
+        console.log('Current user loaded:', user);
         setCurrentUser(user);
 
         if (user.id) {
-          console.log('Loading cases for user:', user.id);
+          console.log('Loading cases for user ID:', user.id);
           
           // Get ALL cases from central storage
           const allCases = getCases();
-          console.log('All cases in system:', allCases);
+          console.log('All cases in system:', allCases.length, allCases);
           
           // Filter cases for this specific user
           const userCases = allCases.filter(case_ => case_.sellerId === user.id);
-          console.log('Cases for user:', userCases);
+          console.log('Cases for user', user.id, ':', userCases.length, userCases);
           
           const processedCases: DashboardCase[] = [];
           
           // Process user cases with complete data
           userCases.forEach(case_ => {
-            console.log('Processing case:', case_.id);
+            console.log('Processing case:', case_.id, case_);
             
             // Get complete case data including all seller inputs
             const completeData = getCompleteCaseData(case_.id) || case_;
-            console.log('Complete data for case:', completeData);
+            console.log('Complete data for case:', case_.id, completeData);
             
             processedCases.push({
               id: case_.id,
@@ -107,7 +108,7 @@ export const useSellerDashboard = () => {
             });
           });
           
-          console.log('Final processed cases for dashboard:', processedCases);
+          console.log('Final processed cases for dashboard:', processedCases.length, processedCases);
           setUserCases(processedCases);
         } else {
           console.log('No user ID found');
@@ -119,44 +120,55 @@ export const useSellerDashboard = () => {
         setUserCases([]);
       }
     } else {
-      console.log('No current user found');
+      console.log('No current user found in localStorage');
       setCurrentUser(null);
       setUserCases([]);
     }
     setIsLoading(false);
+    console.log('=== FINISHED LOADING USER CASES ===');
   };
 
   useEffect(() => {
+    console.log('useSellerDashboard useEffect triggered');
+    
     // Initial load
     loadUserCases();
 
     // Enhanced event listeners for real-time updates
-    const handleCaseUpdate = (event?: CustomEvent) => {
-      console.log('Case update event detected, reloading cases');
+    const handleCaseEvent = (event?: Event) => {
+      console.log('Case event detected:', event?.type, event);
       // Small delay to ensure data is saved
-      setTimeout(() => loadUserCases(), 100);
+      setTimeout(() => {
+        console.log('Reloading cases after event');
+        loadUserCases();
+      }, 100);
     };
 
     const handleStorageChange = (event: StorageEvent) => {
+      console.log('Storage event detected:', event.key, event);
       if (event.key === 'cases' || event.key?.startsWith('seller_case_')) {
         console.log('Storage changed for cases, reloading');
         setTimeout(() => loadUserCases(), 100);
       }
     };
 
-    // Listen for multiple events to catch all case updates
-    window.addEventListener('caseCreated', handleCaseUpdate);
-    window.addEventListener('caseUpdated', handleCaseUpdate);
+    // Listen for all possible case update events
+    window.addEventListener('caseCreated', handleCaseEvent);
+    window.addEventListener('caseUpdated', handleCaseEvent);
+    window.addEventListener('casesChanged', handleCaseEvent);
     window.addEventListener('storage', handleStorageChange);
     
-    // Also set up an interval to check for updates periodically
+    // Also set up an interval to check for updates periodically as fallback
     const intervalId = setInterval(() => {
+      console.log('Periodic check for case updates');
       loadUserCases();
-    }, 5000); // Check every 5 seconds
+    }, 3000); // Check every 3 seconds
 
     return () => {
-      window.removeEventListener('caseCreated', handleCaseUpdate);
-      window.removeEventListener('caseUpdated', handleCaseUpdate);
+      console.log('Cleaning up useSellerDashboard listeners');
+      window.removeEventListener('caseCreated', handleCaseEvent);
+      window.removeEventListener('caseUpdated', handleCaseEvent);
+      window.removeEventListener('casesChanged', handleCaseEvent);
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(intervalId);
     };

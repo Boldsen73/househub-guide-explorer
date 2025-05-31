@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare, Send, Clock, Archive } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getCaseMessages, sendMessage, TestMessage, getTestCases } from '@/utils/testData';
+import { getCases } from '@/utils/caseManagement';
 
 interface CaseInfo {
   id: string;
@@ -31,24 +31,49 @@ const CaseMessageNotifications: React.FC = () => {
   }, []);
 
   const loadData = () => {
-    const allCases = getTestCases();
+    console.log('=== LOADING DATA FOR AGENT NOTIFICATIONS ===');
+    
+    // Get both test cases and real cases
+    const testCases = getTestCases();
+    const realCases = getCases();
+    
+    console.log('Test cases:', testCases.length, testCases);
+    console.log('Real cases:', realCases.length, realCases);
+    
+    // Combine and format all cases
+    const allCases = [
+      ...testCases,
+      ...realCases.map(c => ({
+        ...c,
+        id: c.id.toString(), // Ensure string ID
+        status: c.status as any
+      }))
+    ];
+    
+    console.log('Combined cases for agent:', allCases.length, allCases);
+    
     const caseInfo: CaseInfo[] = allCases.map(c => ({
-      id: c.id,
+      id: c.id.toString(),
       address: c.address,
       status: c.status as any,
-      sagsnummer: c.sagsnummer
+      sagsnummer: c.sagsnummer || `SAG-${c.id.toString().substring(0, 6).toUpperCase()}`
     }));
+    
+    console.log('Formatted case info for agent:', caseInfo);
     setCases(caseInfo);
 
     // Load messages for each case
     const messagesByCase: Record<string, TestMessage[]> = {};
     allCases.forEach(case_ => {
-      const caseMessages = getCaseMessages(case_.id, case_.status === 'archived');
+      const caseMessages = getCaseMessages(case_.id.toString(), case_.status === 'archived');
       if (caseMessages.length > 0) {
-        messagesByCase[case_.id] = caseMessages;
+        messagesByCase[case_.id.toString()] = caseMessages;
       }
     });
+    
+    console.log('Messages by case for agent:', messagesByCase);
     setMessagesByCaseId(messagesByCase);
+    console.log('=== FINISHED LOADING DATA FOR AGENT NOTIFICATIONS ===');
   };
 
   const getCaseInfo = (caseId: string): CaseInfo | undefined => {
