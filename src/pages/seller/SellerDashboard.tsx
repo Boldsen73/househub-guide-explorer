@@ -13,9 +13,26 @@ const SellerDashboard = () => {
 
   // Force refresh when component mounts to ensure latest data
   useEffect(() => {
-    console.log('SellerDashboard mounted, forcing refresh');
+    console.log('SellerDashboard component mounted, forcing refresh');
+    
+    // Log current state for debugging
+    console.log('Current userCases:', userCases);
+    console.log('Current user:', currentUser);
+    console.log('Is loading:', isLoading);
+    
+    // Force refresh of cases
     refreshCases();
+    
+    // Also log localStorage state for debugging
+    const casesInStorage = localStorage.getItem('cases');
+    console.log('Cases in localStorage:', casesInStorage);
+    
   }, []);
+
+  // Add debugging for when userCases changes
+  useEffect(() => {
+    console.log('userCases changed in SellerDashboard:', userCases.length, userCases);
+  }, [userCases]);
 
   if (isLoading) {
     return (

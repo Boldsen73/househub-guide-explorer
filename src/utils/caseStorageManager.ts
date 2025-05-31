@@ -6,11 +6,17 @@ import { Case } from '@/types/user';
 export const getAllCases = (): Case[] => {
   try {
     const cases = localStorage.getItem('cases');
-    const parsedCases = cases ? JSON.parse(cases) : [];
-    console.log('getAllCases returning:', parsedCases.length, 'cases:', parsedCases);
-    return parsedCases;
+    if (!cases) {
+      console.log('No cases found in localStorage, initializing empty array');
+      localStorage.setItem('cases', JSON.stringify([]));
+      return [];
+    }
+    const parsedCases = JSON.parse(cases);
+    console.log('getAllCases found:', parsedCases.length, 'cases:', parsedCases);
+    return Array.isArray(parsedCases) ? parsedCases : [];
   } catch (error) {
-    console.error('Error getting cases:', error);
+    console.error('Error getting cases from localStorage:', error);
+    localStorage.setItem('cases', JSON.stringify([]));
     return [];
   }
 };
@@ -23,7 +29,7 @@ export const saveCaseToStorage = (case_: Case): void => {
     
     // Get existing cases
     const existingCases = getAllCases();
-    console.log('Existing cases before save:', existingCases.length, existingCases);
+    console.log('Existing cases before save:', existingCases.length);
     
     // Find if case already exists
     const existingIndex = existingCases.findIndex(c => c.id === case_.id);
@@ -40,57 +46,58 @@ export const saveCaseToStorage = (case_: Case): void => {
       console.log('Added new case. Total cases now:', updatedCases.length);
     }
     
-    // Save to localStorage
-    localStorage.setItem('cases', JSON.stringify(updatedCases));
-    console.log('Cases saved to localStorage. Updated cases:', updatedCases);
+    // Save to localStorage with error handling
+    try {
+      localStorage.setItem('cases', JSON.stringify(updatedCases));
+      console.log('Cases saved to localStorage successfully');
+    } catch (storageError) {
+      console.error('Failed to save to localStorage:', storageError);
+      throw storageError;
+    }
     
     // Also save individual case for backup
-    localStorage.setItem(`seller_case_${case_.id}`, JSON.stringify(case_));
-    console.log('Individual case backup saved for:', case_.id);
+    try {
+      localStorage.setItem(`seller_case_${case_.id}`, JSON.stringify(case_));
+      console.log('Individual case backup saved for:', case_.id);
+    } catch (backupError) {
+      console.error('Failed to save case backup:', backupError);
+    }
     
     // Verify the save worked
     const verification = localStorage.getItem('cases');
-    const verifiedCases = verification ? JSON.parse(verification) : [];
-    console.log('VERIFICATION: Cases in localStorage after save:', verifiedCases.length, verifiedCases);
+    if (verification) {
+      const verifiedCases = JSON.parse(verification);
+      console.log('VERIFICATION: Cases in localStorage after save:', verifiedCases.length);
+      
+      if (verifiedCases.length !== updatedCases.length) {
+        console.error('Save verification failed! Expected:', updatedCases.length, 'Actual:', verifiedCases.length);
+      }
+    }
     
-    // Dispatch comprehensive events
-    dispatchCaseEvents(case_, updatedCases);
+    // Dispatch events to notify all listening components
+    console.log('Dispatching case update events...');
+    window.dispatchEvent(new CustomEvent('caseCreated', { detail: case_ }));
+    window.dispatchEvent(new CustomEvent('caseUpdated', { detail: case_ }));
+    window.dispatchEvent(new CustomEvent('casesChanged', { detail: { case: case_, allCases: updatedCases } }));
+    window.dispatchEvent(new Event('storage'));
     
     console.log('=== CASE SAVE COMPLETE ===');
     
   } catch (error) {
     console.error('Error saving case:', error);
+    throw error;
   }
-};
-
-// Dispatch all necessary events for case updates
-const dispatchCaseEvents = (case_: Case, allCases: Case[]): void => {
-  console.log('=== DISPATCHING EVENTS ===');
-  console.log('Dispatching events for case:', case_.id);
-  console.log('Total cases for events:', allCases.length);
-  
-  // Force a small delay to ensure localStorage write is complete
-  setTimeout(() => {
-    // Custom events for specific listeners
-    window.dispatchEvent(new CustomEvent('caseCreated', { detail: case_ }));
-    window.dispatchEvent(new CustomEvent('caseUpdated', { detail: case_ }));
-    window.dispatchEvent(new CustomEvent('casesChanged', { detail: { case: case_, allCases } }));
-    
-    // Storage event to trigger other listeners
-    window.dispatchEvent(new Event('storage'));
-    
-    // Force dashboard refresh
-    window.dispatchEvent(new CustomEvent('forceDashboardRefresh', { detail: case_ }));
-    
-    console.log('All case events dispatched for:', case_.id);
-    console.log('=== EVENTS DISPATCH COMPLETE ===');
-  }, 50);
 };
 
 // Get cases for a specific user
 export const getCasesForUser = (userId: string): Case[] => {
+  console.log('getCasesForUser called for userId:', userId);
   const allCases = getAllCases();
-  const userCases = allCases.filter(case_ => case_.sellerId === userId);
+  const userCases = allCases.filter(case_ => {
+    const matches = case_.sellerId === userId;
+    console.log(`Case ${case_.id} sellerId: ${case_.sellerId}, matches user ${userId}: ${matches}`);
+    return matches;
+  });
   console.log(`getCasesForUser(${userId}) returning ${userCases.length} cases:`, userCases);
   return userCases;
 };
@@ -108,6 +115,13 @@ export const createCompleteCase = (caseId: string, basicCaseData: any): Case => 
   console.log('=== CREATING COMPLETE CASE ===');
   console.log('Case ID:', caseId);
   console.log('Basic case data:', basicCaseData);
+  
+  // Ensure basic required fields are present
+  if (!basicCaseData.sellerId) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    basicCaseData.sellerId = currentUser.id;
+    console.log('Added sellerId from currentUser:', basicCaseData.sellerId);
+  }
   
   // Get all form data from localStorage
   const propertyData = localStorage.getItem('propertyForm');
