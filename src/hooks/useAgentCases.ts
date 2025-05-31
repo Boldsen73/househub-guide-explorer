@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CaseStatus, AgentOffer } from '@/types/agent';
 import { Case } from '@/types/case';
+import { getAllCases } from '@/utils/caseStorageManager';
 
 // Use the Case interface from types/case.ts and extend it
 interface CaseWithStatus extends Case {
@@ -35,33 +36,85 @@ export const useAgentCases = () => {
       const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
       console.log('All users for agent case loading:', allUsers);
       
-      // Get user-created cases from localStorage
+      // Get cases from central storage first
+      const centralCases = getAllCases();
+      console.log('Central cases found:', centralCases);
+      
+      // Also check for individual seller cases for backward compatibility
       const userCases: CaseWithStatus[] = [];
       const processedCaseIds = new Set<string>();
-      console.log('Scanning localStorage for seller cases...');
+      
+      // Process central cases first
+      centralCases.forEach(caseData => {
+        if (caseData && caseData.address && caseData.id) {
+          const caseId = caseData.id.toString();
+          
+          if (!processedCaseIds.has(caseId)) {
+            // Get seller information
+            let sellerInfo = { 
+              name: 'Ukendt sælger', 
+              email: 'Ikke angivet', 
+              phone: 'Ikke angivet' 
+            };
+            
+            if (caseData.sellerId) {
+              const seller = allUsers.find(u => u.id === caseData.sellerId);
+              if (seller) {
+                sellerInfo = {
+                  name: seller.name || `${seller.firstName || ''} ${seller.lastName || ''}`.trim() || 'Ukendt sælger',
+                  email: seller.email || 'Ikke angivet',
+                  phone: seller.phone || 'Ikke angivet'
+                };
+              }
+            }
+
+            userCases.push({
+              id: parseInt(caseId),
+              address: caseData.address,
+              municipality: caseData.municipality || caseData.city || 'Ikke angivet',
+              type: caseData.type || caseData.propertyType || 'Ikke angivet',
+              size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
+              price: caseData.price || caseData.expectedPrice || 'Ikke angivet',
+              priceValue: caseData.priceValue || caseData.expectedPriceValue || 0,
+              constructionYear: caseData.buildYear || new Date().getFullYear(),
+              status: 'waiting_for_offers' as const,
+              sellerId: caseData.sellerId,
+              sellerName: sellerInfo.name,
+              sellerEmail: sellerInfo.email,
+              sellerPhone: sellerInfo.phone,
+              rooms: caseData.rooms || "Ikke angivet",
+              description: caseData.notes || caseData.comments || `${caseData.type || caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
+              energyLabel: caseData.energyLabel || "C",
+              agentStatus: 'active' as CaseStatus,
+              deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+            });
+            processedCaseIds.add(caseId);
+            console.log(`Added central case ${caseId} to agent view`);
+          }
+        }
+      });
+      
+      // Also scan for individual seller cases (backward compatibility)
+      console.log('Scanning localStorage for individual seller cases...');
       
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.startsWith('seller_case_')) {
           try {
             const caseData = JSON.parse(localStorage.getItem(key) || '{}');
-            console.log(`Found seller case with key ${key}:`, caseData);
-            
             const caseId = key.replace('seller_case_', '');
             
-            // Skip if this case ID is already processed
+            // Skip if this case ID is already processed from central storage
             if (processedCaseIds.has(caseId)) {
-              console.log(`Case ${caseId} already processed, skipping duplicate`);
+              console.log(`Case ${caseId} already processed from central storage, skipping individual case`);
               continue;
             }
             
-            // Include ALL seller cases regardless of sellerId
             if (caseData && caseData.address) {
               // Check if the case is still active from seller perspective
               const sellerCaseStatus = localStorage.getItem(`seller_case_status_${caseId}`);
               const showingData = localStorage.getItem(`case_${caseId}_showing`);
               
-              // Include cases that are active or have showing booked
               const isVisible = !sellerCaseStatus || 
                                sellerCaseStatus === 'active' || 
                                sellerCaseStatus === 'showing_booked' || 
@@ -69,7 +122,6 @@ export const useAgentCases = () => {
                                showingData;
               
               if (isVisible) {
-                // Mansfield information with better fallback
                 let sellerInfo = { 
                   name: 'Ukendt sælger', 
                   email: 'Ikke angivet', 
@@ -80,14 +132,11 @@ export const useAgentCases = () => {
                   const seller = allUsers.find(u => u.id === caseData.sellerId);
                   if (seller) {
                     sellerInfo = {
-                      name: seller.name || 'Ukendt sælger',
+                      name: seller.name || `${seller.firstName || ''} ${seller.lastName || ''}`.trim() || 'Ukendt sælger',
                       email: seller.email || 'Ikke angivet',
                       phone: seller.phone || 'Ikke angivet'
                     };
                   }
-                  console.log(`Found seller for case ${caseId}:`, sellerInfo);
-                } else {
-                  console.log(`No sellerId found for case ${caseId}`);
                 }
 
                 userCases.push({
@@ -95,9 +144,9 @@ export const useAgentCases = () => {
                   address: caseData.address,
                   municipality: caseData.municipality || caseData.city || 'Ikke angivet',
                   type: caseData.propertyType || caseData.type || 'Ikke angivet',
-                  size: caseData.size ? `${caseData.size} m²` : 'Ikke angivet',
-                  price: caseData.estimatedPrice || 'Ikke angivet',
-                  priceValue: parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
+                  size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
+                  price: caseData.expectedPrice || caseData.estimatedPrice || 'Ikke angivet',
+                  priceValue: caseData.expectedPriceValue || parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
                   constructionYear: caseData.buildYear || new Date().getFullYear(),
                   status: 'waiting_for_offers' as const,
                   sellerId: caseData.sellerId,
@@ -106,14 +155,12 @@ export const useAgentCases = () => {
                   sellerPhone: sellerInfo.phone,
                   rooms: caseData.rooms || "Ikke angivet",
                   description: caseData.notes || caseData.comments || `${caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
-                  energyLabel: caseData.energyLabel || "Ikke angivet",
+                  energyLabel: caseData.energyLabel || "C",
                   agentStatus: 'active' as CaseStatus,
                   deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
                 });
                 processedCaseIds.add(caseId);
-                console.log(`Added case ${caseId} to agent view with seller info:`, sellerInfo);
-              } else {
-                console.log(`Case ${caseId} is not visible to agents (status: ${sellerCaseStatus})`);
+                console.log(`Added individual case ${caseId} to agent view`);
               }
             }
           } catch (error) {
@@ -122,10 +169,10 @@ export const useAgentCases = () => {
         }
       }
       
-      console.log('Real seller cases found for agents:', userCases);
+      console.log('All cases found for agents:', userCases);
       
       if (!userCases || userCases.length === 0) {
-        console.log('No real seller cases found for agents');
+        console.log('No cases found for agents');
         setCases([]);
         return;
       }
@@ -147,7 +194,7 @@ export const useAgentCases = () => {
         };
       });
       
-      console.log('Converted real seller cases for agent view:', convertedCases);
+      console.log('Final converted cases for agent view:', convertedCases);
       setCases(convertedCases);
     };
 

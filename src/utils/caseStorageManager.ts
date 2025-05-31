@@ -139,12 +139,15 @@ export const createCompleteCase = (caseId: string, basicCaseData: any): Case => 
       console.log('Parsed property data:', parsed);
       completeCase = {
         ...completeCase,
-        propertyType: parsed.propertyType,
-        size: parsed.size,
-        buildYear: parsed.buildYear,
-        rooms: parsed.rooms,
-        notes: parsed.notes,
-        city: parsed.city || completeCase.municipality
+        propertyType: parsed.propertyType || completeCase.type,
+        type: parsed.propertyType || completeCase.type,
+        size: parsed.size || completeCase.size,
+        buildYear: parsed.buildYear || completeCase.buildYear,
+        rooms: parsed.rooms || completeCase.rooms,
+        notes: parsed.notes || completeCase.notes,
+        comments: parsed.comments || parsed.notes || completeCase.comments,
+        city: parsed.city || completeCase.municipality,
+        municipality: parsed.city || completeCase.municipality
       };
     } catch (error) {
       console.error('Error parsing property data:', error);
@@ -156,10 +159,22 @@ export const createCompleteCase = (caseId: string, basicCaseData: any): Case => 
     try {
       const parsed = JSON.parse(salesPreferences);
       console.log('Parsed sales preferences:', parsed);
+      
+      // Handle expected price properly
+      let expectedPrice = completeCase.price;
+      let expectedPriceValue = completeCase.priceValue;
+      
+      if (parsed.expectedPrice && Array.isArray(parsed.expectedPrice) && parsed.expectedPrice[0]) {
+        expectedPriceValue = parsed.expectedPrice[0];
+        expectedPrice = `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr`;
+      }
+      
       completeCase = {
         ...completeCase,
-        expectedPrice: parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : completeCase.price,
-        expectedPriceValue: parsed.expectedPrice?.[0] || completeCase.priceValue,
+        expectedPrice: expectedPrice,
+        price: expectedPrice, // Also set price field for display
+        expectedPriceValue: expectedPriceValue,
+        priceValue: expectedPriceValue,
         timeframe: parsed.timeframe?.[0],
         timeframeType: parsed.timeframeType,
         priorities: {
@@ -176,6 +191,12 @@ export const createCompleteCase = (caseId: string, basicCaseData: any): Case => 
       console.error('Error parsing sales preferences:', error);
     }
   }
+  
+  // Ensure essential fields have values
+  completeCase.rooms = completeCase.rooms || 'Ikke angivet';
+  completeCase.size = completeCase.size || 'Ikke angivet';
+  completeCase.price = completeCase.price || completeCase.expectedPrice || 'Ikke angivet';
+  completeCase.type = completeCase.type || completeCase.propertyType || 'Ikke angivet';
   
   console.log('Complete case before save:', completeCase);
   
