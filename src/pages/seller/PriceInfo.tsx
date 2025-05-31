@@ -95,6 +95,7 @@ const PriceInfo = () => {
         type: propertyData.propertyType,
         size: parseInt(propertyData.size) || 0,
         buildYear: parseInt(propertyData.buildYear) || new Date().getFullYear(),
+        rooms: propertyData.værelser,
         price: formattedPrice,
         priceValue: expectedPrice,
         status: 'active' as const,
