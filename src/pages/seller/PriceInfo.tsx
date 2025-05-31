@@ -114,12 +114,8 @@ const PriceInfo: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
       <div className="container mx-auto px-4 py-8 flex-grow">
-        {/* RETTET: Sender nu en string status til ProgressSteps, som forventet af dens type */}
-        {/* Hvis dette er det sidste trin (trin 3), og du er klar til at oprette sagen,
-            kan status være 'data_entered' eller 'sent_to_agents' afhængig af dit flow.
-            Jeg antager 'data_entered' som et generisk sidste trin før afslutning.
-            Du skal vælge den status, der passer bedst til dit UI for trin 3. */}
-        <ProgressSteps status="data_entered" /> {/* Eller "agent_selected" hvis det er det korrekte step for afslutning */}
+        {/* RETTET: Går tilbage til currentStep og totalSteps, da 'status' ikke er en prop for ProgressSteps */}
+        <ProgressSteps currentStep={3} totalSteps={3} /> 
         <Card className="max-w-3xl mx-auto mt-8">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-900">Prisoplysninger</CardTitle>
