@@ -227,7 +227,7 @@ const SalePreferences = () => {
                 </div>
                 
                 <div className="flex gap-4 pt-6">
-                  <Link to="/saelger/boligdata-ny" className="flex-1">
+                  <Link to="/saelger/boligdata" className="flex-1">
                     <Button type="button" variant="outline" className="w-full">
                       Tilbage
                     </Button>
