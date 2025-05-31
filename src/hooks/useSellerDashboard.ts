@@ -1,8 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { getTestCasesForUser } from '@/utils/testData';
+import { getCasesForUser, getCompleteCaseData, getCases } from '@/utils/caseManagement';
 import { getDisplayName } from '@/utils/userNameUtils';
-import { getCompleteCaseData } from '@/utils/caseManagement';
 
 interface DashboardCase {
   id: string;
@@ -60,64 +59,97 @@ export const useSellerDashboard = () => {
         setCurrentUser(user);
 
         if (user.id) {
-          // ONLY get cases that belong to this specific user
-          const userOwnedCases = getTestCasesForUser(user.id);
+          console.log('Loading cases for user:', user.id);
           
-          // Also check for any local seller_case_ entries for this specific user
+          // Get cases from central storage first
+          const centralCases = getCasesForUser(user.id);
+          console.log('Cases from central storage:', centralCases);
+          
+          // Also check for any local seller_case_ entries
           const userCreatedCases = [];
-          const seenCaseIds = new Set(); // Prevent duplicates
+          const seenCaseIds = new Set();
           
+          // Add central cases first
+          centralCases.forEach(case_ => {
+            if (!seenCaseIds.has(case_.id)) {
+              seenCaseIds.add(case_.id);
+              const completeData = getCompleteCaseData(case_.id) || case_;
+              
+              userCreatedCases.push({
+                id: case_.id,
+                address: completeData.address || case_.address,
+                municipality: completeData.municipality || completeData.city || case_.municipality || 'Ikke angivet',
+                type: completeData.propertyType || case_.type || 'Ikke angivet',
+                size: completeData.size ? `${completeData.size} m²` : (case_.size ? `${case_.size} m²` : 'Ikke angivet'),
+                price: completeData.expectedPrice || case_.price || 'Ikke angivet',
+                buildYear: completeData.buildYear || case_.buildYear || new Date().getFullYear(),
+                status: case_.status || 'active',
+                sellerId: case_.sellerId,
+                sagsnummer: case_.sagsnummer || `SAG-${case_.id.substring(0, 6).toUpperCase()}`,
+                // Enhanced fields
+                propertyType: completeData.propertyType,
+                expectedPrice: completeData.expectedPrice,
+                expectedPriceValue: completeData.expectedPriceValue,
+                timeframe: completeData.timeframe,
+                timeframeType: completeData.timeframeType,
+                priorities: completeData.priorities,
+                specialRequests: completeData.specialRequests,
+                notes: completeData.notes,
+                rooms: completeData.rooms,
+                flexiblePrice: completeData.flexiblePrice,
+                marketingBudget: completeData.marketingBudget,
+                freeIfNotSold: completeData.freeIfNotSold
+              });
+            }
+          });
+          
+          // Check for additional cases in localStorage that might not be in central storage yet
           for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (key && key.startsWith('seller_case_')) {
               try {
-                const caseId = key.replace('seller_case_', '');
-                const completeData = getCompleteCaseData(caseId);
-                
-                // STRICT check - only include if sellerId exactly matches current user AND not already seen
-                if (completeData && completeData.address && completeData.sellerId === user.id && !seenCaseIds.has(caseId)) {
-                  seenCaseIds.add(caseId);
-                  userCreatedCases.push({
-                    id: caseId,
-                    address: completeData.address,
-                    municipality: completeData.municipality || completeData.city || 'Ikke angivet',
-                    type: completeData.propertyType || completeData.type || 'Ikke angivet',
-                    size: completeData.size ? `${completeData.size} m²` : 'Ikke angivet',
-                    price: completeData.expectedPrice || completeData.price || 'Ikke angivet',
-                    buildYear: completeData.buildYear || completeData.constructionYear || new Date().getFullYear(),
-                    status: 'active',
-                    sellerId: completeData.sellerId,
-                    sagsnummer: `SAG-${caseId.substring(0, 6).toUpperCase()}`,
-                    // Enhanced fields
-                    propertyType: completeData.propertyType,
-                    expectedPrice: completeData.expectedPrice,
-                    expectedPriceValue: completeData.expectedPriceValue,
-                    timeframe: completeData.timeframe,
-                    timeframeType: completeData.timeframeType,
-                    priorities: completeData.priorities,
-                    specialRequests: completeData.specialRequests,
-                    notes: completeData.notes,
-                    rooms: completeData.rooms,
-                    flexiblePrice: completeData.flexiblePrice,
-                    marketingBudget: completeData.marketingBudget,
-                    freeIfNotSold: completeData.freeIfNotSold
-                  });
+                const caseData = JSON.parse(localStorage.getItem(key) || '{}');
+                if (caseData && caseData.address && caseData.sellerId === user.id) {
+                  const caseId = key.replace('seller_case_', '');
+                  
+                  if (!seenCaseIds.has(caseId)) {
+                    seenCaseIds.add(caseId);
+                    
+                    userCreatedCases.push({
+                      id: caseId,
+                      address: caseData.address,
+                      municipality: caseData.municipality || caseData.city || 'Ikke angivet',
+                      type: caseData.propertyType || caseData.type || 'Ikke angivet',
+                      size: caseData.size ? `${caseData.size} m²` : 'Ikke angivet',
+                      price: caseData.expectedPrice || caseData.price || 'Ikke angivet',
+                      buildYear: caseData.buildYear || caseData.constructionYear || new Date().getFullYear(),
+                      status: caseData.status || 'active',
+                      sellerId: caseData.sellerId,
+                      sagsnummer: caseData.sagsnummer || `SAG-${caseId.substring(0, 6).toUpperCase()}`,
+                      // Enhanced fields
+                      propertyType: caseData.propertyType,
+                      expectedPrice: caseData.expectedPrice,
+                      expectedPriceValue: caseData.expectedPriceValue,
+                      timeframe: caseData.timeframe,
+                      timeframeType: caseData.timeframeType,
+                      priorities: caseData.priorities,
+                      specialRequests: caseData.specialRequests,
+                      notes: caseData.notes,
+                      rooms: caseData.rooms,
+                      flexiblePrice: caseData.flexiblePrice,
+                      marketingBudget: caseData.marketingBudget,
+                      freeIfNotSold: caseData.freeIfNotSold
+                    });
+                  }
                 }
               } catch {
                 // ignore error
               }
             }
           }
-
-          // Combine cases and remove any duplicates by ID
-          const allCases = [...userOwnedCases, ...userCreatedCases];
-          const uniqueCases = allCases.filter((case_, index, arr) => 
-            arr.findIndex(c => c.id === case_.id) === index
-          );
           
-          console.log('Loading cases for user:', user.id);
-          console.log('Found unique cases with complete data:', uniqueCases);
-          setUserCases(uniqueCases);
+          console.log('Found unique cases with complete data:', userCreatedCases);
+          setUserCases(userCreatedCases);
         } else {
           console.log('No user ID found');
           setUserCases([]);
