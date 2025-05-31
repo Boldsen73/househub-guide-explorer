@@ -81,10 +81,13 @@ const PriceInfo = () => {
       console.log('Using existing user:', currentUser);
 
       // Get expected price from sale preferences
-      const expectedPrice = salePreferences?.expectedPrice?.[0] || 0;
-      const formattedPrice = expectedPrice ? `${(expectedPrice / 1000000).toFixed(1)} mio. kr` : 'Ikke angivet';
+      // Ensure expectedPrice is always an array, and take the first element
+      const expectedPriceValue = (Array.isArray(salePreferences?.expectedPrice) && salePreferences.expectedPrice.length > 0)
+        ? salePreferences.expectedPrice[0]
+        : 0;
+      const formattedPrice = expectedPriceValue ? `${(expectedPriceValue / 1000000).toFixed(1)} mio. kr` : 'Ikke angivet';
 
-      // Create new case using existing user
+      // Create new case using existing user and combined data
       const newCase = {
         id: Date.now().toString(),
         sagsnummer: `SAG-${Date.now().toString().substring(0, 6).toUpperCase()}`,
@@ -95,21 +98,30 @@ const PriceInfo = () => {
         type: propertyData.propertyType,
         size: parseInt(propertyData.size) || 0,
         buildYear: parseInt(propertyData.buildYear) || new Date().getFullYear(),
-        rooms: propertyData.rooms, // <-- RETTET HER FRA propertyData.værelser til propertyData.rooms!
-        price: formattedPrice,
-        priceValue: expectedPrice,
+        rooms: propertyData.rooms,
+        price: formattedPrice, // Display formatted price
+        priceValue: expectedPriceValue, // Store actual number value for calculations if needed
         status: 'active' as const,
         createdAt: new Date().toISOString(),
         offers: [],
         showingRegistrations: [],
-        messages: []
+        messages: [],
+
+        // Add data from SalePreferencesForm and PropertyData (notes)
+        timeframe: salePreferences?.timeframe || undefined,
+        timeframeType: salePreferences?.timeframeType || undefined,
+        priorities: salePreferences?.priorities || { speed: false, price: false, service: false },
+        flexiblePrice: salePreferences?.flexiblePrice || false,
+        marketingBudget: salePreferences?.marketingBudget || 0,
+        freeIfNotSold: salePreferences?.freeIfNotSold || false, // Assuming this exists in salePreferences
+        specialRequests: salePreferences?.specialRequests || undefined,
+        notes: propertyData.notes || undefined, // Notes from PropertyData.tsx
       };
 
       console.log('Creating case:', newCase);
 
       // Save the case to test_cases in localStorage
-      // Assuming saveTestCase handles the 'test_cases' storage
-      saveTestCase(newCase); // Use the helper function if it correctly pushes to test_cases
+      saveTestCase(newCase);
 
       // Also save as seller_case for compatibility (if needed by other components)
       localStorage.setItem(`seller_case_${newCase.id}`, JSON.stringify(newCase));
@@ -187,7 +199,7 @@ const PriceInfo = () => {
                       </p>
                       {salePreferences && (
                         <p className="text-sm text-gray-600">
-                          Forventet pris: {(salePreferences.expectedPrice[0] / 1000000).toFixed(1)} mio. kr
+                          Forventet pris: {(salePreferences.expectedPrice?.[0] / 1000000).toFixed(1)} mio. kr
                         </p>
                       )}
                     </div>
@@ -208,11 +220,9 @@ const PriceInfo = () => {
                           <p className="text-sm text-gray-600 mt-2">
                             Seneste offentlige vurdering
                           </p>
-                        </div>
                       </div>
                     </div>
-                  )}
-
+                  </div>
                   <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                     <div className="flex items-start gap-2">
                       <Info className="h-5 w-5 text-yellow-600 mt-0.5" />
