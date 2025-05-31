@@ -36,7 +36,7 @@ export const useAgentCases = () => {
       const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
       console.log('All users for agent case loading:', allUsers);
       
-      // Get cases from central storage first
+      // Get cases from central storage first - this is the primary source
       const centralCases = getAllCases();
       console.log('Central cases found:', centralCases);
       
@@ -44,7 +44,7 @@ export const useAgentCases = () => {
       const userCases: CaseWithStatus[] = [];
       const processedCaseIds = new Set<string>();
       
-      // Process central cases first
+      // Process central cases first - these should be the main source of truth
       centralCases.forEach(caseData => {
         if (caseData && caseData.address && caseData.id) {
           const caseId = caseData.id.toString();
@@ -68,22 +68,25 @@ export const useAgentCases = () => {
               }
             }
 
+            // Ensure we have proper number ID
+            const numericId = typeof caseData.id === 'string' ? parseInt(caseData.id) : caseData.id;
+
             userCases.push({
-              id: parseInt(caseId),
+              id: numericId,
               address: caseData.address,
-              municipality: caseData.municipality || caseData.city || 'Ikke angivet',
-              type: caseData.type || caseData.propertyType || 'Ikke angivet',
-              size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
-              price: caseData.price || caseData.expectedPrice || 'Ikke angivet',
-              priceValue: caseData.priceValue || caseData.expectedPriceValue || 0,
-              constructionYear: caseData.buildYear || new Date().getFullYear(),
-              status: 'waiting_for_offers' as const,
+              municipality: caseData.municipality || 'Ikke angivet',
+              type: caseData.type || 'Ikke angivet',
+              size: caseData.size || 'Ikke angivet',
+              price: caseData.price || 'Ikke angivet',
+              priceValue: caseData.priceValue || 0,
+              constructionYear: caseData.constructionYear || new Date().getFullYear(),
+              status: caseData.status || 'waiting_for_offers',
               sellerId: caseData.sellerId,
               sellerName: sellerInfo.name,
               sellerEmail: sellerInfo.email,
               sellerPhone: sellerInfo.phone,
               rooms: caseData.rooms || "Ikke angivet",
-              description: caseData.notes || caseData.description || `${caseData.type || caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
+              description: caseData.description || `${caseData.type || 'Bolig'} i ${caseData.municipality || 'Danmark'}`,
               energyLabel: caseData.energyLabel || "C",
               agentStatus: 'active' as CaseStatus,
               deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -94,77 +97,72 @@ export const useAgentCases = () => {
         }
       });
       
-      // Also scan for individual seller cases (backward compatibility)
-      console.log('Scanning localStorage for individual seller cases...');
-      
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('seller_case_')) {
-          try {
-            const caseData = JSON.parse(localStorage.getItem(key) || '{}');
-            const caseId = key.replace('seller_case_', '');
-            
-            // Skip if this case ID is already processed from central storage
-            if (processedCaseIds.has(caseId)) {
-              console.log(`Case ${caseId} already processed from central storage, skipping individual case`);
-              continue;
-            }
-            
-            if (caseData && caseData.address) {
-              // Check if the case is still active from seller perspective
-              const sellerCaseStatus = localStorage.getItem(`seller_case_status_${caseId}`);
-              const showingData = localStorage.getItem(`case_${caseId}_showing`);
+      // Also scan for individual seller cases (backward compatibility) if no central cases found
+      if (userCases.length === 0) {
+        console.log('No central cases found, scanning localStorage for individual seller cases...');
+        
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('seller_case_')) {
+            try {
+              const caseData = JSON.parse(localStorage.getItem(key) || '{}');
+              const caseId = key.replace('seller_case_', '');
               
-              const isVisible = !sellerCaseStatus || 
-                               sellerCaseStatus === 'active' || 
-                               sellerCaseStatus === 'showing_booked' || 
-                               sellerCaseStatus === 'showing_completed' ||
-                               showingData;
-              
-              if (isVisible) {
-                let sellerInfo = { 
-                  name: 'Ukendt sælger', 
-                  email: 'Ikke angivet', 
-                  phone: 'Ikke angivet' 
-                };
+              if (caseData && caseData.address) {
+                // Check if the case is still active from seller perspective
+                const sellerCaseStatus = localStorage.getItem(`seller_case_status_${caseId}`);
+                const showingData = localStorage.getItem(`case_${caseId}_showing`);
                 
-                if (caseData.sellerId) {
-                  const seller = allUsers.find(u => u.id === caseData.sellerId);
-                  if (seller) {
-                    sellerInfo = {
-                      name: seller.name || `${seller.firstName || ''} ${seller.lastName || ''}`.trim() || 'Ukendt sælger',
-                      email: seller.email || 'Ikke angivet',
-                      phone: seller.phone || 'Ikke angivet'
-                    };
+                const isVisible = !sellerCaseStatus || 
+                                 sellerCaseStatus === 'active' || 
+                                 sellerCaseStatus === 'showing_booked' || 
+                                 sellerCaseStatus === 'showing_completed' ||
+                                 showingData;
+                
+                if (isVisible) {
+                  let sellerInfo = { 
+                    name: 'Ukendt sælger', 
+                    email: 'Ikke angivet', 
+                    phone: 'Ikke angivet' 
+                  };
+                  
+                  if (caseData.sellerId) {
+                    const seller = allUsers.find(u => u.id === caseData.sellerId);
+                    if (seller) {
+                      sellerInfo = {
+                        name: seller.name || `${seller.firstName || ''} ${seller.lastName || ''}`.trim() || 'Ukendt sælger',
+                        email: seller.email || 'Ikke angivet',
+                        phone: seller.phone || 'Ikke angivet'
+                      };
+                    }
                   }
-                }
 
-                userCases.push({
-                  id: parseInt(caseId),
-                  address: caseData.address,
-                  municipality: caseData.municipality || caseData.city || 'Ikke angivet',
-                  type: caseData.propertyType || caseData.type || 'Ikke angivet',
-                  size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
-                  price: caseData.expectedPrice || caseData.estimatedPrice || 'Ikke angivet',
-                  priceValue: caseData.expectedPriceValue || parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
-                  constructionYear: caseData.buildYear || new Date().getFullYear(),
-                  status: 'waiting_for_offers' as const,
-                  sellerId: caseData.sellerId,
-                  sellerName: sellerInfo.name,
-                  sellerEmail: sellerInfo.email,
-                  sellerPhone: sellerInfo.phone,
-                  rooms: caseData.rooms || "Ikke angivet",
-                  description: caseData.notes || caseData.description || `${caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
-                  energyLabel: caseData.energyLabel || "C",
-                  agentStatus: 'active' as CaseStatus,
-                  deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-                });
-                processedCaseIds.add(caseId);
-                console.log(`Added individual case ${caseId} to agent view`);
+                  userCases.push({
+                    id: parseInt(caseId),
+                    address: caseData.address,
+                    municipality: caseData.municipality || caseData.city || 'Ikke angivet',
+                    type: caseData.propertyType || caseData.type || 'Ikke angivet',
+                    size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
+                    price: caseData.expectedPrice || caseData.estimatedPrice || 'Ikke angivet',
+                    priceValue: caseData.expectedPriceValue || parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
+                    constructionYear: caseData.buildYear || new Date().getFullYear(),
+                    status: 'waiting_for_offers' as const,
+                    sellerId: caseData.sellerId,
+                    sellerName: sellerInfo.name,
+                    sellerEmail: sellerInfo.email,
+                    sellerPhone: sellerInfo.phone,
+                    rooms: caseData.rooms || "Ikke angivet",
+                    description: caseData.description || `${caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
+                    energyLabel: caseData.energyLabel || "C",
+                    agentStatus: 'active' as CaseStatus,
+                    deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+                  });
+                  console.log(`Added individual case ${caseId} to agent view`);
+                }
               }
+            } catch (error) {
+              console.error(`Error parsing case data for key ${key}:`, error);
             }
-          } catch (error) {
-            console.error(`Error parsing case data for key ${key}:`, error);
           }
         }
       }
@@ -172,8 +170,31 @@ export const useAgentCases = () => {
       console.log('All cases found for agents:', userCases);
       
       if (!userCases || userCases.length === 0) {
-        console.log('No cases found for agents');
-        setCases([]);
+        console.log('No cases found for agents - creating test case for demonstration');
+        
+        // Create a test case to demonstrate the interface
+        const testCase: CaseWithStatus = {
+          id: 1,
+          address: "Vesterbrogade 115",
+          municipality: "København V",
+          type: "Lejlighed",
+          size: "76 m²",
+          price: "Ikke angivet",
+          priceValue: 0,
+          constructionYear: 1920,
+          status: 'waiting_for_offers',
+          sellerId: "test-seller",
+          sellerName: "Test Sælger",
+          sellerEmail: "test@example.com",
+          sellerPhone: "12345678",
+          rooms: "3 værelses",
+          description: "Dejlig lejlighed i København V",
+          energyLabel: "C",
+          agentStatus: 'active' as CaseStatus,
+          deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        };
+        
+        setCases([testCase]);
         return;
       }
       

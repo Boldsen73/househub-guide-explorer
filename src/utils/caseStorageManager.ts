@@ -1,6 +1,6 @@
 
 // Centralized case storage manager for consistent data handling
-import { Case } from '@/types/user';
+import { Case } from '@/types/case';
 
 // Get all cases from localStorage
 export const getAllCases = (): Case[] => {
@@ -26,6 +26,12 @@ export const saveCaseToStorage = (case_: Case): void => {
   try {
     console.log('=== SAVING CASE TO STORAGE ===');
     console.log('Case being saved:', case_);
+    
+    // Ensure the case has a proper ID
+    if (!case_.id) {
+      case_.id = Date.now().toString();
+      console.log('Generated new case ID:', case_.id);
+    }
     
     // Get existing cases
     const existingCases = getAllCases();
@@ -123,6 +129,9 @@ export const createCompleteCase = (caseId: string, basicCaseData: any): Case => 
     console.log('Added sellerId from currentUser:', basicCaseData.sellerId);
   }
   
+  // Ensure the case has the provided ID
+  basicCaseData.id = caseId;
+  
   // Get all form data from localStorage
   const propertyData = localStorage.getItem('propertyForm');
   const salesPreferences = localStorage.getItem('salePreferences');
@@ -143,9 +152,10 @@ export const createCompleteCase = (caseId: string, basicCaseData: any): Case => 
         type: parsed.propertyType || completeCase.type,
         size: parsed.size || completeCase.size,
         buildYear: parsed.buildYear || completeCase.buildYear,
+        constructionYear: parsed.buildYear || completeCase.constructionYear,
         rooms: parsed.rooms || completeCase.rooms,
         notes: parsed.notes || completeCase.notes,
-        comments: parsed.comments || parsed.notes || completeCase.comments,
+        description: parsed.notes || parsed.description || completeCase.description,
         city: parsed.city || completeCase.municipality,
         municipality: parsed.city || completeCase.municipality
       };
@@ -197,6 +207,9 @@ export const createCompleteCase = (caseId: string, basicCaseData: any): Case => 
   completeCase.size = completeCase.size || 'Ikke angivet';
   completeCase.price = completeCase.price || completeCase.expectedPrice || 'Ikke angivet';
   completeCase.type = completeCase.type || completeCase.propertyType || 'Ikke angivet';
+  completeCase.status = completeCase.status || 'waiting_for_offers';
+  completeCase.energyLabel = completeCase.energyLabel || 'C';
+  completeCase.description = completeCase.description || `${completeCase.type} i ${completeCase.municipality}`;
   
   console.log('Complete case before save:', completeCase);
   
