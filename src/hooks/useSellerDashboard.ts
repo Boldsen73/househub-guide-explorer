@@ -52,6 +52,7 @@ export const useSellerDashboard = () => {
   };
 
   const loadUserCases = () => {
+    console.log('Loading user cases...');
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       try {
@@ -69,7 +70,7 @@ export const useSellerDashboard = () => {
           const userCases = allCases.filter(case_ => case_.sellerId === user.id);
           console.log('Cases for user:', userCases);
           
-          const userCreatedCases = [];
+          const processedCases: DashboardCase[] = [];
           
           // Process user cases with complete data
           userCases.forEach(case_ => {
@@ -79,7 +80,7 @@ export const useSellerDashboard = () => {
             const completeData = getCompleteCaseData(case_.id) || case_;
             console.log('Complete data for case:', completeData);
             
-            userCreatedCases.push({
+            processedCases.push({
               id: case_.id,
               address: completeData.address || case_.address,
               municipality: completeData.municipality || completeData.city || case_.municipality || 'Ikke angivet',
@@ -106,8 +107,8 @@ export const useSellerDashboard = () => {
             });
           });
           
-          console.log('Final processed cases for dashboard:', userCreatedCases);
-          setUserCases(userCreatedCases);
+          console.log('Final processed cases for dashboard:', processedCases);
+          setUserCases(processedCases);
         } else {
           console.log('No user ID found');
           setUserCases([]);
@@ -126,34 +127,38 @@ export const useSellerDashboard = () => {
   };
 
   useEffect(() => {
+    // Initial load
     loadUserCases();
 
-    const handleStorageChange = () => {
-      console.log('Storage changed, reloading cases');
-      loadUserCases();
+    // Enhanced event listeners for real-time updates
+    const handleCaseUpdate = (event?: CustomEvent) => {
+      console.log('Case update event detected, reloading cases');
+      // Small delay to ensure data is saved
+      setTimeout(() => loadUserCases(), 100);
     };
 
-    const handleCaseCreated = () => {
-      console.log('Case created event, reloading cases');
-      loadUserCases();
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'cases' || event.key?.startsWith('seller_case_')) {
+        console.log('Storage changed for cases, reloading');
+        setTimeout(() => loadUserCases(), 100);
+      }
     };
 
-    // Listen for changes to localStorage
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('caseCreated', handleCaseCreated);
-    
-    // Also listen for a custom event that we'll dispatch when a case is created
-    const handleCaseUpdate = () => {
-      console.log('Case update event, reloading cases');
-      setTimeout(() => loadUserCases(), 100); // Small delay to ensure data is saved
-    };
-    
+    // Listen for multiple events to catch all case updates
+    window.addEventListener('caseCreated', handleCaseUpdate);
     window.addEventListener('caseUpdated', handleCaseUpdate);
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also set up an interval to check for updates periodically
+    const intervalId = setInterval(() => {
+      loadUserCases();
+    }, 5000); // Check every 5 seconds
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('caseCreated', handleCaseCreated);
+      window.removeEventListener('caseCreated', handleCaseUpdate);
       window.removeEventListener('caseUpdated', handleCaseUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
     };
   }, []);
 

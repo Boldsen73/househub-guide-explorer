@@ -1,3 +1,4 @@
+
 import { Case } from '@/types/user';
 
 export const getCases = (): Case[] => {
@@ -29,78 +30,90 @@ export const saveCase = (case_: Case) => {
   
   localStorage.setItem('cases', JSON.stringify(cases));
   
-  // Dispatch a custom event to notify components that cases have been updated
+  // Dispatch multiple events to ensure all components update
   window.dispatchEvent(new CustomEvent('caseUpdated', { detail: case_ }));
-  console.log('Dispatched caseUpdated event for case:', case_.id);
+  window.dispatchEvent(new CustomEvent('caseCreated', { detail: case_ }));
+  window.dispatchEvent(new CustomEvent('storage', { key: 'cases' }));
+  console.log('Dispatched case events for case:', case_.id);
 };
 
-// Create a complete case from form data and save it properly
+// Enhanced case creation that ensures all data is properly saved
 export const createCompleteCase = (caseId: string, basicCaseData: any) => {
   console.log('createCompleteCase called with:', { caseId, basicCaseData });
   
   // Prevent duplicate cases by checking if one already exists
   const existingCase = getCaseById(caseId);
   if (existingCase) {
-    console.log('Case already exists, updating instead of creating duplicate');
+    console.log('Case already exists, updating with new data');
     return updateCaseWithCompleteData(caseId, basicCaseData);
   }
 
-  // Get all form data
+  // Get all form data from localStorage
   const propertyData = localStorage.getItem('propertyForm');
   const salesPreferences = localStorage.getItem('salePreferences');
   
   let completeCase = { ...basicCaseData };
   
-  // Add property form data
+  // Add property form data if available
   if (propertyData) {
     try {
       const parsed = JSON.parse(propertyData);
       console.log('Adding property data:', parsed);
-      completeCase.propertyType = parsed.propertyType;
-      completeCase.size = parsed.size;
-      completeCase.buildYear = parsed.buildYear;
-      completeCase.rooms = parsed.rooms;
-      completeCase.notes = parsed.notes;
-      completeCase.city = parsed.city;
+      completeCase = {
+        ...completeCase,
+        propertyType: parsed.propertyType,
+        size: parsed.size,
+        buildYear: parsed.buildYear,
+        rooms: parsed.rooms,
+        notes: parsed.notes,
+        city: parsed.city || completeCase.municipality
+      };
     } catch (error) {
       console.error('Error parsing property data:', error);
     }
   }
   
-  // Add sales preferences
+  // Add sales preferences if available
   if (salesPreferences) {
     try {
       const parsed = JSON.parse(salesPreferences);
       console.log('Adding sales preferences:', parsed);
-      completeCase.expectedPrice = parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : undefined;
-      completeCase.expectedPriceValue = parsed.expectedPrice?.[0];
-      completeCase.timeframe = parsed.timeframe?.[0];
-      completeCase.timeframeType = parsed.timeframeType;
-      completeCase.priorities = {
-        speed: parsed.prioritySpeed,
-        price: parsed.priorityPrice,
-        service: parsed.priorityService
+      completeCase = {
+        ...completeCase,
+        expectedPrice: parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : completeCase.price,
+        expectedPriceValue: parsed.expectedPrice?.[0] || completeCase.priceValue,
+        timeframe: parsed.timeframe?.[0],
+        timeframeType: parsed.timeframeType,
+        priorities: {
+          speed: parsed.prioritySpeed || false,
+          price: parsed.priorityPrice || false,
+          service: parsed.priorityService || false
+        },
+        specialRequests: parsed.specialRequests,
+        flexiblePrice: parsed.flexiblePrice,
+        marketingBudget: parsed.marketingBudget?.[0],
+        freeIfNotSold: parsed.freeIfNotSold
       };
-      completeCase.specialRequests = parsed.specialRequests;
-      completeCase.flexiblePrice = parsed.flexiblePrice;
-      completeCase.marketingBudget = parsed.marketingBudget?.[0];
-      completeCase.freeIfNotSold = parsed.freeIfNotSold;
     } catch (error) {
       console.error('Error parsing sales preferences:', error);
     }
   }
   
-  // Save to both central cases and case-specific storage
-  console.log('Saving complete case:', completeCase);
+  // Save to central storage immediately
+  console.log('Saving complete case to central storage:', completeCase);
   saveCase(completeCase);
+  
+  // Also save to case-specific storage for backup
   localStorage.setItem(`seller_case_${caseId}`, JSON.stringify(completeCase));
   
-  console.log('Created complete case with enhanced data:', completeCase);
+  console.log('Successfully created complete case:', completeCase);
   return completeCase;
 };
 
 // Update existing case with complete data
 export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) => {
+  console.log('updateCaseWithCompleteData called for:', caseId);
+  
   const existingCase = getCaseById(caseId);
   if (!existingCase) {
     console.log('No existing case found, creating new one');
@@ -117,12 +130,15 @@ export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) =
   if (propertyData) {
     try {
       const parsed = JSON.parse(propertyData);
-      updatedCase.propertyType = parsed.propertyType;
-      updatedCase.size = parsed.size;
-      updatedCase.buildYear = parsed.buildYear;
-      updatedCase.rooms = parsed.rooms;
-      updatedCase.notes = parsed.notes;
-      updatedCase.city = parsed.city;
+      updatedCase = {
+        ...updatedCase,
+        propertyType: parsed.propertyType,
+        size: parsed.size,
+        buildYear: parsed.buildYear,
+        rooms: parsed.rooms,
+        notes: parsed.notes,
+        city: parsed.city || updatedCase.municipality
+      };
     } catch (error) {
       console.error('Error parsing property data:', error);
     }
@@ -132,19 +148,22 @@ export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) =
   if (salesPreferences) {
     try {
       const parsed = JSON.parse(salesPreferences);
-      updatedCase.expectedPrice = parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : undefined;
-      updatedCase.expectedPriceValue = parsed.expectedPrice?.[0];
-      updatedCase.timeframe = parsed.timeframe?.[0];
-      updatedCase.timeframeType = parsed.timeframeType;
-      updatedCase.priorities = {
-        speed: parsed.prioritySpeed,
-        price: parsed.priorityPrice,
-        service: parsed.priorityService
+      updatedCase = {
+        ...updatedCase,
+        expectedPrice: parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : updatedCase.price,
+        expectedPriceValue: parsed.expectedPrice?.[0] || updatedCase.priceValue,
+        timeframe: parsed.timeframe?.[0],
+        timeframeType: parsed.timeframeType,
+        priorities: {
+          speed: parsed.prioritySpeed || false,
+          price: parsed.priorityPrice || false,
+          service: parsed.priorityService || false
+        },
+        specialRequests: parsed.specialRequests,
+        flexiblePrice: parsed.flexiblePrice,
+        marketingBudget: parsed.marketingBudget?.[0],
+        freeIfNotSold: parsed.freeIfNotSold
       };
-      updatedCase.specialRequests = parsed.specialRequests;
-      updatedCase.flexiblePrice = parsed.flexiblePrice;
-      updatedCase.marketingBudget = parsed.marketingBudget?.[0];
-      updatedCase.freeIfNotSold = parsed.freeIfNotSold;
     } catch (error) {
       console.error('Error parsing sales preferences:', error);
     }
@@ -154,7 +173,7 @@ export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) =
   saveCase(updatedCase);
   localStorage.setItem(`seller_case_${caseId}`, JSON.stringify(updatedCase));
   
-  console.log('Updated complete case:', updatedCase);
+  console.log('Successfully updated complete case:', updatedCase);
   return updatedCase;
 };
 
@@ -173,6 +192,8 @@ export const getCompleteCaseData = (caseId: string) => {
     try {
       const parsed = JSON.parse(caseSpecificData);
       console.log('Found case in case-specific storage:', parsed);
+      // Also save to central storage for consistency
+      saveCase(parsed);
       return parsed;
     } catch (error) {
       console.error('Error parsing case-specific data:', error);
@@ -189,6 +210,10 @@ export const updateCaseStatus = (caseId: string, newStatus: Case['status']) => {
     c.id === caseId ? { ...c, status: newStatus } : c
   );
   localStorage.setItem('cases', JSON.stringify(updatedCases));
+  
+  // Dispatch events to notify components
+  window.dispatchEvent(new CustomEvent('caseUpdated'));
+  window.dispatchEvent(new CustomEvent('storage', { key: 'cases' }));
 };
 
 export const getCaseById = (id: string): Case | null => {
