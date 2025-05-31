@@ -7,13 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link, useNavigate } from 'react-router-dom';
 import { TrendingUp, Home, Info, FileText } from 'lucide-react';
 import { fetchPublicValuation } from '@/services/publicValuationService';
-import { generateSagsnummer, saveTestCase, addTestUser } from '@/utils/testData';
+import { saveTestCase } from '@/utils/testData'; // Removed addTestUser as it's not used here
 import { useToast } from '@/hooks/use-toast';
 
 const PriceInfo = () => {
-  const [propertyData, setPropertyData] = useState(null);
-  const [salePreferences, setSalePreferences] = useState(null);
-  const [publicValuation, setPublicValuation] = useState(null);
+  const [propertyData, setPropertyData] = useState<any>(null); // Use 'any' for now for flexibility
+  const [salePreferences, setSalePreferences] = useState<any>(null); // Use 'any' for now
+  const [publicValuation, setPublicValuation] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
   const navigate = useNavigate();
@@ -21,23 +21,26 @@ const PriceInfo = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      // Get saved property data and sale preferences
       const savedPropertyData = localStorage.getItem('propertyForm');
       const savedSalePreferences = localStorage.getItem('salePreferencesForm');
       
-      console.log('Property data:', savedPropertyData);
-      console.log('Sale preferences:', savedSalePreferences);
+      console.log('Property data from localStorage:', savedPropertyData);
+      console.log('Sale preferences from localStorage:', savedSalePreferences);
       
       if (savedPropertyData) {
-        const propertyData = JSON.parse(savedPropertyData);
-        setPropertyData(propertyData);
+        const parsedPropertyData = JSON.parse(savedPropertyData);
+        setPropertyData(parsedPropertyData);
         
-        // Get public valuation
         try {
-          const valuation = await fetchPublicValuation(propertyData.address, propertyData.postalCode);
+          const valuation = await fetchPublicValuation(parsedPropertyData.address, parsedPropertyData.postalCode);
           setPublicValuation(valuation);
         } catch (error) {
           console.error('Error fetching valuation:', error);
+          toast({
+            title: "Fejl ved offentlig vurdering",
+            description: "Kunne ikke hente offentlig vurdering for boligen.",
+            variant: "destructive"
+          });
         }
       }
       
@@ -64,7 +67,6 @@ const PriceInfo = () => {
     setIsCreatingCase(true);
 
     try {
-      // Get current user from localStorage
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
       
       if (!currentUser || !currentUser.id) {
@@ -77,60 +79,58 @@ const PriceInfo = () => {
         return;
       }
 
-      console.log('=== CREATING CASE FOR EXISTING USER ===');
-      console.log('Using existing user:', currentUser);
+      console.log('Creating case for user:', currentUser.id);
 
-      // Get expected price from sale preferences
-      // Ensure expectedPrice is always an array, and take the first element
-      const expectedPriceValue = (Array.isArray(salePreferences?.expectedPrice) && salePreferences.expectedPrice.length > 0)
-        ? salePreferences.expectedPrice[0]
-        : 0;
+      // Extract expected price from the array if it exists
+      const expectedPriceArray = salePreferences?.expectedPrice;
+      const expectedPriceValue = (Array.isArray(expectedPriceArray) && expectedPriceArray.length > 0)
+        ? expectedPriceArray[0]
+        : 0; // Default to 0 if not set
+
       const formattedPrice = expectedPriceValue ? `${(expectedPriceValue / 1000000).toFixed(1)} mio. kr` : 'Ikke angivet';
 
-      // Create new case using existing user and combined data
+      // Create new case object, ensuring all fields are included
       const newCase = {
         id: Date.now().toString(),
         sagsnummer: `SAG-${Date.now().toString().substring(0, 6).toUpperCase()}`,
         sellerId: currentUser.id,
-        address: propertyData.address,
-        postnummer: propertyData.postalCode,
-        municipality: propertyData.city,
-        type: propertyData.propertyType,
+        // Property Data
+        address: propertyData.address || 'Ikke angivet',
+        postnummer: propertyData.postalCode || 'Ikke angivet',
+        municipality: propertyData.city || 'Ikke angivet',
+        type: propertyData.propertyType || 'Ikke angivet',
         size: parseInt(propertyData.size) || 0,
         buildYear: parseInt(propertyData.buildYear) || new Date().getFullYear(),
-        rooms: propertyData.rooms,
-        price: formattedPrice, // Display formatted price
-        priceValue: expectedPriceValue, // Store actual number value for calculations if needed
+        rooms: propertyData.rooms || 'Ikke angivet', // Ensure rooms is included
+        notes: propertyData.notes || undefined, // Yderligere bemærkninger
+        
+        // Sale Preferences
+        expectedPrice: formattedPrice, // The string for display
+        expectedPriceValue: expectedPriceValue, // The number for potential calculations
+        flexiblePrice: salePreferences?.flexiblePrice || false,
+        timeframe: salePreferences?.timeframe || undefined,
+        timeframeType: salePreferences?.timeframeType || undefined,
+        priorities: salePreferences?.priorities || { speed: false, price: false, service: false },
+        marketingBudget: salePreferences?.marketingBudget || 0,
+        freeIfNotSold: salePreferences?.freeIfNotSold || false,
+        specialRequests: salePreferences?.specialRequests || undefined, // Særlige ønsker eller kommentarer
+
+        // Case Status and other default info
         status: 'active' as const,
         createdAt: new Date().toISOString(),
         offers: [],
         showingRegistrations: [],
         messages: [],
-
-        // Add data from SalePreferencesForm and PropertyData (notes)
-        timeframe: salePreferences?.timeframe || undefined,
-        timeframeType: salePreferences?.timeframeType || undefined,
-        priorities: salePreferences?.priorities || { speed: false, price: false, service: false },
-        flexiblePrice: salePreferences?.flexiblePrice || false,
-        marketingBudget: salePreferences?.marketingBudget || 0,
-        freeIfNotSold: salePreferences?.freeIfNotSold || false, // Assuming this exists in salePreferences
-        specialRequests: salePreferences?.specialRequests || undefined,
-        notes: propertyData.notes || undefined, // Notes from PropertyData.tsx
       };
 
-      console.log('Creating case:', newCase);
+      console.log('New case object created:', newCase);
 
-      // Save the case to test_cases in localStorage
       saveTestCase(newCase);
-
-      // Also save as seller_case for compatibility (if needed by other components)
       localStorage.setItem(`seller_case_${newCase.id}`, JSON.stringify(newCase));
 
-      // Clear the form data from localStorage after case creation
       localStorage.removeItem('propertyForm');
       localStorage.removeItem('salePreferencesForm');
 
-      // Dispatch event for dashboard to update
       window.dispatchEvent(new Event('caseCreated'));
 
       toast({
@@ -138,7 +138,6 @@ const PriceInfo = () => {
         description: `Din sag ${newCase.sagsnummer} er blevet oprettet.`,
       });
 
-      // Navigate to dashboard
       navigate('/saelger/dashboard');
 
     } catch (error) {
@@ -153,8 +152,8 @@ const PriceInfo = () => {
     }
   };
 
-  const formatPrice = (price) => {
-    if (!price) return 'N/A';
+  const formatPrice = (price: number) => {
+    if (typeof price !== 'number') return 'N/A';
     return new Intl.NumberFormat('da-DK', {
       style: 'currency',
       currency: 'DKK',
@@ -197,9 +196,9 @@ const PriceInfo = () => {
                       <p className="text-sm text-gray-600">
                         {propertyData.size} m² • {propertyData.propertyType} • Bygget {propertyData.buildYear}
                       </p>
-                      {salePreferences && (
+                      {salePreferences && salePreferences.expectedPrice && salePreferences.expectedPrice.length > 0 && (
                         <p className="text-sm text-gray-600">
-                          Forventet pris: {(salePreferences.expectedPrice?.[0] / 1000000).toFixed(1)} mio. kr
+                          Forventet pris: {(salePreferences.expectedPrice[0] / 1000000).toFixed(1)} mio. kr
                         </p>
                       )}
                     </div>
