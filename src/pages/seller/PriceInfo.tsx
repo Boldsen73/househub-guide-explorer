@@ -114,8 +114,9 @@ const PriceInfo: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
       <div className="container mx-auto px-4 py-8 flex-grow">
-        {/* RETTET: Går tilbage til currentStep og totalSteps, da 'status' ikke er en prop for ProgressSteps */}
-        <ProgressSteps currentStep={3} totalSteps={3} /> 
+        {/* RETTET: Sender nu den korrekte 'status' string til ProgressSteps */}
+        {/* Vælg den mest passende status for dette trin, f.eks. 'data_entered' */}
+        <ProgressSteps status="data_entered" /> 
         <Card className="max-w-3xl mx-auto mt-8">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-900">Prisoplysninger</CardTitle>
