@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Euro, Clock, Target, FileText, TrendingUp } from 'lucide-react';
+import { Euro, Clock, Target, FileText, TrendingUp, Info } from 'lucide-react'; // Added Info icon for notes
 
 interface Case {
   expectedPrice?: string;
@@ -16,7 +15,7 @@ interface Case {
   marketingBudget?: number;
   freeIfNotSold?: boolean;
   specialRequests?: string;
-  notes?: string;
+  notes?: string; // Ensure notes is still in the interface
 }
 
 interface CaseEnhancedInfoProps {
@@ -38,8 +37,8 @@ const CaseEnhancedInfo: React.FC<CaseEnhancedInfoProps> = ({ case_ }) => {
     return result;
   };
 
-  const hasEnhancedInfo = case_.expectedPrice || case_.timeframe || case_.priorities || 
-                          case_.specialRequests || case_.notes || case_.marketingBudget;
+  const hasEnhancedInfo = case_.expectedPrice || case_.timeframe || case_.priorities ||
+                           case_.specialRequests || case_.notes || case_.marketingBudget;
 
   if (!hasEnhancedInfo) return null;
 
@@ -94,14 +93,24 @@ const CaseEnhancedInfo: React.FC<CaseEnhancedInfoProps> = ({ case_ }) => {
         </div>
       )}
 
-      {(case_.specialRequests || case_.notes) && (
+      {/* Særlige ønsker eller kommentarer (fra Salgsønsker) */}
+      {case_.specialRequests && (
         <div className="flex items-start gap-2">
           <FileText className="h-4 w-4 text-gray-600 mt-0.5" />
           <div>
-            <span className="text-sm text-gray-600">Kommentarer:</span>
-            <p className="text-sm mt-1 text-gray-700">
-              {case_.specialRequests || case_.notes}
-            </p>
+            <span className="text-sm text-gray-600 font-medium">Særlige ønsker eller kommentarer:</span>
+            <p className="text-sm mt-1 text-gray-700">{case_.specialRequests}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Yderligere bemærkninger (fra Boligdata) - NY SEKTION */}
+      {case_.notes && (
+        <div className="flex items-start gap-2">
+          <Info className="h-4 w-4 text-gray-600 mt-0.5" /> {/* Brug Info-ikonet eller et andet passende ikon */}
+          <div>
+            <span className="text-sm text-gray-600 font-medium">Yderligere bemærkninger:</span>
+            <p className="text-sm mt-1 text-gray-700">{case_.notes}</p>
           </div>
         </div>
       )}
