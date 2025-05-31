@@ -75,7 +75,7 @@ const PropertyData = () => {
         propertyType: formData.boligtype,
         size: formData.størrelse,
         buildYear: formData.byggeår,
-        rooms: formData.værelser,
+        rooms: formData.rooms,
         notes: formData.notes
       };
 
