@@ -51,6 +51,106 @@ export const useSellerDashboard = () => {
     return getDisplayName(user);
   };
 
+  // Helper function to merge all form data for a case
+  const enrichCaseWithFormData = (caseData: any, caseId: string): DashboardCase => {
+    console.log('Enriching case with form data:', caseId, caseData);
+    
+    // Get stored form data
+    const propertyForm = localStorage.getItem('propertyForm');
+    const salePreferences = localStorage.getItem('salePreferences');
+    
+    console.log('Property form data:', propertyForm);
+    console.log('Sale preferences data:', salePreferences);
+    
+    let enrichedCase = { ...caseData };
+    
+    // Add property form data
+    if (propertyForm) {
+      try {
+        const parsed = JSON.parse(propertyForm);
+        console.log('Parsed property form:', parsed);
+        
+        enrichedCase = {
+          ...enrichedCase,
+          propertyType: parsed.propertyType || enrichedCase.propertyType || enrichedCase.type,
+          type: parsed.propertyType || enrichedCase.type || 'Ikke angivet',
+          size: parsed.size ? `${parsed.size} m²` : (enrichedCase.size || 'Ikke angivet'),
+          buildYear: parsed.buildYear || enrichedCase.buildYear || new Date().getFullYear(),
+          rooms: parsed.rooms || enrichedCase.rooms || 'Ikke angivet',
+          municipality: parsed.city || enrichedCase.municipality || 'Ikke angivet',
+          notes: parsed.notes || enrichedCase.notes || enrichedCase.specialRequests
+        };
+      } catch (error) {
+        console.error('Error parsing property form:', error);
+      }
+    }
+    
+    // Add sales preferences
+    if (salePreferences) {
+      try {
+        const parsed = JSON.parse(salePreferences);
+        console.log('Parsed sale preferences:', parsed);
+        
+        let expectedPrice = enrichedCase.expectedPrice || enrichedCase.price;
+        let expectedPriceValue = enrichedCase.expectedPriceValue;
+        
+        if (parsed.expectedPrice && Array.isArray(parsed.expectedPrice) && parsed.expectedPrice[0]) {
+          expectedPriceValue = parsed.expectedPrice[0];
+          expectedPrice = `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr`;
+        }
+        
+        enrichedCase = {
+          ...enrichedCase,
+          expectedPrice: expectedPrice,
+          price: expectedPrice,
+          expectedPriceValue: expectedPriceValue,
+          timeframe: parsed.timeframe?.[0],
+          timeframeType: parsed.timeframeType,
+          priorities: {
+            speed: parsed.prioritySpeed || false,
+            price: parsed.priorityPrice || false,
+            service: parsed.priorityService || false
+          },
+          specialRequests: parsed.specialRequests || enrichedCase.notes,
+          flexiblePrice: parsed.flexiblePrice,
+          marketingBudget: parsed.marketingBudget?.[0],
+          freeIfNotSold: parsed.freeIfNotSold
+        };
+      } catch (error) {
+        console.error('Error parsing sales preferences:', error);
+      }
+    }
+    
+    // Ensure all required fields have values
+    const finalCase: DashboardCase = {
+      id: typeof enrichedCase.id === 'string' ? enrichedCase.id : enrichedCase.id.toString(),
+      address: enrichedCase.address || 'Ingen adresse',
+      municipality: enrichedCase.municipality || 'Ikke angivet',
+      type: enrichedCase.propertyType || enrichedCase.type || 'Ikke angivet',
+      size: enrichedCase.size || 'Ikke angivet',
+      price: enrichedCase.expectedPrice || enrichedCase.price || 'Ikke angivet',
+      buildYear: enrichedCase.buildYear || enrichedCase.constructionYear || new Date().getFullYear(),
+      status: enrichedCase.status || 'active',
+      sellerId: enrichedCase.sellerId || '',
+      sagsnummer: enrichedCase.sagsnummer || `SAG-${caseId.substring(0, 6).toUpperCase()}`,
+      propertyType: enrichedCase.propertyType,
+      expectedPrice: enrichedCase.expectedPrice,
+      expectedPriceValue: enrichedCase.expectedPriceValue,
+      timeframe: enrichedCase.timeframe,
+      timeframeType: enrichedCase.timeframeType,
+      priorities: enrichedCase.priorities,
+      specialRequests: enrichedCase.specialRequests,
+      notes: enrichedCase.notes,
+      rooms: enrichedCase.rooms || 'Ikke angivet',
+      flexiblePrice: enrichedCase.flexiblePrice,
+      marketingBudget: enrichedCase.marketingBudget,
+      freeIfNotSold: enrichedCase.freeIfNotSold
+    };
+    
+    console.log('Final enriched case:', finalCase);
+    return finalCase;
+  };
+
   const loadUserCases = () => {
     console.log('=== LOADING USER CASES IN DASHBOARD ===');
     setIsLoading(true);
@@ -123,40 +223,11 @@ export const useSellerDashboard = () => {
       
       console.log('Combined unique cases:', uniqueCases);
       
+      // Process each case and enrich with form data
       const processedCases: DashboardCase[] = uniqueCases.map(case_ => {
         console.log('Processing case for dashboard:', case_.id, case_);
-        
-        // Safely convert ID to string
         const caseId = typeof case_.id === 'string' ? case_.id : case_.id.toString();
-        
-        const processedCase: DashboardCase = {
-          id: caseId,
-          address: case_.address || 'Ingen adresse',
-          municipality: case_.municipality || (case_ as any).city || 'Ikke angivet',
-          type: (case_ as any).propertyType || case_.type || 'Ikke angivet',
-          size: case_.size ? `${case_.size} m²` : 'Ikke angivet',
-          price: (case_ as any).expectedPrice || case_.price || 'Ikke angivet',
-          buildYear: (case_ as any).buildYear || case_.constructionYear || new Date().getFullYear(),
-          status: case_.status || 'active',
-          sellerId: case_.sellerId || '',
-          sagsnummer: (case_ as any).sagsnummer || `SAG-${caseId.substring(0, 6).toUpperCase()}`,
-          // Enhanced fields with safe access
-          propertyType: (case_ as any).propertyType,
-          expectedPrice: (case_ as any).expectedPrice,
-          expectedPriceValue: (case_ as any).expectedPriceValue,
-          timeframe: (case_ as any).timeframe,
-          timeframeType: (case_ as any).timeframeType,
-          priorities: (case_ as any).priorities,
-          specialRequests: (case_ as any).specialRequests,
-          notes: (case_ as any).notes,
-          rooms: case_.rooms,
-          flexiblePrice: (case_ as any).flexiblePrice,
-          marketingBudget: (case_ as any).marketingBudget,
-          freeIfNotSold: (case_ as any).freeIfNotSold
-        };
-        
-        console.log('Processed case for dashboard:', processedCase);
-        return processedCase;
+        return enrichCaseWithFormData(case_, caseId);
       });
       
       console.log('Final processed cases for dashboard:', processedCases.length, processedCases);
