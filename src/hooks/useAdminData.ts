@@ -116,11 +116,10 @@ export const useAdminData = () => {
     const combinedCases: Case[] = [
       ...allCases.map(c => ({
         ...c,
+        id: typeof c.id === 'string' ? c.id : c.id.toString(),
         sellerName: c.sellerName || 'Ukendt sælger',
         sellerEmail: c.sellerEmail || 'Ikke angivet',
-        sellerPhone: c.sellerPhone || 'Ikke angivet',
-        postnummer: c.postnummer || '',
-        buildYear: c.buildYear || c.constructionYear || new Date().getFullYear()
+        sellerPhone: c.sellerPhone || 'Ikke angivet'
       })), 
       ...sellerCases
     ];
