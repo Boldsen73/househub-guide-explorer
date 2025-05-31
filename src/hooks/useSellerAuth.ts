@@ -10,6 +10,15 @@ interface SellerCase {
   submittedAt?: string;
 }
 
+interface User {
+  id: string;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  email?: string;
+  type?: string;
+}
+
 export const useSellerAuth = () => {
   const [hasActiveCase, setHasActiveCase] = useState<boolean | null>(null);
   const [sellerCase, setSellerCase] = useState<SellerCase | null>(null);
@@ -37,7 +46,7 @@ export const useSellerAuth = () => {
       if (userCase) {
         setHasActiveCase(true);
         setSellerCase({
-          id: userCase.id,
+          id: typeof userCase.id === 'string' ? userCase.id : userCase.id.toString(),
           address: userCase.address,
           status: userCase.status as 'draft' | 'active' | 'completed',
           submittedAt: userCase.createdAt

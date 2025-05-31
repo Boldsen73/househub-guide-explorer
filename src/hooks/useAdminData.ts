@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { getUsers, getCases, updateCaseStatus, archiveCaseMessages, User, Case } from '@/utils/userData';
 
@@ -80,7 +79,7 @@ export const useAdminData = () => {
               postnummer: caseData.postnummer || '',
               municipality: caseData.municipality || caseData.city || 'Ikke angivet',
               type: caseData.propertyType || caseData.type || 'Ikke angivet',
-              size: caseData.size || 0,
+              size: typeof caseData.size === 'number' ? caseData.size : parseInt(caseData.size || '0'),
               buildYear: caseData.buildYear || new Date().getFullYear(),
               price: caseData.estimatedPrice || 'Ikke angivet',
               priceValue: parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
@@ -113,13 +112,15 @@ export const useAdminData = () => {
     
     console.log('Processed seller cases:', sellerCases);
     
-    // Combine all cases, ensuring seller properties are included
+    // Combine all cases, ensuring all required properties are present
     const combinedCases: Case[] = [
       ...allCases.map(c => ({
         ...c,
         sellerName: c.sellerName || 'Ukendt sælger',
         sellerEmail: c.sellerEmail || 'Ikke angivet',
-        sellerPhone: c.sellerPhone || 'Ikke angivet'
+        sellerPhone: c.sellerPhone || 'Ikke angivet',
+        postnummer: c.postnummer || '',
+        buildYear: c.buildYear || c.constructionYear || new Date().getFullYear()
       })), 
       ...sellerCases
     ];
