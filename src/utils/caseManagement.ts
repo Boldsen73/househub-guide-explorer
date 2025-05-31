@@ -23,16 +23,17 @@ export const saveCase = (case_: Case) => {
   }
   
   localStorage.setItem('cases', JSON.stringify(cases));
-  
-  // Also store case-specific data for detailed view
-  const caseData = getCompleteCaseData(case_.id);
-  if (caseData) {
-    localStorage.setItem(`seller_case_${case_.id}`, JSON.stringify(caseData));
-  }
 };
 
 // Create a complete case from form data and save it properly
 export const createCompleteCase = (caseId: string, basicCaseData: any) => {
+  // Prevent duplicate cases by checking if one already exists
+  const existingCase = getCaseById(caseId);
+  if (existingCase) {
+    console.log('Case already exists, updating instead of creating duplicate');
+    return updateCaseWithCompleteData(caseId, basicCaseData);
+  }
+
   // Get all form data
   const propertyData = localStorage.getItem('propertyForm');
   const salesPreferences = localStorage.getItem('salePreferences');
@@ -85,6 +86,62 @@ export const createCompleteCase = (caseId: string, basicCaseData: any) => {
   return completeCase;
 };
 
+// Update existing case with complete data
+export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) => {
+  const existingCase = getCaseById(caseId);
+  if (!existingCase) return null;
+
+  // Get all form data
+  const propertyData = localStorage.getItem('propertyForm');
+  const salesPreferences = localStorage.getItem('salePreferences');
+  
+  let updatedCase = { ...existingCase, ...basicCaseData };
+  
+  // Add property form data
+  if (propertyData) {
+    try {
+      const parsed = JSON.parse(propertyData);
+      updatedCase.propertyType = parsed.propertyType;
+      updatedCase.size = parsed.size;
+      updatedCase.buildYear = parsed.buildYear;
+      updatedCase.rooms = parsed.rooms;
+      updatedCase.notes = parsed.notes;
+      updatedCase.city = parsed.city;
+    } catch (error) {
+      console.error('Error parsing property data:', error);
+    }
+  }
+  
+  // Add sales preferences
+  if (salesPreferences) {
+    try {
+      const parsed = JSON.parse(salesPreferences);
+      updatedCase.expectedPrice = parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : undefined;
+      updatedCase.expectedPriceValue = parsed.expectedPrice?.[0];
+      updatedCase.timeframe = parsed.timeframe?.[0];
+      updatedCase.timeframeType = parsed.timeframeType;
+      updatedCase.priorities = {
+        speed: parsed.prioritySpeed,
+        price: parsed.priorityPrice,
+        service: parsed.priorityService
+      };
+      updatedCase.specialRequests = parsed.specialRequests;
+      updatedCase.flexiblePrice = parsed.flexiblePrice;
+      updatedCase.marketingBudget = parsed.marketingBudget?.[0];
+      updatedCase.freeIfNotSold = parsed.freeIfNotSold;
+    } catch (error) {
+      console.error('Error parsing sales preferences:', error);
+    }
+  }
+  
+  // Save updated case
+  saveCase(updatedCase);
+  localStorage.setItem(`seller_case_${caseId}`, JSON.stringify(updatedCase));
+  
+  console.log('Updated complete case:', updatedCase);
+  return updatedCase;
+};
+
 // Enhanced function to get complete case data including seller inputs
 export const getCompleteCaseData = (caseId: string) => {
   // First try to get from central cases storage
@@ -103,54 +160,7 @@ export const getCompleteCaseData = (caseId: string) => {
     }
   }
 
-  // Last resort: try to reconstruct from separate storage
-  const propertyData = localStorage.getItem('propertyForm');
-  const salesPreferences = localStorage.getItem('salePreferences');
-  
-  if (!propertyData && !salesPreferences) return null;
-  
-  let completeData: any = {};
-
-  // Add property form data if it exists
-  if (propertyData) {
-    try {
-      const parsed = JSON.parse(propertyData);
-      completeData.propertyType = parsed.propertyType;
-      completeData.size = parsed.size;
-      completeData.buildYear = parsed.buildYear;
-      completeData.rooms = parsed.rooms;
-      completeData.notes = parsed.notes;
-      completeData.city = parsed.city;
-      completeData.address = parsed.address;
-      completeData.postalCode = parsed.postalCode;
-    } catch (error) {
-      console.error('Error parsing property data:', error);
-    }
-  }
-
-  // Add sales preferences if they exist
-  if (salesPreferences) {
-    try {
-      const parsed = JSON.parse(salesPreferences);
-      completeData.expectedPrice = parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : undefined;
-      completeData.expectedPriceValue = parsed.expectedPrice?.[0];
-      completeData.timeframe = parsed.timeframe?.[0];
-      completeData.timeframeType = parsed.timeframeType;
-      completeData.priorities = {
-        speed: parsed.prioritySpeed,
-        price: parsed.priorityPrice,
-        service: parsed.priorityService
-      };
-      completeData.specialRequests = parsed.specialRequests;
-      completeData.flexiblePrice = parsed.flexiblePrice;
-      completeData.marketingBudget = parsed.marketingBudget?.[0];
-      completeData.freeIfNotSold = parsed.freeIfNotSold;
-    } catch (error) {
-      console.error('Error parsing sales preferences:', error);
-    }
-  }
-
-  return Object.keys(completeData).length > 0 ? completeData : null;
+  return null;
 };
 
 export const updateCaseStatus = (caseId: string, newStatus: Case['status']) => {

@@ -61,18 +61,19 @@ export const useSellerDashboard = () => {
         if (user.id) {
           console.log('Loading cases for user:', user.id);
           
-          // Get cases from central storage first
+          // Get cases from central storage
           const centralCases = getCasesForUser(user.id);
           console.log('Cases from central storage:', centralCases);
           
-          // Also check for any local seller_case_ entries
           const userCreatedCases = [];
           const seenCaseIds = new Set();
           
-          // Add central cases first
+          // Process central cases with complete data
           centralCases.forEach(case_ => {
             if (!seenCaseIds.has(case_.id)) {
               seenCaseIds.add(case_.id);
+              
+              // Get complete case data including all seller inputs
               const completeData = getCompleteCaseData(case_.id) || case_;
               
               userCreatedCases.push({
@@ -86,7 +87,7 @@ export const useSellerDashboard = () => {
                 status: case_.status || 'active',
                 sellerId: case_.sellerId,
                 sagsnummer: case_.sagsnummer || `SAG-${case_.id.substring(0, 6).toUpperCase()}`,
-                // Enhanced fields
+                // Enhanced fields - ensure ALL data is included
                 propertyType: completeData.propertyType,
                 expectedPrice: completeData.expectedPrice,
                 expectedPriceValue: completeData.expectedPriceValue,
@@ -103,52 +104,7 @@ export const useSellerDashboard = () => {
             }
           });
           
-          // Check for additional cases in localStorage that might not be in central storage yet
-          for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('seller_case_')) {
-              try {
-                const caseData = JSON.parse(localStorage.getItem(key) || '{}');
-                if (caseData && caseData.address && caseData.sellerId === user.id) {
-                  const caseId = key.replace('seller_case_', '');
-                  
-                  if (!seenCaseIds.has(caseId)) {
-                    seenCaseIds.add(caseId);
-                    
-                    userCreatedCases.push({
-                      id: caseId,
-                      address: caseData.address,
-                      municipality: caseData.municipality || caseData.city || 'Ikke angivet',
-                      type: caseData.propertyType || caseData.type || 'Ikke angivet',
-                      size: caseData.size ? `${caseData.size} m²` : 'Ikke angivet',
-                      price: caseData.expectedPrice || caseData.price || 'Ikke angivet',
-                      buildYear: caseData.buildYear || caseData.constructionYear || new Date().getFullYear(),
-                      status: caseData.status || 'active',
-                      sellerId: caseData.sellerId,
-                      sagsnummer: caseData.sagsnummer || `SAG-${caseId.substring(0, 6).toUpperCase()}`,
-                      // Enhanced fields
-                      propertyType: caseData.propertyType,
-                      expectedPrice: caseData.expectedPrice,
-                      expectedPriceValue: caseData.expectedPriceValue,
-                      timeframe: caseData.timeframe,
-                      timeframeType: caseData.timeframeType,
-                      priorities: caseData.priorities,
-                      specialRequests: caseData.specialRequests,
-                      notes: caseData.notes,
-                      rooms: caseData.rooms,
-                      flexiblePrice: caseData.flexiblePrice,
-                      marketingBudget: caseData.marketingBudget,
-                      freeIfNotSold: caseData.freeIfNotSold
-                    });
-                  }
-                }
-              } catch {
-                // ignore error
-              }
-            }
-          }
-          
-          console.log('Found unique cases with complete data:', userCreatedCases);
+          console.log('Loaded cases with complete data:', userCreatedCases);
           setUserCases(userCreatedCases);
         } else {
           console.log('No user ID found');
