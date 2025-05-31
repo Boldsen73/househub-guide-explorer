@@ -86,8 +86,19 @@ export const useAuth = () => {
   };
 
   const logout = () => {
+    console.log('useAuth logout called');
     logoutUser();
     setUser(null);
+    
+    // Clear all localStorage except essential system data
+    const keysToKeep = ['systemInitialized'];
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+      if (!keysToKeep.includes(key)) {
+        localStorage.removeItem(key);
+      }
+    });
+    
     navigate('/');
   };
 

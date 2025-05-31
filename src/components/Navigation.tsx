@@ -1,5 +1,5 @@
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Home, LogOut, User } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -7,6 +7,7 @@ import { getDisplayName } from '@/utils/userNameUtils';
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
     { path: '/', label: 'Forside' },
@@ -28,9 +29,21 @@ const Navigation = () => {
   const isAgentLoggedIn = isLoggedIn && (location.pathname.includes('/maegler/') || currentUser.role === 'agent');
 
   const handleLogout = () => {
+    console.log('Logging out user...');
     localStorage.removeItem('currentUser');
     sessionStorage.clear();
-    window.location.href = '/';
+    
+    // Clear all other localStorage data to ensure clean logout
+    const keysToKeep = ['systemInitialized']; // Keep system data
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+      if (!keysToKeep.includes(key)) {
+        localStorage.removeItem(key);
+      }
+    });
+    
+    console.log('Redirecting to home page...');
+    navigate('/');
   };
 
   const getHomeLinkPath = () => {
