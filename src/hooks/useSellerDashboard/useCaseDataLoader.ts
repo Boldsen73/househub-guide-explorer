@@ -23,10 +23,29 @@ export const useCaseDataLoader = () => {
             const caseId = key.replace('seller_case_', '');
             const caseStatus = localStorage.getItem(`seller_case_status_${caseId}`) || 'active';
             
+            // Check for showing data
+            const showingDataKey = `showing_data_${userId}`;
+            const showingData = localStorage.getItem(showingDataKey);
+            let showingInfo = {};
+            if (showingData) {
+              try {
+                const parsedShowing = JSON.parse(showingData);
+                showingInfo = {
+                  showingDate: parsedShowing.date,
+                  showingTime: parsedShowing.time,
+                  showingNotes: parsedShowing.notes,
+                  showingStatus: parsedShowing.status || 'planlagt'
+                };
+              } catch (error) {
+                console.error('Error parsing showing data:', error);
+              }
+            }
+            
             sellerSpecificCases.push({
               ...caseData,
               id: caseId,
-              status: caseStatus
+              status: caseStatus,
+              ...showingInfo
             });
           }
         } catch (error) {

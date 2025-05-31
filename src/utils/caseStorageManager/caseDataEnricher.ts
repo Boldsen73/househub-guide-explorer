@@ -38,7 +38,8 @@ export const enrichCaseWithFormData = (caseId: string, basicCaseData: any): Case
         notes: parsed.notes || completeCase.notes,
         description: parsed.notes || parsed.description || completeCase.description,
         city: parsed.city || completeCase.municipality,
-        municipality: parsed.city || completeCase.municipality
+        municipality: parsed.city || completeCase.municipality,
+        address: completeCase.address || `${parsed.address || 'Ukendt adresse'}, ${parsed.city || ''}`
       };
     } catch (error) {
       console.error('Error parsing property data:', error);
@@ -79,6 +80,26 @@ export const enrichCaseWithFormData = (caseId: string, basicCaseData: any): Case
       };
     } catch (error) {
       console.error('Error parsing sales preferences:', error);
+    }
+  }
+  
+  // Check for showing data
+  if (basicCaseData.sellerId) {
+    const showingData = localStorage.getItem(`showing_data_${basicCaseData.sellerId}`);
+    if (showingData) {
+      try {
+        const parsed = JSON.parse(showingData);
+        console.log('Found showing data:', parsed);
+        completeCase = {
+          ...completeCase,
+          showingDate: parsed.date,
+          showingTime: parsed.time,
+          showingNotes: parsed.notes,
+          showingStatus: parsed.status || 'planlagt'
+        };
+      } catch (error) {
+        console.error('Error parsing showing data:', error);
+      }
     }
   }
   

@@ -1,4 +1,3 @@
-
 interface DashboardCase {
   id: string;
   address: string;
@@ -26,19 +25,37 @@ interface DashboardCase {
   flexiblePrice?: boolean;
   marketingBudget?: number;
   freeIfNotSold?: boolean;
+  showingDate?: Date;
+  showingTime?: string;
+  showingNotes?: string;
+  showingStatus?: string;
 }
 
 export const useCaseFormDataEnricher = () => {
   const getCaseFormData = (caseId: string) => {
     console.log('Getting form data for case:', caseId);
     
-    const caseSpecificPropertyForm = localStorage.getItem(`propertyForm_${caseId}`);
-    const caseSpecificSalePreferences = localStorage.getItem(`salePreferences_${caseId}`);
-    const globalPropertyForm = localStorage.getItem('propertyForm');
-    const globalSalePreferences = localStorage.getItem('salePreferences');
+    // Try multiple sources for form data
+    const sources = [
+      `propertyForm_${caseId}`,
+      'propertyForm',
+      `salePreferences_${caseId}`,
+      'salePreferences'
+    ];
     
-    const propertyFormData = caseSpecificPropertyForm || globalPropertyForm;
-    const salePreferencesData = caseSpecificSalePreferences || globalSalePreferences;
+    let propertyFormData = null;
+    let salePreferencesData = null;
+    
+    for (const key of sources) {
+      const data = localStorage.getItem(key);
+      if (data) {
+        if (key.includes('propertyForm')) {
+          propertyFormData = data;
+        } else if (key.includes('salePreferences')) {
+          salePreferencesData = data;
+        }
+      }
+    }
     
     console.log('Property form data found:', propertyFormData);
     console.log('Sale preferences data found:', salePreferencesData);
@@ -70,7 +87,8 @@ export const useCaseFormDataEnricher = () => {
           buildYear: parsed.buildYear || enrichedCase.buildYear || new Date().getFullYear(),
           rooms: parsed.rooms || enrichedCase.rooms || 'Ikke angivet',
           municipality: parsed.city || enrichedCase.municipality || 'Ikke angivet',
-          notes: parsed.notes || enrichedCase.notes || enrichedCase.specialRequests || ''
+          notes: parsed.notes || enrichedCase.notes || enrichedCase.specialRequests || '',
+          address: enrichedCase.address || `${parsed.address || 'Ukendt adresse'}, ${parsed.city || ''}`
         };
       } catch (error) {
         console.error('Error parsing property form:', error);
@@ -113,23 +131,43 @@ export const useCaseFormDataEnricher = () => {
       }
     }
     
-    // Also check for case-specific stored data
-    const caseSpecificData = localStorage.getItem(`seller_case_${caseId}`);
-    if (caseSpecificData) {
-      try {
-        const parsedCaseData = JSON.parse(caseSpecificData);
-        console.log('Found case-specific data:', parsedCaseData);
-        
-        enrichedCase = {
-          ...enrichedCase,
-          ...parsedCaseData,
-          propertyType: enrichedCase.propertyType || parsedCaseData.propertyType,
-          rooms: enrichedCase.rooms || parsedCaseData.rooms,
-          notes: enrichedCase.notes || parsedCaseData.notes,
-          specialRequests: enrichedCase.specialRequests || parsedCaseData.specialRequests
-        };
-      } catch (error) {
-        console.error('Error parsing case-specific data:', error);
+    // Also check for case-specific stored data in multiple locations
+    const caseKeys = [
+      `seller_case_${caseId}`,
+      `case_${caseId}_showing`,
+      `showing_data_${enrichedCase.sellerId}`
+    ];
+    
+    for (const key of caseKeys) {
+      const caseSpecificData = localStorage.getItem(key);
+      if (caseSpecificData) {
+        try {
+          const parsedCaseData = JSON.parse(caseSpecificData);
+          console.log(`Found data in ${key}:`, parsedCaseData);
+          
+          // Merge showing data if present
+          if (parsedCaseData.showingDate || parsedCaseData.date) {
+            enrichedCase.showingDate = parsedCaseData.showingDate || parsedCaseData.date;
+            enrichedCase.showingTime = parsedCaseData.showingTime || parsedCaseData.time;
+            enrichedCase.showingNotes = parsedCaseData.showingNotes || parsedCaseData.notes;
+            enrichedCase.showingStatus = parsedCaseData.showingStatus || parsedCaseData.status;
+          }
+          
+          // Merge other case data
+          enrichedCase = {
+            ...enrichedCase,
+            ...parsedCaseData,
+            // Keep enriched data priority over stored data for these fields
+            propertyType: enrichedCase.propertyType || parsedCaseData.propertyType,
+            rooms: enrichedCase.rooms || parsedCaseData.rooms,
+            notes: enrichedCase.notes || parsedCaseData.notes,
+            specialRequests: enrichedCase.specialRequests || parsedCaseData.specialRequests,
+            price: enrichedCase.price || parsedCaseData.price || parsedCaseData.expectedPrice,
+            expectedPrice: enrichedCase.expectedPrice || parsedCaseData.expectedPrice
+          };
+        } catch (error) {
+          console.error(`Error parsing data from ${key}:`, error);
+        }
       }
     }
     
@@ -156,7 +194,11 @@ export const useCaseFormDataEnricher = () => {
       rooms: enrichedCase.rooms || 'Ikke angivet',
       flexiblePrice: enrichedCase.flexiblePrice,
       marketingBudget: enrichedCase.marketingBudget,
-      freeIfNotSold: enrichedCase.freeIfNotSold
+      freeIfNotSold: enrichedCase.freeIfNotSold,
+      showingDate: enrichedCase.showingDate,
+      showingTime: enrichedCase.showingTime,
+      showingNotes: enrichedCase.showingNotes,
+      showingStatus: enrichedCase.showingStatus
     };
     
     console.log('Final enriched case:', finalCase);
