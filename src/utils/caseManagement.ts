@@ -1,15 +1,18 @@
-
 import { Case } from '@/types/user';
 
 export const getCases = (): Case[] => {
   const cases = localStorage.getItem('cases');
-  return cases ? JSON.parse(cases) : [];
+  const parsedCases = cases ? JSON.parse(cases) : [];
+  console.log('getCases returning:', parsedCases);
+  return parsedCases;
 };
 
 // Get cases for specific user only
 export const getCasesForUser = (userId: string): Case[] => {
   const allCases = getCases();
-  return allCases.filter(case_ => case_.sellerId === userId);
+  const userCases = allCases.filter(case_ => case_.sellerId === userId);
+  console.log(`getCasesForUser(${userId}) returning:`, userCases);
+  return userCases;
 };
 
 export const saveCase = (case_: Case) => {
@@ -18,15 +21,23 @@ export const saveCase = (case_: Case) => {
   
   if (existingIndex >= 0) {
     cases[existingIndex] = case_;
+    console.log('Updated existing case:', case_.id);
   } else {
     cases.push(case_);
+    console.log('Added new case:', case_.id);
   }
   
   localStorage.setItem('cases', JSON.stringify(cases));
+  
+  // Dispatch a custom event to notify components that cases have been updated
+  window.dispatchEvent(new CustomEvent('caseUpdated', { detail: case_ }));
+  console.log('Dispatched caseUpdated event for case:', case_.id);
 };
 
 // Create a complete case from form data and save it properly
 export const createCompleteCase = (caseId: string, basicCaseData: any) => {
+  console.log('createCompleteCase called with:', { caseId, basicCaseData });
+  
   // Prevent duplicate cases by checking if one already exists
   const existingCase = getCaseById(caseId);
   if (existingCase) {
@@ -37,7 +48,6 @@ export const createCompleteCase = (caseId: string, basicCaseData: any) => {
   // Get all form data
   const propertyData = localStorage.getItem('propertyForm');
   const salesPreferences = localStorage.getItem('salePreferences');
-  const sellerInfo = localStorage.getItem('sellerInfo');
   
   let completeCase = { ...basicCaseData };
   
@@ -45,6 +55,7 @@ export const createCompleteCase = (caseId: string, basicCaseData: any) => {
   if (propertyData) {
     try {
       const parsed = JSON.parse(propertyData);
+      console.log('Adding property data:', parsed);
       completeCase.propertyType = parsed.propertyType;
       completeCase.size = parsed.size;
       completeCase.buildYear = parsed.buildYear;
@@ -60,6 +71,7 @@ export const createCompleteCase = (caseId: string, basicCaseData: any) => {
   if (salesPreferences) {
     try {
       const parsed = JSON.parse(salesPreferences);
+      console.log('Adding sales preferences:', parsed);
       completeCase.expectedPrice = parsed.expectedPrice?.[0] ? `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : undefined;
       completeCase.expectedPriceValue = parsed.expectedPrice?.[0];
       completeCase.timeframe = parsed.timeframe?.[0];
@@ -79,17 +91,21 @@ export const createCompleteCase = (caseId: string, basicCaseData: any) => {
   }
   
   // Save to both central cases and case-specific storage
+  console.log('Saving complete case:', completeCase);
   saveCase(completeCase);
   localStorage.setItem(`seller_case_${caseId}`, JSON.stringify(completeCase));
   
-  console.log('Created complete case:', completeCase);
+  console.log('Created complete case with enhanced data:', completeCase);
   return completeCase;
 };
 
 // Update existing case with complete data
 export const updateCaseWithCompleteData = (caseId: string, basicCaseData: any) => {
   const existingCase = getCaseById(caseId);
-  if (!existingCase) return null;
+  if (!existingCase) {
+    console.log('No existing case found, creating new one');
+    return createCompleteCase(caseId, basicCaseData);
+  }
 
   // Get all form data
   const propertyData = localStorage.getItem('propertyForm');
@@ -147,6 +163,7 @@ export const getCompleteCaseData = (caseId: string) => {
   // First try to get from central cases storage
   const case_ = getCaseById(caseId);
   if (case_) {
+    console.log('Found case in central storage:', case_);
     return case_;
   }
 
@@ -154,12 +171,15 @@ export const getCompleteCaseData = (caseId: string) => {
   const caseSpecificData = localStorage.getItem(`seller_case_${caseId}`);
   if (caseSpecificData) {
     try {
-      return JSON.parse(caseSpecificData);
+      const parsed = JSON.parse(caseSpecificData);
+      console.log('Found case in case-specific storage:', parsed);
+      return parsed;
     } catch (error) {
       console.error('Error parsing case-specific data:', error);
     }
   }
 
+  console.log('No case data found for:', caseId);
   return null;
 };
 
@@ -173,7 +193,9 @@ export const updateCaseStatus = (caseId: string, newStatus: Case['status']) => {
 
 export const getCaseById = (id: string): Case | null => {
   const cases = getCases();
-  return cases.find(c => c.id === id) || null;
+  const found = cases.find(c => c.id === id) || null;
+  console.log(`getCaseById(${id}) found:`, found);
+  return found;
 };
 
 export const getCaseBySagsnummer = (sagsnummer: string): Case | null => {
