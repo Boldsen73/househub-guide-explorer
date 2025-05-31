@@ -33,7 +33,11 @@ export const saveCase = (case_: Case) => {
   // Dispatch multiple events to ensure all components update
   window.dispatchEvent(new CustomEvent('caseUpdated', { detail: case_ }));
   window.dispatchEvent(new CustomEvent('caseCreated', { detail: case_ }));
-  window.dispatchEvent(new CustomEvent('storage', { key: 'cases' }));
+  
+  // Create a proper storage event
+  const storageEvent = new Event('storage');
+  window.dispatchEvent(storageEvent);
+  
   console.log('Dispatched case events for case:', case_.id);
 };
 
@@ -213,7 +217,8 @@ export const updateCaseStatus = (caseId: string, newStatus: Case['status']) => {
   
   // Dispatch events to notify components
   window.dispatchEvent(new CustomEvent('caseUpdated'));
-  window.dispatchEvent(new CustomEvent('storage', { key: 'cases' }));
+  const storageEvent = new Event('storage');
+  window.dispatchEvent(storageEvent);
 };
 
 export const getCaseById = (id: string): Case | null => {
