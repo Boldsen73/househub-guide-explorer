@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { saveTestCase, generateSagsnummer } from '@/utils/testData';
-import ProgressIndicator from '@/components/seller/ProgressIndicator';
+import ProgressSteps from '@/components/seller/ProgressSteps'; // <--- RETTET IMPORT
 import Footer from '@/components/layout/Footer';
 import Navigation from '@/components/layout/Navigation';
 import { Button } from '@/components/ui/button';
@@ -78,7 +78,7 @@ const PriceInfo: React.FC = () => {
       size: parseInt(propertyData.size) || 0,
       buildYear: parseInt(propertyData.buildYear) || new Date().getFullYear(),
       rooms: propertyData.rooms || 'Ikke angivet',
-      // notes: propertyData.notes || undefined, // REMOVED THIS LINE
+      // notes: propertyData.notes || undefined, // THIS LINE IS REMOVED
 
       // Sale Preferences
       expectedPrice: formattedPrice, // The string for display
@@ -114,7 +114,8 @@ const PriceInfo: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
       <div className="container mx-auto px-4 py-8 flex-grow">
-        <ProgressIndicator currentStep={3} totalSteps={3} />
+        {/* Bruger ProgressSteps komponenten, som forventet */}
+        <ProgressSteps currentStep={3} totalSteps={3} /> 
         <Card className="max-w-3xl mx-auto mt-8">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-900">Prisoplysninger</CardTitle>
