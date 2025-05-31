@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { saveTestCase, generateSagsnummer } from '@/utils/testData';
-import ProgressSteps from '@/components/seller/ProgressSteps';
-import Footer from '@/components/Footer';     // <--- DENNE LINJE ER RETTET!
-import Navigation from '@/components/Navigation'; // <--- DENNE LINJE ER RETTET!
+import ProgressSteps from '@/components/seller/ProgressSteps'; // Forventes at være der
+import Footer from '@/components/Footer';     // Retten importsti baseret på din filstruktur
+import Navigation from '@/components/Navigation'; // Retten importsti baseret på din filstruktur
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -18,7 +18,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 const PriceInfo: React.FC = () => {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  // RETTET: currentUser er nu korrekt dekonstrueret fra 'user' property'en i useAuth
+  const { user: currentUser } = useAuth(); 
   const [propertyData, setPropertyData] = useState<any>(null);
   const [salePreferences, setSalePreferences] = useState<any>(null);
   const [publicValuation, setPublicValuation] = useState<number | null>(null);
@@ -78,21 +79,20 @@ const PriceInfo: React.FC = () => {
       size: parseInt(propertyData.size) || 0,
       buildYear: parseInt(propertyData.buildYear) || new Date().getFullYear(),
       rooms: propertyData.rooms || 'Ikke angivet',
-      // notes: propertyData.notes || undefined, // THIS LINE IS REMOVED
 
       // Sale Preferences
-      expectedPrice: formattedPrice, // The string for display
-      expectedPriceValue: currentValuation, // The number for potential calculations
+      expectedPrice: formattedPrice,
+      expectedPriceValue: currentValuation,
       flexiblePrice: salePreferences?.flexiblePrice || false,
       timeframe: salePreferences?.timeframe || undefined,
       timeframeType: salePreferences?.timeframeType || undefined,
       priorities: salePreferences?.priorities || { speed: false, price: false, service: false },
       marketingBudget: salePreferences?.marketingBudget || 0,
       freeIfNotSold: salePreferences?.freeIfNotSold || false,
-      specialRequests: salePreferences?.specialRequests || undefined, // Særlige ønsker eller kommentarer
+      specialRequests: salePreferences?.specialRequests || undefined,
 
       // Case status and timestamps
-      status: 'active' as const, // Start as active case
+      status: 'active' as const,
       createdAt: new Date().toISOString(),
       offers: [],
       showingRegistrations: [],
@@ -114,7 +114,12 @@ const PriceInfo: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
       <div className="container mx-auto px-4 py-8 flex-grow">
-        <ProgressSteps currentStep={3} totalSteps={3} />
+        {/* RETTET: Sender nu en string status til ProgressSteps, som forventet af dens type */}
+        {/* Hvis dette er det sidste trin (trin 3), og du er klar til at oprette sagen,
+            kan status være 'data_entered' eller 'sent_to_agents' afhængig af dit flow.
+            Jeg antager 'data_entered' som et generisk sidste trin før afslutning.
+            Du skal vælge den status, der passer bedst til dit UI for trin 3. */}
+        <ProgressSteps status="data_entered" /> {/* Eller "agent_selected" hvis det er det korrekte step for afslutning */}
         <Card className="max-w-3xl mx-auto mt-8">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-900">Prisoplysninger</CardTitle>
