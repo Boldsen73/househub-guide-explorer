@@ -103,11 +103,11 @@ export const loadSellerCasesFromStorage = (allUsers: User[]): Case[] => {
             sellerEmail: sellerInfo.email,
             sellerPhone: sellerInfo.phone,
             address: caseData.address,
-            postnummer: caseData.postnummer || '',
+            postnummer: caseData.postnummer || '', // Ensure this property exists
             municipality: caseData.municipality || caseData.city || 'Ikke angivet',
             type: caseData.propertyType || caseData.type || 'Ikke angivet',
             size: typeof caseData.size === 'number' ? caseData.size : parseInt(caseData.size || '0'),
-            buildYear: caseData.buildYear || new Date().getFullYear(),
+            buildYear: caseData.buildYear || new Date().getFullYear(), // Ensure this property exists
             price: caseData.estimatedPrice || 'Ikke angivet',
             priceValue: parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
             status: sellerCaseStatus as Case['status'],
