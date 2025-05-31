@@ -23,7 +23,7 @@ const PropertyData = () => {
     boligtype: '',
     størrelse: '',
     byggeår: '',
-    værelser: '',
+    rooms: '',
     notes: ''
   });
 
