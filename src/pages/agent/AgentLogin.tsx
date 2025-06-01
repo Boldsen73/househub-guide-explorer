@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -9,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { LogIn, Home } from 'lucide-react';
 import { useTestAuth } from '@/hooks/useTestAuth';
 import { useToast } from '@/hooks/use-toast';
+import { ROUTES } from '@/constants/routes';
 
 const AgentLogin = () => {
   const [email, setEmail] = useState('m@hh.dk');
@@ -103,13 +105,13 @@ const AgentLogin = () => {
               </form>
               <div className="flex justify-between mt-4">
                 <Link
-                  to="/"
+                  to={ROUTES.HOME}
                   className="flex items-center text-blue-600 hover:underline"
                 >
                   <Home className="w-4 h-4 mr-1" /> Til forsiden
                 </Link>
                 <Link
-                  to="/saelger/opret-bruger"
+                  to={ROUTES.SELLER_SIGNUP}
                   className="text-blue-600 hover:underline"
                 >
                   Opret sælger-bruger

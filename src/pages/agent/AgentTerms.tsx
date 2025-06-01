@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { Home } from 'lucide-react';
 import { useState } from 'react';
+import { ROUTES } from '@/constants/routes';
 
 const AgentTerms = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -39,7 +40,7 @@ const AgentTerms = () => {
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-2xl mx-auto">
           <div className="mb-8">
-            <Link to="/maegler/afgiv-tilbud" className="text-blue-600 hover:underline mb-2 inline-block">
+            <Link to="/agent/submit-offer" className="text-blue-600 hover:underline mb-2 inline-block">
               ← Tilbage til tilbud
             </Link>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -106,12 +107,12 @@ const AgentTerms = () => {
                 </div>
                 
                 <div className="flex gap-4 pt-6">
-                  <Link to="/maegler/afgiv-tilbud" className="flex-1">
+                  <Link to="/agent/submit-offer" className="flex-1">
                     <Button type="button" variant="outline" className="w-full">
                       Tilbage
                     </Button>
                   </Link>
-                  <Link to="/maegler/bekraeftelse" className="flex-1">
+                  <Link to={ROUTES.AGENT_CONFIRMATION} className="flex-1">
                     <Button 
                       className="w-full"
                       disabled={!acceptTerms || !acceptCommission}

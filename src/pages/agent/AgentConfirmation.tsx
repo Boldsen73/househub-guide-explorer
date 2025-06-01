@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
 import { Home } from 'lucide-react';
+import { ROUTES } from '@/constants/routes';
 
 const AgentConfirmation = () => {
   return (
@@ -104,12 +105,12 @@ const AgentConfirmation = () => {
                 </div>
                 
                 <div className="flex gap-4 pt-6">
-                  <Link to="/maegler/gennemse-sager" className="flex-1">
+                  <Link to={ROUTES.AGENT_BROWSE_CASES} className="flex-1">
                     <Button variant="outline" className="w-full">
                       Se flere sager
                     </Button>
                   </Link>
-                  <Link to="/maegler/gennemse-sager" className="flex-1">
+                  <Link to={ROUTES.AGENT_BROWSE_CASES} className="flex-1">
                     <Button className="w-full">
                       Mine tilbud
                     </Button>

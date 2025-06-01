@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
+import { ROUTES } from '@/constants/routes';
 
 const AgentStart = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -15,7 +16,7 @@ const AgentStart = () => {
   const handleOnboardingAccept = () => {
     // Store acceptance in localStorage
     localStorage.setItem('househub_agent_terms_accepted', 'true');
-    navigate('/maegler/opret-bruger');
+    navigate(ROUTES.AGENT_SIGNUP);
   };
 
   return (
@@ -55,7 +56,7 @@ const AgentStart = () => {
               </div>
               
               <div className="border-t border-gray-200 pt-6">
-                <Link to="/maegler/login" className="block">
+                <Link to={ROUTES.AGENT_LOGIN} className="block">
                   <Button size="lg" variant="outline" className="w-full h-16 text-lg">
                     Log ind
                   </Button>

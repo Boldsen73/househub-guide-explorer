@@ -117,26 +117,42 @@ const App = () => (
           <Route path={ROUTES.SELLER_UPLOAD_DOCUMENTS} element={<UploadDocuments />} />
           <Route path={ROUTES.SELLER_WAITING_FOR_OFFERS} element={<WaitingForOffers />} />
 
-          {/* Agent routes */}
+          {/* Agent routes - updated to English paths */}
           <Route path={ROUTES.AGENT_START} element={<AgentStart />} />
-          <Route path="/maegler/start" element={<AgentStart />} />
+          <Route path="/agent/start" element={<AgentStart />} />
+          <Route path="/maegler" element={<AgentStart />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_SIGNUP} element={<AgentSignup />} />
+          <Route path="/maegler/opret-bruger" element={<AgentSignup />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_LOGIN} element={<AgentLogin />} />
+          <Route path="/maegler/login" element={<AgentLogin />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_DASHBOARD} element={<AgentDashboard />} />
-          <Route path={ROUTES.AGENT_BROWSE_CASES} element={<AgentBrowseCases />} />
-          <Route path={ROUTES.AGENT_BROWSE_CASES_ALT} element={<BrowseCases />} />
+          <Route path="/maegler/dashboard" element={<AgentDashboard />} /> {/* Legacy redirect */}
+          <Route path={ROUTES.AGENT_BROWSE_CASES} element={<BrowseCases />} />
+          <Route path="/maegler/gennemse-sager" element={<BrowseCases />} /> {/* Legacy redirect */}
+          <Route path="/maegler/browse-cases" element={<BrowseCases />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_CASE_DETAIL} element={<CaseDetailsPage />} />
-          <Route path={ROUTES.AGENT_CASE_DETAIL_ALT} element={<AgentCaseDetail />} />
+          <Route path="/maegler/case/:id" element={<CaseDetailsPage />} /> {/* Legacy redirect */}
+          <Route path="/maegler/sag/:id" element={<AgentCaseDetail />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_SUBMIT_OFFER} element={<SubmitOffer />} />
+          <Route path="/maegler/afgiv-tilbud/:id" element={<SubmitOffer />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_VIEW_OFFER} element={<ViewOffer />} />
+          <Route path="/maegler/tilbud/:id" element={<ViewOffer />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_MY_OFFERS} element={<AgentMyOffers />} />
+          <Route path="/maegler/mine-tilbud" element={<AgentMyOffers />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_MESSAGES} element={<AgentMessages />} />
+          <Route path="/maegler/beskeder" element={<AgentMessages />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_PROFILE} element={<AgentProfile />} />
+          <Route path="/maegler/profil" element={<AgentProfile />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_SETTINGS} element={<AgentSettings />} />
+          <Route path="/maegler/indstillinger" element={<AgentSettings />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_STATISTICS} element={<AgentStatistics />} />
+          <Route path="/maegler/statistik" element={<AgentStatistics />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_ARCHIVE} element={<AgentArchive />} />
+          <Route path="/maegler/arkiv" element={<AgentArchive />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_TERMS} element={<AgentTerms />} />
+          <Route path="/maegler/vilkaar" element={<AgentTerms />} /> {/* Legacy redirect */}
           <Route path={ROUTES.AGENT_CONFIRMATION} element={<AgentConfirmation />} />
+          <Route path="/maegler/bekræftelse" element={<AgentConfirmation />} /> {/* Legacy redirect */}
 
           {/* Admin routes */}
           <Route path={ROUTES.ADMIN_LOGIN} element={<AdminLogin />} />

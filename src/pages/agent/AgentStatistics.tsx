@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +6,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { TrendingUp, Award, DollarSign, Target, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdminReturnBanner from '@/components/admin/AdminReturnBanner';
+import { ROUTES } from '@/constants/routes';
 
 const AgentStatistics = () => {
   // Check if user is in admin session
@@ -30,7 +30,7 @@ const AgentStatistics = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link to="/maegler/dashboard">
+            <Link to={ROUTES.AGENT_DASHBOARD}>
               <Button variant="outline" size="sm" className="transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Tilbage til dashboard
@@ -46,6 +46,8 @@ const AgentStatistics = () => {
           </Badge>
         </div>
 
+        {/* ... keep existing code (KPI Cards, Charts, Performance Summary) */}
+        
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
@@ -146,7 +148,7 @@ const AgentStatistics = () => {
         {/* Performance Summary */}
         <Card className="transition-all duration-300 ease-in-out hover:shadow-xl">
           <CardHeader>
-            <CardTitle>Performance sammenfatning</CardTitle>
+            <CardTitle>Performance sammenfatning</CardHeader>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

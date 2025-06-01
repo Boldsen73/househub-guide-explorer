@@ -14,6 +14,7 @@ import CaseSellerInfo from '@/components/agent/caseDetails/CaseSellerInfo';
 import CaseSubmittedBid from '@/components/agent/caseDetails/CaseSubmittedBid';
 import CasePropertyDescription from '@/components/agent/caseDetails/CasePropertyDescription';
 import CaseActions from '@/components/agent/caseDetails/CaseActions';
+import { ROUTES } from '@/constants/routes';
 
 const CaseDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -125,7 +126,7 @@ const CaseDetailsPage = () => {
         {/* Back Navigation */}
         <Button 
           variant="ghost" 
-          onClick={() => navigate('/maegler/gennemse-sager')}
+          onClick={() => navigate(ROUTES.AGENT_BROWSE_CASES)}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

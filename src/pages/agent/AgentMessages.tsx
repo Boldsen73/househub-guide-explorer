@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CaseMessageNotifications from '@/components/agent/CaseMessageNotifications';
 import HeaderNavigation from '@/components/agent/browseCases/HeaderNavigation';
+import { ROUTES } from '@/constants/routes';
 
 const AgentMessages = () => {
   const [searchParams] = useSearchParams();
@@ -19,7 +20,7 @@ const AgentMessages = () => {
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link to="/maegler/dashboard">
+          <Link to={ROUTES.AGENT_DASHBOARD}>
             <Button variant="outline" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tilbage til dashboard

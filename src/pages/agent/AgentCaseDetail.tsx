@@ -8,6 +8,7 @@ import { ArrowLeft, MapPin, Home, DollarSign, Calendar } from 'lucide-react';
 import AdminReturnBanner from '@/components/admin/AdminReturnBanner';
 import { useAgentCases } from '@/hooks/useAgentCases';
 import CaseActions from '@/components/agent/caseDetails/CaseActions';
+import { ROUTES } from '@/constants/routes';
 
 const AgentCaseDetail = () => {
   const { id } = useParams();
@@ -23,7 +24,7 @@ const AgentCaseDetail = () => {
         {isAdminSession && <AdminReturnBanner />}
         <div className="container mx-auto px-6 py-8">
           <div className="flex items-center gap-4 mb-8">
-            <Link to="/maegler/gennemse-sager">
+            <Link to={ROUTES.AGENT_BROWSE_CASES}>
               <Button variant="outline" size="sm">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Tilbage til sager
@@ -37,15 +38,15 @@ const AgentCaseDetail = () => {
   }
 
   const handleSubmitOffer = () => {
-    navigate(`/maegler/afgiv-tilbud/${id}`);
+    navigate(`/agent/submit-offer/${id}`);
   };
 
   const handleContactSeller = () => {
-    navigate(`/maegler/beskeder?case=${id}`);
+    navigate(`${ROUTES.AGENT_MESSAGES}?case=${id}`);
   };
 
   const handleBookViewing = () => {
-    navigate(`/maegler/book-fremvisning/${id}`);
+    navigate(`/agent/book-showing/${id}`);
   };
 
   return (
@@ -53,7 +54,7 @@ const AgentCaseDetail = () => {
       {isAdminSession && <AdminReturnBanner />}
       <div className="container mx-auto px-6 py-8">
         <div className="flex items-center gap-4 mb-8">
-          <Link to="/maegler/gennemse-sager">
+          <Link to={ROUTES.AGENT_BROWSE_CASES}>
             <Button variant="outline" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tilbage til sager
