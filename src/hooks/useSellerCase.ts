@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { getTestCases } from '@/utils/testData';
-import { getCasesForUser } from '@/utils/caseManagement';
+import { getCasesForUser, getCompleteCaseData } from '@/utils/caseManagement';
+import { getTestCasesForUser } from '@/utils/testData';
 
 export interface SellerCase {
   id: string;
@@ -37,12 +37,31 @@ export const useSellerCase = () => {
 
   useEffect(() => {
     loadSellerCase();
+
+    // Listen for case updates
+    const handleCaseUpdate = () => {
+      console.log('Case update detected in useSellerCase');
+      setTimeout(loadSellerCase, 100);
+    };
+
+    window.addEventListener('caseCreated', handleCaseUpdate);
+    window.addEventListener('caseUpdated', handleCaseUpdate);
+    window.addEventListener('casesChanged', handleCaseUpdate);
+
+    return () => {
+      window.removeEventListener('caseCreated', handleCaseUpdate);
+      window.removeEventListener('caseUpdated', handleCaseUpdate);
+      window.removeEventListener('casesChanged', handleCaseUpdate);
+    };
   }, []);
 
   const loadSellerCase = () => {
+    console.log('=== LOADING SELLER CASE ===');
+    
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     
     if (!currentUser.id) {
+      console.log('No current user found');
       setSellerCase(null);
       setIsLoading(false);
       return;
@@ -55,14 +74,22 @@ export const useSellerCase = () => {
     console.log('Real cases found:', realCases);
     
     // Then check test cases as fallback
-    const testCases = getTestCases();
-    const testUserCase = testCases.find(c => c.sellerId === currentUser.id);
+    const testCases = getTestCasesForUser(currentUser.id);
+    console.log('Test cases found:', testCases);
     
-    // Use real case if available, otherwise use test case
-    const userCase = realCases.length > 0 ? realCases[0] : testUserCase;
+    // Combine and get the most recent case
+    const allUserCases = [...realCases, ...testCases];
     
-    if (userCase) {
-      console.log('Found user case:', userCase);
+    if (allUserCases.length > 0) {
+      // Sort by creation date and get most recent
+      allUserCases.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0).getTime();
+        const dateB = new Date(b.createdAt || 0).getTime();
+        return dateB - dateA;
+      });
+      
+      const userCase = allUserCases[0];
+      console.log('Using most recent case:', userCase);
       
       // Get agent registrations - ensure they're specific to this case
       const registrations = JSON.parse(localStorage.getItem(`showing_registrations_${userCase.id}`) || '[]');
@@ -102,6 +129,7 @@ export const useSellerCase = () => {
     }
     
     setIsLoading(false);
+    console.log('=== SELLER CASE LOADING COMPLETE ===');
   };
 
   const determineStatus = (showingData: any, registrations: any[], offers: any[]) => {
