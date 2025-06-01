@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCachedSellerAddress, getCasesForUser, getCompleteCaseData } from '@/utils/caseManagement';
+import { getCasesForUser, getCompleteCaseData } from '@/utils/caseManagement';
 import { getTestCasesForUser } from '@/utils/testData';
 import { ROUTES } from '@/constants/routes';
 
@@ -40,8 +40,8 @@ export const useSellerAuth = () => {
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
       console.log('Current user in useSellerAuth:', currentUser);
       
-      // Get cached address for auto-fill
-      const address = getCachedSellerAddress();
+      // Get cached address for auto-fill from localStorage
+      const address = localStorage.getItem('lastUsedAddress') || null;
       setCachedAddress(address);
       
       if (!currentUser.id) {
