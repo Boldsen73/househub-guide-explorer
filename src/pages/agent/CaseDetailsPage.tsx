@@ -146,7 +146,7 @@ const CaseDetailsPage = () => {
           type={detailedCaseData?.propertyType || caseItem.type}
           size={String(detailedCaseData?.size || caseItem.size)}
           rooms={String(detailedCaseData?.rooms || caseItem.rooms)}
-          buildYear={detailedCaseData?.buildYear || caseItem.constructionYear}
+          buildYear={detailedCaseData?.buildYear || caseItem.buildYear}
           municipality={caseItem.municipality}
           energyLabel={caseItem.energyLabel}
           timeRemaining={timeRemaining}

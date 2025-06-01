@@ -43,7 +43,7 @@ const CaseHeader: React.FC<CaseHeaderProps> = ({
   const displayType = detailedCaseData?.type || detailedCaseData?.propertyType || type;
   const displaySize = detailedCaseData?.size || size;
   const displayRooms = detailedCaseData?.rooms || rooms;
-  const displayBuildYear = detailedCaseData?.constructionYear || detailedCaseData?.buildYear || buildYear;
+  const displayBuildYear = detailedCaseData?.buildYear || buildYear;
   const displayMunicipality = detailedCaseData?.municipality || municipality;
   const displayEnergyLabel = detailedCaseData?.energyLabel || energyLabel;
 

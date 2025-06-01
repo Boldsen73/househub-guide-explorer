@@ -68,7 +68,7 @@ const CaseCardContent: React.FC<CaseCardContentProps> = ({
         </div>
         <div>
           <span className="text-sm text-gray-500">Byggeår:</span>
-          <p className="font-medium">{caseItem.constructionYear}</p>
+          <p className="font-medium">{caseItem.buildYear}</p>
         </div>
       </div>
 

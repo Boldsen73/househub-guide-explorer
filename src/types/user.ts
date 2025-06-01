@@ -1,4 +1,3 @@
-
 // User data types and interfaces
 export interface User {
   id: string;
@@ -43,7 +42,7 @@ export interface Case {
   rooms?: string;
   description?: string;
   energyLabel?: string;
-  constructionYear?: number;
+  buildYear?: number;
   // Enhanced seller data fields
   propertyType?: string;
   expectedPrice?: string;
