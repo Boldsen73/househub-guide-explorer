@@ -103,8 +103,8 @@ const PropertyData = () => {
         description: 'Boligdata er gemt.'
       });
 
-      // NAVIGER TIL NÆSTE TRIN (RETTET STI MED 'ø')
-      navigate('/saelger/salgsønsker'); // KORREKT STI
+      // NAVIGER TIL NÆSTE TRIN (RETTET STI UDEN 'ø')
+      navigate('/saelger/salgsoensker'); // KORREKT STI UDEN 'ø'
     } catch (error) {
       toast({
         title: 'Fejl',
