@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { getTestCases } from '@/utils/testData';
 import { getCasesForUser } from '@/utils/caseManagement';
@@ -72,12 +73,26 @@ export const useSellerCase = () => {
       // Get showing data - ensure it's specific to this case
       const showingData = JSON.parse(localStorage.getItem(`showing_data_${userCase.id}`) || '{}');
       
+      // Also check for showing data in multiple formats for robustness
+      let finalShowingData = showingData;
+      if (!finalShowingData.date && !finalShowingData.time) {
+        // Try alternative storage keys
+        const altShowingData = JSON.parse(localStorage.getItem(`case_${userCase.id}_showing`) || '{}');
+        if (altShowingData.showingDate || altShowingData.showingTime) {
+          finalShowingData = {
+            date: altShowingData.showingDate,
+            time: altShowingData.showingTime,
+            completed: altShowingData.status === 'showing_completed'
+          };
+        }
+      }
+      
       setSellerCase({
         id: userCase.id.toString(),
         address: userCase.address,
-        status: determineStatus(showingData, registrations, offers),
-        showingDate: showingData.date,
-        showingTime: showingData.time,
+        status: determineStatus(finalShowingData, registrations, offers),
+        showingDate: finalShowingData.date,
+        showingTime: finalShowingData.time,
         agentRegistrations: registrations,
         offers: offers
       });
@@ -92,7 +107,7 @@ export const useSellerCase = () => {
   const determineStatus = (showingData: any, registrations: any[], offers: any[]) => {
     if (offers.length > 0) return 'offers_received';
     if (showingData.completed) return 'showing_completed';
-    if (showingData.date) return 'showing_scheduled';
+    if (showingData.date && showingData.time) return 'showing_scheduled';
     return 'active';
   };
 
@@ -100,6 +115,15 @@ export const useSellerCase = () => {
     if (sellerCase) {
       const showingData = { date, time, completed: false };
       localStorage.setItem(`showing_data_${sellerCase.id}`, JSON.stringify(showingData));
+      
+      // Also store in agent-accessible format for synchronization
+      localStorage.setItem(`case_${sellerCase.id}_showing`, JSON.stringify({
+        showingDate: date,
+        showingTime: time,
+        showingNotes: '',
+        status: 'showing_booked'
+      }));
+      
       loadSellerCase();
     }
   };
@@ -112,6 +136,15 @@ export const useSellerCase = () => {
         completed: true 
       };
       localStorage.setItem(`showing_data_${sellerCase.id}`, JSON.stringify(showingData));
+      
+      // Update agent-accessible format
+      localStorage.setItem(`case_${sellerCase.id}_showing`, JSON.stringify({
+        showingDate: sellerCase.showingDate,
+        showingTime: sellerCase.showingTime,
+        showingNotes: '',
+        status: 'showing_completed'
+      }));
+      
       loadSellerCase();
     }
   };

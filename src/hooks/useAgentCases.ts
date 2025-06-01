@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { CaseStatus, AgentOffer } from '@/types/agent';
 import { Case } from '@/types/case';
@@ -50,7 +51,7 @@ export const useAgentCases = () => {
           const caseId = caseData.id.toString();
           
           if (!processedCaseIds.has(caseId)) {
-            // Get seller information
+            // Get seller information with enhanced data loading
             let sellerInfo = { 
               name: 'Ukendt sælger', 
               email: 'Ikke angivet', 
@@ -71,14 +72,15 @@ export const useAgentCases = () => {
             // Ensure we have proper number ID
             const numericId = typeof caseData.id === 'string' ? parseInt(caseData.id) : caseData.id;
 
-            userCases.push({
+            // Get enhanced case data with proper price and property details
+            const enhancedCaseData = {
               id: numericId,
               address: caseData.address,
               municipality: caseData.municipality || 'Ikke angivet',
-              type: caseData.type || 'Ikke angivet',
+              type: caseData.type || caseData.propertyType || 'Ikke angivet',
               size: caseData.size || 'Ikke angivet',
-              price: caseData.price || 'Ikke angivet',
-              priceValue: caseData.priceValue || 0,
+              price: caseData.price || caseData.expectedPrice || caseData.estimatedPrice || 'Ikke angivet',
+              priceValue: caseData.priceValue || caseData.expectedPriceValue || parseInt((caseData.expectedPrice || caseData.estimatedPrice || '0').replace(/[^\d]/g, '') || '0'),
               buildYear: caseData.buildYear || new Date().getFullYear(),
               status: caseData.status || 'waiting_for_offers',
               sellerId: caseData.sellerId,
@@ -89,9 +91,11 @@ export const useAgentCases = () => {
               energyLabel: caseData.energyLabel || "C",
               agentStatus: 'active' as CaseStatus,
               deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-            });
+            };
+
+            userCases.push(enhancedCaseData);
             processedCaseIds.add(caseId);
-            console.log(`Added central case ${caseId} to agent view`);
+            console.log(`Added central case ${caseId} to agent view with enhanced data:`, enhancedCaseData);
           }
         }
       });
@@ -136,14 +140,15 @@ export const useAgentCases = () => {
                     }
                   }
 
-                  userCases.push({
+                  // Create case with enhanced data from seller input
+                  const enhancedCase = {
                     id: parseInt(caseId),
                     address: caseData.address,
                     municipality: caseData.municipality || caseData.city || 'Ikke angivet',
                     type: caseData.propertyType || caseData.type || 'Ikke angivet',
                     size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
                     price: caseData.expectedPrice || caseData.estimatedPrice || caseData.price || 'Ikke angivet',
-                    priceValue: caseData.expectedPriceValue || caseData.priceValue || parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
+                    priceValue: caseData.expectedPriceValue || caseData.priceValue || parseInt((caseData.expectedPrice || caseData.estimatedPrice || '0').replace(/[^\d]/g, '') || '0'),
                     buildYear: caseData.buildYear || new Date().getFullYear(),
                     status: 'waiting_for_offers' as const,
                     sellerId: caseData.sellerId,
@@ -154,8 +159,10 @@ export const useAgentCases = () => {
                     energyLabel: caseData.energyLabel || "C",
                     agentStatus: 'active' as CaseStatus,
                     deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-                  });
-                  console.log(`Added individual case ${caseId} to agent view`);
+                  };
+
+                  userCases.push(enhancedCase);
+                  console.log(`Added individual case ${caseId} to agent view with data:`, enhancedCase);
                 }
               }
             } catch (error) {

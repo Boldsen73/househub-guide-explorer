@@ -76,7 +76,7 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
         localStorage.setItem('current_showing_data', JSON.stringify(showingData));
         console.log('Stored in current_showing_data as backup');
         
-        // Store for agent visibility - sync to agent system
+        // Store for agent visibility - sync to agent system with enhanced data
         const agentShowingData = {
           sellerId: currentUser.id,
           sellerName: currentUser.firstName + ' ' + currentUser.lastName,
@@ -90,8 +90,9 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
         
         // Store in agent-accessible format
         localStorage.setItem(`agent_showing_${currentUser.id}`, JSON.stringify(agentShowingData));
+        localStorage.setItem(`case_${currentUser.id}_showing`, JSON.stringify(agentShowingData));
         
-        // Update all cases for this seller with showing info
+        // Update all cases for this seller with showing info and ensure complete data sync
         const existingCases = JSON.parse(localStorage.getItem('cases') || '[]');
         const updatedCases = existingCases.map((case_: any) => {
           if (case_.sellerId === currentUser.id) {
@@ -108,6 +109,31 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
         
         localStorage.setItem('cases', JSON.stringify(updatedCases));
         console.log('Updated cases with showing data');
+        
+        // Also update individual seller case data to include complete seller information
+        const sellerCaseKey = `seller_case_${currentUser.id}`;
+        const existingSellerCase = JSON.parse(localStorage.getItem(sellerCaseKey) || '{}');
+        const enhancedSellerCase = {
+          ...existingSellerCase,
+          showingDate: selectedDate,
+          showingTime: selectedTime,
+          showingNotes: notes,
+          status: 'showing_booked',
+          // Ensure all seller data is preserved
+          sellerId: currentUser.id,
+          sellerName: currentUser.firstName + ' ' + currentUser.lastName,
+          sellerEmail: currentUser.email,
+          sellerPhone: currentUser.phone || 'Ikke angivet'
+        };
+        localStorage.setItem(sellerCaseKey, JSON.stringify(enhancedSellerCase));
+        
+        // Dispatch event to notify other components
+        window.dispatchEvent(new CustomEvent('showingBooked', { 
+          detail: { 
+            caseId: currentUser.id, 
+            showingData: agentShowingData 
+          } 
+        }));
         
       } else {
         console.error('No user ID found for storing showing data');
