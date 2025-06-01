@@ -144,7 +144,7 @@ export const useAgentCases = () => {
                     size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
                     price: caseData.expectedPrice || caseData.estimatedPrice || caseData.price || 'Ikke angivet',
                     priceValue: caseData.expectedPriceValue || caseData.priceValue || parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
-                    constructionYear: caseData.buildYear || caseData.constructionYear || new Date().getFullYear(),
+                    constructionYear: caseData.constructionYear || caseData.buildYear || new Date().getFullYear(),
                     status: 'waiting_for_offers' as const,
                     sellerId: caseData.sellerId,
                     sellerName: sellerInfo.name,
