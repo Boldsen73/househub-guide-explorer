@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { saveTestCase, generateSagsnummer } from '@/utils/testData';
 import ProgressSteps from '@/components/seller/ProgressSteps';
-import Footer from '@/components/Footer';     // Retten importsti baseret på din filstruktur
-import Navigation from '@/components/Navigation'; // Retten importsti baseret på din filstruktur
+import Footer from '@/components/Footer';
+import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -15,10 +15,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast'; // Tilføjet useToast
 
 const PriceInfo: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth(); 
+  const { toast } = useToast(); // Initialiser useToast
+
   const [propertyData, setPropertyData] = useState<any>(null);
   const [salePreferences, setSalePreferences] = useState<any>(null);
   const [publicValuation, setPublicValuation] = useState<number | null>(null);
@@ -31,29 +34,62 @@ const PriceInfo: React.FC = () => {
     const storedPropertyData = localStorage.getItem('propertyData');
     const storedSalePreferences = localStorage.getItem('salePreferences');
 
+    console.log('PriceInfo - Initializing useEffect');
+    console.log('Stored propertyData:', storedPropertyData);
+    console.log('Stored salePreferences:', storedSalePreferences);
+
     if (storedPropertyData) {
-      setPropertyData(JSON.parse(storedPropertyData));
+      const parsedPropertyData = JSON.parse(storedPropertyData);
+      setPropertyData(parsedPropertyData);
+      console.log('Parsed propertyData:', parsedPropertyData);
+    } else {
+      console.warn('PropertyData not found in localStorage.');
     }
+
     if (storedSalePreferences) {
-      setSalePreferences(JSON.parse(storedSalePreferences));
+      const parsedSalePreferences = JSON.parse(storedSalePreferences);
+      setSalePreferences(parsedSalePreferences);
+      console.log('Parsed salePreferences:', parsedSalePreferences);
+    } else {
+      console.warn('SalePreferences not found in localStorage.');
     }
 
     setValuationLoading(true);
     setTimeout(() => {
-      const simulatedValuation = Math.floor(Math.random() * (5000000 - 1000000 + 1)) + 1000000;
+      // Simuleret offentlig vurdering baseret på propertyData.size for at gøre det mere dynamisk
+      const baseValuation = propertyData ? parseInt(propertyData.size) * 20000 : 2000000; // Eksempel: 20.000 DKK per m²
+      const simulatedValuation = Math.floor(baseValuation + (Math.random() * baseValuation * 0.5 - baseValuation * 0.25)); // +/- 25% variation
       setPublicValuation(simulatedValuation);
       setCurrentValuation(simulatedValuation);
       setValuationLoading(false);
     }, 1500);
-  }, []);
+  }, [propertyData]); // Tilføj propertyData til dependency array, så den kan bruges i valuation simulation
 
   const handlePriceChange = (value: number[]) => {
     setCurrentValuation(value[0]);
   };
 
   const handleFinalizeCase = () => {
-    if (!currentUser || !propertyData || !salePreferences || !currentValuation) {
-      alert('Missing information to finalize the case.');
+    // Log for at fejlfinde, hvad der mangler
+    console.log('Finalizing case...');
+    console.log('currentUser:', currentUser);
+    console.log('propertyData:', propertyData);
+    console.log('salePreferences:', salePreferences);
+    console.log('currentValuation:', currentValuation);
+
+    let missingInfo = [];
+    if (!currentUser) missingInfo.push('Brugeroplysninger');
+    if (!propertyData) missingInfo.push('Boligdata');
+    if (!salePreferences) missingInfo.push('Salgsoensker');
+    if (currentValuation === null) missingInfo.push('Boligvurdering'); // Tjek for null
+
+    if (missingInfo.length > 0) {
+      toast({
+        title: 'Fejl: Manglende information',
+        description: `Du skal udfylde følgende for at oprette sagen: ${missingInfo.join(', ')}.`,
+        variant: 'destructive',
+        duration: 5000,
+      });
       return;
     }
 
@@ -63,29 +99,29 @@ const PriceInfo: React.FC = () => {
       currency: 'DKK',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(currentValuation);
+    }).format(currentValuation!); // Brug ! for at indikere, at den ikke er null her
 
     const newCase = {
       id: Date.now().toString(),
       sagsnummer: sagsnummer,
-      sellerId: currentUser.id,
-      address: propertyData.address || 'Ikke angivet',
-      postnummer: propertyData.postalCode || 'Ikke angivet',
-      municipality: propertyData.city || 'Ikke angivet',
-      type: propertyData.propertyType || 'Ikke angivet',
-      size: parseInt(propertyData.size) || 0,
-      buildYear: parseInt(propertyData.buildYear) || new Date().getFullYear(),
-      rooms: propertyData.rooms || 'Ikke angivet',
+      sellerId: currentUser!.id, // Brug ! for at indikere, at den ikke er null her
+      address: propertyData!.address || 'Ikke angivet',
+      postnummer: propertyData!.postalCode || 'Ikke angivet',
+      municipality: propertyData!.city || 'Ikke angivet',
+      type: propertyData!.propertyType || 'Ikke angivet',
+      size: parseInt(propertyData!.size) || 0,
+      buildYear: parseInt(propertyData!.buildYear) || new Date().getFullYear(),
+      rooms: propertyData!.rooms || 'Ikke angivet',
 
       expectedPrice: formattedPrice,
-      expectedPriceValue: currentValuation,
-      flexiblePrice: salePreferences?.flexiblePrice || false,
-      timeframe: salePreferences?.timeframe || undefined,
-      timeframeType: salePreferences?.timeframeType || undefined,
-      priorities: salePreferences?.priorities || { speed: false, price: false, service: false },
-      marketingBudget: salePreferences?.marketingBudget || 0,
-      freeIfNotSold: salePreferences?.freeIfNotSold || false,
-      specialRequests: salePreferences?.specialRequests || undefined,
+      expectedPriceValue: currentValuation!,
+      flexiblePrice: salePreferences!.flexiblePrice || false,
+      timeframe: salePreferences!.timeframe || undefined,
+      timeframeType: salePreferences!.timeframeType || undefined,
+      priorities: salePreferences!.priorities || { speed: false, price: false, service: false },
+      marketingBudget: salePreferences!.marketingBudget || 0,
+      freeIfNotSold: salePreferences!.freeIfNotSold || false,
+      specialRequests: salePreferences!.specialRequests || undefined,
 
       status: 'active' as const,
       createdAt: new Date().toISOString(),
@@ -172,7 +208,7 @@ const PriceInfo: React.FC = () => {
             </div>
 
             <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={() => navigate('/saelger/salgsoensker')}>
+              <Button variant="outline" onClick={() => navigate('/saelger/salgsønsker')}>
                 Tilbage
               </Button>
               <Button onClick={handleFinalizeCase}>
