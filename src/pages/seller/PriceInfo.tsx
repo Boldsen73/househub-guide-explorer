@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -85,7 +84,8 @@ const PriceInfo = () => {
         marketingBudget: salePreferences?.marketingBudget || 0,
         freeIfNotSold: salePreferences?.freeIfNotSold || false,
         description: propertyData?.notes || '',
-        buildYear: propertyData?.buildYear || 0
+        buildYear: propertyData?.buildYear || 0,
+        energyLabel: propertyData?.energyLabel || '', // Tilføjet/rettet for at løse TypeScript-fejlen
       };
 
       console.log('Creating case:', newCase);
@@ -214,11 +214,15 @@ const PriceInfo = () => {
               )}
               
               <div className="flex gap-4 pt-8">
-                <Link to={ROUTES.SELLER_WISHES} className="flex-1">
-                  <Button type="button" variant="outline" className="w-full">
-                    Tilbage
-                  </Button>
-                </Link>
+                {/* Rettet til at bruge ROUTES.SELLER_WISHES for konsistens */}
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full flex-1" 
+                  onClick={() => navigate(ROUTES.SELLER_WISHES)}
+                >
+                  Tilbage
+                </Button>
                 <Button 
                   className="w-full flex-1" 
                   onClick={handleCreateCase}
