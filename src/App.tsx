@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -98,7 +97,7 @@ const App = () => (
           <Route path="/saelger/boligdata" element={<PropertyData />} />
           <Route path="/saelger/boligdata-ny" element={<PropertyData />} />
           <Route path="/saelger/boligdata-udvidet" element={<PropertyDataExtended />} />
-          <Route path="/saelger/salgsønsker" element={<SalePreferences />} />
+          <Route path="/saelger/salgsoensker" element={<SalePreferences />} /> {/* OPDATERET: salgsoensker uden 'ø' */}
           <Route path="/saelger/prisinfo" element={<PriceInfo />} />
           <Route path="/saelger/prisoplysninger" element={<PriceInfo />} />
           <Route path="/saelger/min-sag" element={<SellerMyCase />} />
