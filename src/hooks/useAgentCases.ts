@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { CaseStatus, AgentOffer } from '@/types/agent';
 import { Case } from '@/types/case';
@@ -86,7 +87,6 @@ export const useAgentCases = () => {
               sellerEmail: sellerInfo.email,
               sellerPhone: sellerInfo.phone,
               rooms: caseData.rooms || "Ikke angivet",
-              description: caseData.description || `${caseData.type || 'Bolig'} i ${caseData.municipality || 'Danmark'}`,
               energyLabel: caseData.energyLabel || "C",
               agentStatus: 'active' as CaseStatus,
               deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -152,7 +152,6 @@ export const useAgentCases = () => {
                     sellerEmail: sellerInfo.email,
                     sellerPhone: sellerInfo.phone,
                     rooms: caseData.rooms || "Ikke angivet",
-                    description: caseData.description || `${caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
                     energyLabel: caseData.energyLabel || "C",
                     agentStatus: 'active' as CaseStatus,
                     deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -188,7 +187,6 @@ export const useAgentCases = () => {
           sellerEmail: "test@example.com",
           sellerPhone: "12345678",
           rooms: "3 værelses",
-          description: "Dejlig lejlighed i København V",
           energyLabel: "C",
           agentStatus: 'active' as CaseStatus,
           deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()

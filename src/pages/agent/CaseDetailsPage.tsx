@@ -114,6 +114,9 @@ const CaseDetailsPage = () => {
     setIsRegistered(true);
   };
 
+  // Generate fallback description based on case data
+  const fallbackDescription = `${caseItem.type} i ${caseItem.municipality}. Boligen er ${caseItem.size} stor og har ${caseItem.rooms} værelser.`;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <HeaderNavigation />
@@ -184,7 +187,7 @@ const CaseDetailsPage = () => {
         {/* Property Description with Enhanced Seller's Data */}
         <CasePropertyDescription
           detailedCaseData={detailedCaseData}
-          fallbackDescription={caseItem.description}
+          fallbackDescription={fallbackDescription}
         />
 
         {/* Action Buttons */}

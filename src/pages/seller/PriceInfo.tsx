@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -73,7 +74,7 @@ const PriceInfo = () => {
         rooms: propertyData?.rooms || 0,
         price: salePreferences?.expectedPrice ? `${(salePreferences.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : 'Ikke angivet',
         priceValue: salePreferences?.expectedPrice?.[0] || 0,
-        status: 'active',
+        status: 'active' as const,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         timeframe: salePreferences?.timeframe || 6,

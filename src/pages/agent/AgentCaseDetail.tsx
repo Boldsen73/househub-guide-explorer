@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, MapPin, Home, DollarSign, Calendar } from 'lucide-react';
 import AdminReturnBanner from '@/components/admin/AdminReturnBanner';
 import { useAgentCases } from '@/hooks/useAgentCases';
-import CaseActions from '@/components/agent/caseDetails/CaseActions'; // ✅ Husk at importere
+import CaseActions from '@/components/agent/caseDetails/CaseActions';
 
 const AgentCaseDetail = () => {
   const { id } = useParams();
@@ -108,13 +109,12 @@ const AgentCaseDetail = () => {
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-600 mb-2">Beskrivelse</p>
-                  <p className="text-gray-800">{caseData.description}</p>
+                  <p className="text-sm text-gray-600 mb-2">Om boligen</p>
+                  <p className="text-gray-800">{caseData.type} i {caseData.municipality}</p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* ✅ Fix: Brug CaseActions med caseId som string */}
             <Card>
               <CardHeader>
                 <CardTitle>Handlinger</CardTitle>
@@ -122,7 +122,7 @@ const AgentCaseDetail = () => {
               <CardContent>
                 <CaseActions 
                   agentStatus="active"
-                  caseId={String(caseData.id)} // ✅ fixet her
+                  caseId={String(caseData.id)}
                 />
               </CardContent>
             </Card>
