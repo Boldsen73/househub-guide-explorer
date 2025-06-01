@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -10,9 +9,10 @@ import { useSellerCase } from '@/hooks/useSellerCase';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import ShowingBooking from '@/components/seller/ShowingBooking';
+import { ROUTES } from '@/constants/routes';
 
 const SellerMyCase = () => {
-  const { sellerCase, isLoading, scheduleShowing, markShowingCompleted } = useSellerCase();
+  const { sellerCase, isLoading, scheduleShowing, markShowingCompleted, refreshCase } = useSellerCase();
   const { toast } = useToast();
   const [showingBooked, setShowingBooked] = useState(false);
   const [showingCompleted, setShowingCompleted] = useState(false);
@@ -31,7 +31,23 @@ const SellerMyCase = () => {
         }
       }
     }
-  }, []);
+
+    // Listen for case events to refresh when new cases are created
+    const handleCaseEvent = () => {
+      console.log('Case event detected, refreshing case data');
+      refreshCase();
+    };
+
+    window.addEventListener('caseCreated', handleCaseEvent);
+    window.addEventListener('caseUpdated', handleCaseEvent);
+    window.addEventListener('casesChanged', handleCaseEvent);
+
+    return () => {
+      window.removeEventListener('caseCreated', handleCaseEvent);
+      window.removeEventListener('caseUpdated', handleCaseEvent);
+      window.removeEventListener('casesChanged', handleCaseEvent);
+    };
+  }, [refreshCase]);
 
   if (isLoading) {
     return (
@@ -259,14 +275,14 @@ const SellerMyCase = () => {
           {/* Navigation Links */}
           <div className="flex gap-4 justify-center">
             {(showingCompleted || sellerCase.offers.length > 0) && (
-              <Link to="/saelger/tilbud">
+              <Link to={ROUTES.SELLER_OFFERS}>
                 <Button variant="outline">Se tilbud</Button>
               </Link>
             )}
-            <Link to="/saelger/beskeder">
+            <Link to={ROUTES.SELLER_MESSAGES}>
               <Button variant="outline">Beskeder</Button>
             </Link>
-            <Link to="/saelger/dashboard">
+            <Link to={ROUTES.SELLER_DASHBOARD}>
               <Button variant="outline">Tilbage til dashboard</Button>
             </Link>
           </div>

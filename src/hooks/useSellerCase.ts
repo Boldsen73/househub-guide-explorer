@@ -1,6 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { getTestCases } from '@/utils/testData';
+import { getCasesForUser } from '@/utils/caseManagement';
 
 export interface SellerCase {
   id: string;
@@ -40,21 +40,40 @@ export const useSellerCase = () => {
 
   const loadSellerCase = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const cases = getTestCases();
-    const userCase = cases.find(c => c.sellerId === currentUser.id);
+    
+    if (!currentUser.id) {
+      setSellerCase(null);
+      setIsLoading(false);
+      return;
+    }
+
+    console.log('Loading seller case for user:', currentUser.id);
+
+    // First check real cases from localStorage/caseManagement
+    const realCases = getCasesForUser(currentUser.id);
+    console.log('Real cases found:', realCases);
+    
+    // Then check test cases as fallback
+    const testCases = getTestCases();
+    const testUserCase = testCases.find(c => c.sellerId === currentUser.id);
+    
+    // Use real case if available, otherwise use test case
+    const userCase = realCases.length > 0 ? realCases[0] : testUserCase;
     
     if (userCase) {
+      console.log('Found user case:', userCase);
+      
       // Get agent registrations - ensure they're specific to this case
       const registrations = JSON.parse(localStorage.getItem(`showing_registrations_${userCase.id}`) || '[]');
       
       // Get offers - ensure they're specific to this case
       const offers = JSON.parse(localStorage.getItem(`case_offers_${userCase.id}`) || '[]');
       
-      // Get showing data - ensure it's specific to this case, not inherited from other cases
+      // Get showing data - ensure it's specific to this case
       const showingData = JSON.parse(localStorage.getItem(`showing_data_${userCase.id}`) || '{}');
       
       setSellerCase({
-        id: userCase.id,
+        id: userCase.id.toString(),
         address: userCase.address,
         status: determineStatus(showingData, registrations, offers),
         showingDate: showingData.date,
@@ -63,37 +82,8 @@ export const useSellerCase = () => {
         offers: offers
       });
     } else {
-      // Check if we have a newly created case in localStorage that doesn't exist in test data yet
-      const userCreatedCases = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('seller_case_') && currentUser.id) {
-          try {
-            const caseData = JSON.parse(localStorage.getItem(key) || '{}');
-            if (caseData && caseData.address && caseData.sellerId === currentUser.id) {
-              const caseId = key.replace('seller_case_', '');
-              
-              // For new cases, start fresh without inherited showing data
-              const newCaseRegistrations = JSON.parse(localStorage.getItem(`showing_registrations_${caseId}`) || '[]');
-              const newCaseOffers = JSON.parse(localStorage.getItem(`case_offers_${caseId}`) || '[]');
-              const newCaseShowingData = JSON.parse(localStorage.getItem(`showing_data_${caseId}`) || '{}');
-              
-              setSellerCase({
-                id: caseId,
-                address: caseData.address,
-                status: determineStatus(newCaseShowingData, newCaseRegistrations, newCaseOffers),
-                showingDate: newCaseShowingData.date,
-                showingTime: newCaseShowingData.time,
-                agentRegistrations: newCaseRegistrations,
-                offers: newCaseOffers
-              });
-              break; // Only take the first matching case
-            }
-          } catch {
-            // ignore error
-          }
-        }
-      }
+      console.log('No case found for user');
+      setSellerCase(null);
     }
     
     setIsLoading(false);
