@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCachedSellerAddress, getCases } from '@/utils/userData';
+import { ROUTES } from '@/constants/routes';
 
 interface SellerCase {
   id: string;
@@ -64,10 +65,10 @@ export const useSellerAuth = () => {
 
   const redirectBasedOnStatus = () => {
     if (hasActiveCase) {
-      navigate('/saelger/min-sag');
+      navigate(ROUTES.SELLER_MY_CASE);
     } else {
-      // Fixed routing to use correct case creation flow
-      navigate('/saelger/boligdata-ny');
+      // Updated to use correct English route
+      navigate(ROUTES.SELLER_PROPERTY_DATA_NEW);
     }
   };
 

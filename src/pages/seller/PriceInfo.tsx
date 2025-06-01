@@ -1,252 +1,177 @@
-
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { saveTestCase, generateSagsnummer } from '@/utils/testData';
-import ProgressSteps from '@/components/seller/ProgressSteps';
-import Footer from '@/components/Footer';
-import Navigation from '@/components/Navigation';
+import Navigation from '../../components/Navigation';
+import Footer from '../../components/Footer';
+import ProgressIndicator from '../../components/ProgressIndicator';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Home, TrendingUp, Info, FileText } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { ROUTES } from '@/constants/routes';
 
-const PriceInfo: React.FC = () => {
-  const navigate = useNavigate();
-  const { user: currentUser } = useAuth();
+const PriceInfo = () => {
   const { toast } = useToast();
-
-  const [propertyData, setPropertyData] = useState<any>(null);
-  const [salePreferences, setSalePreferences] = useState<any>(null);
-  const [publicValuation, setPublicValuation] = useState<number | null>(null);
-
-  const [currentValuation, setCurrentValuation] = useState<number | null>(null);
-  const [valuationLoading, setValuationLoading] = useState<boolean>(false);
-  const [valuationError, setValuationError] = useState<string | null>(null);
-
-  // NY STATE: Til at holde den forventede pris fra SalePreferences
-  const [expectedSalePriceFromPreferences, setExpectedSalePriceFromPreferences] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const [propertyData, setPropertyData] = useState(null);
+  const [salePreferences, setSalePreferences] = useState(null);
+  const [publicValuation, setPublicValuation] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingCase, setIsCreatingCase] = useState(false);
 
   useEffect(() => {
     const storedPropertyData = localStorage.getItem('propertyData');
-    const storedSalePreferences = localStorage.getItem('salePreferences');
+    const storedSalePreferences = localStorage.getItem('salePreferencesForm');
 
-    console.log('PriceInfo - Initializing useEffect');
-    console.log('Stored propertyData:', storedPropertyData);
-    console.log('Stored salePreferences:', storedSalePreferences);
-
-    let parsedPropertyData = null; 
-    if (storedPropertyData) {
-      parsedPropertyData = JSON.parse(storedPropertyData);
-      setPropertyData(parsedPropertyData);
-      console.log('Parsed propertyData:', parsedPropertyData);
-    } else {
-      console.warn('PropertyData not found in localStorage.');
+    if (storedPropertyData && storedSalePreferences) {
+      setPropertyData(JSON.parse(storedPropertyData));
+      setSalePreferences(JSON.parse(storedSalePreferences));
     }
 
-    if (storedSalePreferences) {
-      const parsedSalePreferences = JSON.parse(storedSalePreferences);
-      setSalePreferences(parsedSalePreferences);
-      console.log('Parsed salePreferences:', parsedSalePreferences);
-
-      // Sæt den forventede salgspris fra SalePreferences
-      // Antager at 'expectedPrice' er en nøgle i salePreferences objektet.
-      // Hvis din SalePreferences side har et felt til "forventet pris",
-      // skal navnet på det felt her matche navnet på den nøgle, du gemmer i localStorage.
-      if (parsedSalePreferences.expectedPrice) { 
-        setExpectedSalePriceFromPreferences(parseFloat(parsedSalePreferences.expectedPrice)); // Parse som float/number
-      }
-    } else {
-      console.warn('SalePreferences not found in localStorage.');
-    }
-
-    // Simulering af offentlig vurdering kører kun én gang
-    setValuationLoading(true);
+    // Simulerer hentning af offentlig vurdering
     setTimeout(() => {
-      // Brug den lokale parsedPropertyData, som er tilgængelig her
-      const baseValuation = parsedPropertyData && parsedPropertyData.size ? parseInt(parsedPropertyData.size) * 20000 : 2000000; 
-      const simulatedValuation = Math.floor(baseValuation + (Math.random() * baseValuation * 0.5 - baseValuation * 0.25));
-      setPublicValuation(simulatedValuation);
-      setCurrentValuation(simulatedValuation); // Denne bruges til den offentlige/simulerede vurdering
-      setValuationLoading(false);
-    }, 1500);
-  }, []); // <-- TOMT AFHÆNGIGHEDSARRAY: Kører kun én gang ved mount
+      setPublicValuation(Math.floor(Math.random() * (6000000 - 2000000 + 1)) + 2000000);
+      setIsLoading(false);
+    }, 1000);
+  }, []);
 
-  const handlePriceChange = (value: number[]) => {
-    setCurrentValuation(value[0]);
+  const formatPrice = (price: number) => {
+    return price.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' });
   };
 
-  const handleFinalizeCase = () => {
-    console.log('Finalizing case...');
-    console.log('currentUser:', currentUser);
-    console.log('propertyData:', propertyData);
-    console.log('salePreferences:', salePreferences);
-    console.log('currentValuation (public/simulated):', currentValuation);
-    console.log('expectedSalePriceFromPreferences (from SalePreferences):', expectedSalePriceFromPreferences);
+  const handleCreateCase = async () => {
+    setIsCreatingCase(true);
+    try {
+      // Simulerer oprettelse af sag
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-    let missingInfo = [];
-    if (!currentUser || !currentUser.id) missingInfo.push('Brugeroplysninger (log venligst ind)');
-    if (!propertyData) missingInfo.push('Boligdata');
-    if (!salePreferences) missingInfo.push('Salgsoensker');
-    if (currentValuation === null) missingInfo.push('Boligvurdering');
-    // Overvej om expectedSalePriceFromPreferences skal være obligatorisk for at finalisere sagen
-    // if (expectedSalePriceFromPreferences === null) missingInfo.push('Forventet salgspris');
+      localStorage.setItem('seller_has_active_case', 'true');
 
-
-    if (missingInfo.length > 0) {
       toast({
-        title: 'Fejl: Manglende information',
-        description: `Du skal udfylde følgende for at oprette sagen: ${missingInfo.join(', ')}.`,
-        variant: 'destructive',
-        duration: 5000,
+        title: 'Sag oprettet!',
+        description: 'Din sag er nu oprettet og mæglere kan byde på den.',
       });
-      return;
+
+      navigate(ROUTES.SELLER_MY_CASE);
+    } catch (error) {
+      toast({
+        title: 'Fejl',
+        description: 'Der opstod en fejl ved oprettelse af sagen.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsCreatingCase(false);
     }
-
-    const sagsnummer = generateSagsnummer();
-    const formattedPublicValuation = new Intl.NumberFormat('da-DK', {
-      style: 'currency',
-      currency: 'DKK',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(currentValuation!);
-
-    // Opret newCase med både forventet pris (fra SalePreferences) og offentlig vurdering
-    const newCase = {
-      id: Date.now().toString(),
-      sagsnummer: sagsnummer,
-      sellerId: currentUser!.id,
-      address: propertyData!.address || 'Ikke angivet',
-      postnummer: propertyData!.postalCode || 'Ikke angivet',
-      municipality: propertyData!.city || 'Ikke angivet',
-      type: propertyData!.propertyType || 'Ikke angivet',
-      size: parseInt(propertyData!.size) || 0,
-      buildYear: parseInt(propertyData!.buildYear) || new Date().getFullYear(),
-      rooms: propertyData!.rooms || 'Ikke angivet',
-
-      // Den pris sælgeren HAR ANGIVET i SalePreferences
-      expectedPrice: expectedSalePriceFromPreferences ? new Intl.NumberFormat('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(expectedSalePriceFromPreferences) : 'Ikke angivet',
-      expectedPriceValue: expectedSalePriceFromPreferences || 0, // Gemmer rå værdi
-
-      // Den offentlige/simulerede vurdering
-      publicValuation: formattedPublicValuation,
-      publicValuationValue: currentValuation!,
-
-      // Add required properties for TestCase compatibility
-      price: formattedPublicValuation, // Use public valuation as price
-      priceValue: currentValuation!, // Use current valuation as priceValue
-
-      flexiblePrice: salePreferences!.flexiblePrice || false,
-      timeframe: salePreferences!.timeframe || undefined,
-      timeframeType: salePreferences!.timeframeType || undefined,
-      priorities: salePreferences!.priorities || { speed: false, price: false, service: false },
-      marketingBudget: salePreferences!.marketingBudget || 0,
-      freeIfNotSold: salePreferences!.freeIfNotSold || false,
-      specialRequests: salePreferences!.specialRequests || undefined,
-
-      status: 'active' as const,
-      createdAt: new Date().toISOString(),
-      offers: [],
-      showingRegistrations: [],
-      messages: [],
-    };
-
-    saveTestCase(newCase);
-    localStorage.removeItem('propertyData');
-    localStorage.removeItem('salePreferences');
-
-    navigate('/seller/dashboard');
   };
 
-  const propertyDetails = propertyData
-    ? `${propertyData.address || ''} • ${propertyData.size || ''} m² ${propertyData.propertyType || ''} • Bygget ${propertyData.buildYear || ''}`
-    : 'Indlæser boligdetaljer...';
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div>Indlæser prisoplysninger...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
-      <div className="container mx-auto px-4 py-8 flex-grow">
-        <ProgressSteps
-          currentStep="data_entered"
-          agentsContacted={0}
-          agentsResponded={0}
-          agentsRejected={0}
-          agentsPending={0}
-        /> 
-        <Card className="max-w-3xl mx-auto mt-8">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-900">Prisoplysninger</CardTitle>
-            <CardDescription className="text-gray-600">
-              Her er de aktuelle markedsoplysninger for din bolig
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-md">
-              <p className="font-semibold text-blue-800">
-                {propertyDetails}
+      
+      <div className="container mx-auto px-6 py-20">
+        <div className="max-w-2xl mx-auto">
+          <ProgressIndicator currentStep={3} totalSteps={3} />
+          
+          <Card className="shadow-xl border-0">
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl">Prisoplysninger</CardTitle>
+              <p className="text-gray-600 text-lg">
+                Her er de aktuelle markedsoplysninger for din bolig
               </p>
-              {/* Viser den forventede salgspris fra SalePreferences, hvis den findes */}
-              {expectedSalePriceFromPreferences !== null && (
-                <p className="mt-2 text-blue-700">
-                  Forventet salgspris: <span className="font-bold">{new Intl.NumberFormat('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(expectedSalePriceFromPreferences)}</span>
-                </p>
-              )}
-            </div>
+            </CardHeader>
+            <CardContent className="p-8">
+              
+              {propertyData && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
+                    <Home className="h-6 w-6 text-blue-600" />
+                    <div>
+                      <h3 className="font-semibold">{propertyData.address}</h3>
+                      <p className="text-sm text-gray-600">
+                        {propertyData.size} m² • {propertyData.propertyType} • Bygget {propertyData.buildYear}
+                      </p>
+                      {salePreferences && salePreferences.expectedPrice && salePreferences.expectedPrice.length > 0 && (
+                        <p className="text-sm text-gray-600">
+                          Forventet pris: {(salePreferences.expectedPrice[0] / 1000000).toFixed(1)} mio. kr
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg text-gray-800">Offentlig vurdering</h3>
-              {valuationLoading ? (
-                <p className="text-gray-500">Indlæser offentlig vurdering...</p>
-              ) : valuationError ? (
-                <p className="text-red-500">Fejl ved indlæsning: {valuationError}</p>
-              ) : publicValuation !== null ? (
-                <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-md flex justify-between items-center">
-                  <div>
-                    <p className="text-2xl font-bold text-green-800">
-                      {new Intl.NumberFormat('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(publicValuation)}
-                    </p>
-                    <p className="text-sm text-green-700 mt-1">Seneste offentlige vurdering</p>
+                  {publicValuation && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-green-600" />
+                        <h3 className="text-lg font-semibold">Offentlig vurdering</h3>
+                      </div>
+                      
+                      <div className="bg-green-50 p-6 rounded-lg border border-green-200">
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-green-700">
+                            {formatPrice(publicValuation)}
+                          </p>
+                          <p className="text-sm text-gray-600 mt-2">
+                            Seneste offentlige vurdering
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <div className="flex items-start gap-2">
+                      <Info className="h-5 w-5 text-yellow-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-yellow-800">Bemærk</h4>
+                        <p className="text-sm text-yellow-700">
+                          Den offentlige vurdering kan afvige fra markedsprisen. 
+                          Mæglerne vil give dig deres professionelle vurdering baseret på aktuelle markedsforhold.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-start gap-2">
+                      <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-blue-800">Dokumenter</h4>
+                        <p className="text-sm text-blue-700">
+                          HouseHub henter automatisk relevante dokumenter for din bolig, 
+                          så mæglerne får alle nødvendige oplysninger til at give dig det bedste tilbud.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <p className="text-gray-500">Ingen offentlig vurdering fundet.</p>
               )}
-            </div>
-
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md text-sm text-yellow-800">
-              <p className="font-medium">Bemærk</p>
-              <p className="mt-1">
-                Den offentlige vurdering kan afvige fra markedsprisen. Mæglerne vil give dig deres professionelle vurdering baseret på aktuelle markedsforhold.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg text-gray-800">Dokumenter</h3>
-              <div className="bg-gray-100 p-4 rounded-md text-sm text-gray-700">
-                <p>
-                  HouseHub henter automatisk relevante dokumenter for din bolig, så mæglerne får alle nødvendige oplysninger til at give dig det bedste tilbud.
-                </p>
+              
+              <div className="flex gap-4 pt-8">
+                <Link to={ROUTES.SELLER_WISHES} className="flex-1">
+                  <Button type="button" variant="outline" className="w-full">
+                    Tilbage
+                  </Button>
+                </Link>
+                <Button 
+                  className="w-full flex-1" 
+                  onClick={handleCreateCase}
+                  disabled={isCreatingCase || !propertyData}
+                >
+                  {isCreatingCase ? 'Opretter sag...' : 'Afslut og opret sag'}
+                </Button>
               </div>
-            </div>
-
-            <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={() => navigate('/seller/seller-wishes')}>
-                Tilbage
-              </Button>
-              <Button onClick={handleFinalizeCase}>
-                Afslut og opret sag
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
+      
       <Footer />
     </div>
   );
