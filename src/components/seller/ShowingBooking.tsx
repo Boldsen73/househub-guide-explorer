@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -13,14 +12,22 @@ import { useToast } from '@/hooks/use-toast';
 
 interface ShowingBookingProps {
   onShowingBooked: (showingData: any) => void;
+  initialDate?: Date; // New prop for initial date
+  initialTime?: string; // New prop for initial time
 }
 
-const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedTime, setSelectedTime] = useState<string>('');
+const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked, initialDate, initialTime }) => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(initialDate);
+  const [selectedTime, setSelectedTime] = useState<string>(initialTime || '');
   const [notes, setNotes] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  // Effect to update state if initialDate or initialTime props change
+  useEffect(() => {
+    setSelectedDate(initialDate);
+    setSelectedTime(initialTime || '');
+  }, [initialDate, initialTime]);
 
   // Time slots from 10:00 to 18:00 (full hours only)
   const timeSlots = [
@@ -30,10 +37,10 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
   const handleBookShowing = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     console.log('=== BOOK SHOWING DEBUG ===');
     console.log('handleBookShowing called', { selectedDate, selectedTime, isSubmitting });
-    
+
     if (!selectedDate || !selectedTime) {
       console.log('Missing date or time');
       toast({
@@ -51,7 +58,7 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
 
     console.log('Starting booking process...');
     setIsSubmitting(true);
-    
+
     try {
       const showingData = {
         date: selectedDate,
@@ -60,22 +67,22 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
         status: 'planlagt',
         bookedAt: new Date().toISOString()
       };
-      
+
       console.log('Booking showing with data:', showingData);
-      
+
       // Store the showing data in localStorage with multiple keys for robustness
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
       console.log('Current user for booking:', currentUser);
-      
+
       if (currentUser.id) {
         const storageKey = `showing_data_${currentUser.id}`;
         localStorage.setItem(storageKey, JSON.stringify(showingData));
         console.log('Stored showing data with key:', storageKey);
-        
+
         // Also store in a general showing key
         localStorage.setItem('current_showing_data', JSON.stringify(showingData));
         console.log('Stored in current_showing_data as backup');
-        
+
         // Store for agent visibility - sync to agent system with enhanced data
         const agentShowingData = {
           sellerId: currentUser.id,
@@ -87,11 +94,11 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
           status: 'showing_booked',
           bookedAt: new Date().toISOString()
         };
-        
+
         // Store in agent-accessible format
         localStorage.setItem(`agent_showing_${currentUser.id}`, JSON.stringify(agentShowingData));
         localStorage.setItem(`case_${currentUser.id}_showing`, JSON.stringify(agentShowingData));
-        
+
         // Update all cases for this seller with showing info and ensure complete data sync
         const existingCases = JSON.parse(localStorage.getItem('cases') || '[]');
         const updatedCases = existingCases.map((case_: any) => {
@@ -106,10 +113,10 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
           }
           return case_;
         });
-        
+
         localStorage.setItem('cases', JSON.stringify(updatedCases));
         console.log('Updated cases with showing data');
-        
+
         // Also update individual seller case data to include complete seller information
         const sellerCaseKey = `seller_case_${currentUser.id}`;
         const existingSellerCase = JSON.parse(localStorage.getItem(sellerCaseKey) || '{}');
@@ -126,35 +133,37 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
           sellerPhone: currentUser.phone || 'Ikke angivet'
         };
         localStorage.setItem(sellerCaseKey, JSON.stringify(enhancedSellerCase));
-        
+
         // Dispatch event to notify other components
-        window.dispatchEvent(new CustomEvent('showingBooked', { 
-          detail: { 
-            caseId: currentUser.id, 
-            showingData: agentShowingData 
-          } 
+        window.dispatchEvent(new CustomEvent('showingBooked', {
+          detail: {
+            caseId: currentUser.id,
+            showingData: agentShowingData
+          }
         }));
-        
+
       } else {
         console.error('No user ID found for storing showing data');
       }
-      
+
       // Call the callback function
       console.log('Calling onShowingBooked callback...');
       await onShowingBooked(showingData);
-      
+
       toast({
         title: "Fremvisning booket",
         description: `Fremvisning er planlagt til ${format(selectedDate, 'EEEE d. MMMM yyyy', { locale: da })} kl. ${selectedTime}`,
       });
-      
+
       console.log('Showing booked successfully');
-      
-      // Reset form
-      setSelectedDate(undefined);
-      setSelectedTime('');
-      setNotes('');
-      
+
+      // Reset form if it's a new booking, not just editing
+      if (!initialDate && !initialTime) {
+        setSelectedDate(undefined);
+        setSelectedTime('');
+        setNotes('');
+      }
+
     } catch (error) {
       console.error('Error booking showing:', error);
       toast({
@@ -171,22 +180,22 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
   const isDateDisabled = (date: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     // Minimum 7 days from today
     const minDate = new Date(today);
     minDate.setDate(minDate.getDate() + 7);
-    
+
     // Check if date is before minimum date
     if (date < minDate) {
       return true;
     }
-    
+
     // Check if date is weekend (Saturday = 6, Sunday = 0)
     const dayOfWeek = date.getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       return true;
     }
-    
+
     return false;
   };
 
@@ -210,7 +219,7 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked }) => {
             <div>
               <h4 className="font-medium text-blue-900 mb-1">Om fremvisningen</h4>
               <p className="text-sm text-blue-800">
-                Fremvisningen vil typisk tage ca. 2 timer, hvor mæglerne får mulighed for at se boligen og stille spørgsmål. 
+                Fremvisningen vil typisk tage ca. 2 timer, hvor mæglerne får mulighed for at se boligen og stille spørgsmål.
                 Du kan forvente at møde flere mæglere, der alle er interesserede i at hjælpe dig med salget.
               </p>
               <p className="text-sm text-blue-800 mt-2">
