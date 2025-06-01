@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { CaseStatus, AgentOffer } from '@/types/agent';
 import { Case } from '@/types/case';
@@ -80,13 +79,13 @@ export const useAgentCases = () => {
               size: caseData.size || 'Ikke angivet',
               price: caseData.price || 'Ikke angivet',
               priceValue: caseData.priceValue || 0,
-              constructionYear: caseData.constructionYear || new Date().getFullYear(),
+              constructionYear: caseData.constructionYear || caseData.buildYear || new Date().getFullYear(),
               status: caseData.status || 'waiting_for_offers',
               sellerId: caseData.sellerId,
               sellerName: sellerInfo.name,
               sellerEmail: sellerInfo.email,
               sellerPhone: sellerInfo.phone,
-              rooms: caseData.rooms || "Ikke angivet",
+              rooms: caseData.rooms?.toString() || "Ikke angivet",
               energyLabel: caseData.energyLabel || "C",
               agentStatus: 'active' as CaseStatus,
               deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -143,15 +142,15 @@ export const useAgentCases = () => {
                     municipality: caseData.municipality || caseData.city || 'Ikke angivet',
                     type: caseData.propertyType || caseData.type || 'Ikke angivet',
                     size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
-                    price: caseData.expectedPrice || caseData.estimatedPrice || 'Ikke angivet',
-                    priceValue: caseData.expectedPriceValue || parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
-                    constructionYear: caseData.buildYear || new Date().getFullYear(),
+                    price: caseData.expectedPrice || caseData.estimatedPrice || caseData.price || 'Ikke angivet',
+                    priceValue: caseData.expectedPriceValue || caseData.priceValue || parseInt(caseData.estimatedPrice?.replace(/[^\d]/g, '') || '0'),
+                    constructionYear: caseData.buildYear || caseData.constructionYear || new Date().getFullYear(),
                     status: 'waiting_for_offers' as const,
                     sellerId: caseData.sellerId,
                     sellerName: sellerInfo.name,
                     sellerEmail: sellerInfo.email,
                     sellerPhone: sellerInfo.phone,
-                    rooms: caseData.rooms || "Ikke angivet",
+                    rooms: caseData.rooms?.toString() || "Ikke angivet",
                     energyLabel: caseData.energyLabel || "C",
                     agentStatus: 'active' as CaseStatus,
                     deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()

@@ -39,6 +39,14 @@ const CaseHeader: React.FC<CaseHeaderProps> = ({
     return price.replace(/(\d)\.(\d{3})\.(\d{3})/, '$1.$2.$3');
   };
 
+  // Use detailed data when available, fallback to basic data
+  const displayType = detailedCaseData?.type || detailedCaseData?.propertyType || type;
+  const displaySize = detailedCaseData?.size || size;
+  const displayRooms = detailedCaseData?.rooms || rooms;
+  const displayBuildYear = detailedCaseData?.constructionYear || detailedCaseData?.buildYear || buildYear;
+  const displayMunicipality = detailedCaseData?.municipality || municipality;
+  const displayEnergyLabel = detailedCaseData?.energyLabel || energyLabel;
+
   return (
     <Card className="mb-6">
       <CardHeader>
@@ -65,27 +73,27 @@ const CaseHeader: React.FC<CaseHeaderProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <span className="text-sm text-gray-500">Type</span>
-            <p className="font-semibold">{detailedCaseData?.propertyType || type}</p>
+            <p className="font-semibold">{displayType}</p>
           </div>
           <div>
             <span className="text-sm text-gray-500">Størrelse</span>
-            <p className="font-semibold">{detailedCaseData?.size || size} m²</p>
+            <p className="font-semibold">{displaySize}{typeof displaySize === 'number' ? ' m²' : ''}</p>
           </div>
           <div>
             <span className="text-sm text-gray-500">Værelser</span>
-            <p className="font-semibold">{detailedCaseData?.rooms || rooms}</p>
+            <p className="font-semibold">{displayRooms}</p>
           </div>
           <div>
             <span className="text-sm text-gray-500">Byggeår</span>
-            <p className="font-semibold">{detailedCaseData?.buildYear || buildYear}</p>
+            <p className="font-semibold">{displayBuildYear}</p>
           </div>
         </div>
 
         <div className="mt-4 flex items-center gap-2">
           <MapPin className="h-4 w-4 text-gray-500" />
-          <span className="text-gray-600">{detailedCaseData?.municipality || municipality}</span>
+          <span className="text-gray-600">{displayMunicipality}</span>
           <Badge variant="outline" className="ml-2">
-            Energimærke {detailedCaseData?.energyLabel || energyLabel}
+            Energimærke {displayEnergyLabel}
           </Badge>
         </div>
       </CardContent>

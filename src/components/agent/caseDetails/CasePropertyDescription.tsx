@@ -32,23 +32,35 @@ const CasePropertyDescription: React.FC<CasePropertyDescriptionProps> = ({
           </div>
         )}
 
-        {detailedCaseData?.sellerPriorities && Array.isArray(detailedCaseData.sellerPriorities) && detailedCaseData.sellerPriorities.length > 0 && (
+        {detailedCaseData?.specialRequests && (
+          <div className="mb-4">
+            <h4 className="font-semibold mb-2 text-blue-800">Særlige ønsker fra sælger:</h4>
+            <p className="text-gray-700 leading-relaxed bg-yellow-50 p-4 rounded-lg border border-yellow-200">{detailedCaseData.specialRequests}</p>
+          </div>
+        )}
+
+        {detailedCaseData?.priorities && (
           <div className="mb-4">
             <h4 className="font-semibold mb-2 text-blue-800">Sælgers prioriteter:</h4>
             <div className="flex flex-wrap gap-2">
-              {detailedCaseData.sellerPriorities.map((priority, index) => (
-                <Badge key={index} variant="outline" className="bg-blue-50 text-blue-700">
-                  {priority}
-                </Badge>
-              ))}
+              {detailedCaseData.priorities.speed && <Badge variant="outline" className="bg-blue-50 text-blue-700">Hurtig salg</Badge>}
+              {detailedCaseData.priorities.price && <Badge variant="outline" className="bg-green-50 text-green-700">Højeste pris</Badge>}
+              {detailedCaseData.priorities.service && <Badge variant="outline" className="bg-purple-50 text-purple-700">Bedste service</Badge>}
             </div>
           </div>
         )}
 
-        {detailedCaseData?.sellerExpectedTimeframe && (
+        {detailedCaseData?.timeframe && (
           <div className="mb-4">
             <h4 className="font-semibold mb-2 text-blue-800">Forventet tidsramme for salg:</h4>
-            <p className="text-gray-700">{detailedCaseData.sellerExpectedTimeframe}</p>
+            <p className="text-gray-700">{detailedCaseData.timeframe} {detailedCaseData.timeframeType === 'months' ? 'måneder' : 'uger'}</p>
+          </div>
+        )}
+
+        {detailedCaseData?.flexiblePrice !== undefined && (
+          <div className="mb-4">
+            <h4 className="font-semibold mb-2 text-blue-800">Prisfleksibilitet:</h4>
+            <p className="text-gray-700">{detailedCaseData.flexiblePrice ? 'Sælger er åben for forhandling' : 'Fast pris ønskes'}</p>
           </div>
         )}
 

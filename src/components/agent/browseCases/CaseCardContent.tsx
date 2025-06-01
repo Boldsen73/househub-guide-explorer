@@ -16,6 +16,20 @@ const CaseCardContent: React.FC<CaseCardContentProps> = ({
   formatPrice,
   getViewingText
 }) => {
+  // Format size to ensure it shows correctly
+  const formatSize = (size: string | number) => {
+    if (typeof size === 'number') {
+      return `${size} m²`;
+    }
+    if (typeof size === 'string') {
+      if (size.includes('m²')) {
+        return size;
+      }
+      return `${size} m²`;
+    }
+    return size;
+  };
+
   return (
     <CardContent className="space-y-4">
       {/* Viewing Information */}
@@ -34,7 +48,7 @@ const CaseCardContent: React.FC<CaseCardContentProps> = ({
         </div>
         <div>
           <span className="text-sm text-gray-500">Størrelse:</span>
-          <p className="font-medium">{caseItem.size}</p>
+          <p className="font-medium">{formatSize(caseItem.size)}</p>
         </div>
         <div>
           <span className="text-sm text-gray-500">Pris:</span>
@@ -43,6 +57,18 @@ const CaseCardContent: React.FC<CaseCardContentProps> = ({
         <div>
           <span className="text-sm text-gray-500">Kommune:</span>
           <p className="font-medium">{caseItem.municipality}</p>
+        </div>
+      </div>
+
+      {/* Additional property details */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <span className="text-sm text-gray-500">Værelser:</span>
+          <p className="font-medium">{caseItem.rooms}</p>
+        </div>
+        <div>
+          <span className="text-sm text-gray-500">Byggeår:</span>
+          <p className="font-medium">{caseItem.constructionYear}</p>
         </div>
       </div>
 
