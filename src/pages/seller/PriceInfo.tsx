@@ -8,21 +8,21 @@ import { Home, TrendingUp, Info, FileText } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { ROUTES } from '@/constants/routes';
-import { saveCase } from '@/utils/caseManagement'; // Ensure this import is correct
-import { generateSagsnummer } from '@/utils/caseManagement'; // Ensure this import is correct
+import { saveCase } from '@/utils/caseManagement';
+import { generateSagsnummer } from '@/utils/caseManagement';
 
 const PriceInfo = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [propertyData, setPropertyData] = useState<any>(null); // Explicitly use 'any' or define a type for propertyData
-  const [salePreferences, setSalePreferences] = useState<any>(null); // Explicitly use 'any' or define a type for salePreferences
+  const [propertyData, setPropertyData] = useState<any>(null);
+  const [salePreferences, setSalePreferences] = useState<any>(null);
   const [publicValuation, setPublicValuation] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
 
   useEffect(() => {
     const storedPropertyData = localStorage.getItem('propertyData');
-    const storedSalePreferences = localStorage.getItem('salePreferencesForm'); // Ensure this key matches SellerWishes
+    const storedSalePreferences = localStorage.getItem('salePreferencesForm');
 
     if (storedPropertyData && storedSalePreferences) {
       setPropertyData(JSON.parse(storedPropertyData));
@@ -83,7 +83,6 @@ const PriceInfo = () => {
         flexiblePrice: salePreferences?.flexiblePrice || false,
         marketingBudget: salePreferences?.marketingBudget || 0,
         freeIfNotSold: salePreferences?.freeIfNotSold || false,
-        // description: propertyData?.notes || '', // DENNE LINJE ER FJERNET!
         buildYear: propertyData?.buildYear || 0,
         energyLabel: propertyData?.energyLabel || '',
       };
@@ -157,7 +156,7 @@ const PriceInfo = () => {
                       <p className="text-sm text-gray-600">
                         {propertyData.size} m² • {propertyData.propertyType} • Bygget {propertyData.buildYear}
                       </p>
-                      {propertyData.energyLabel && ( // Vis kun hvis energimærke er tilgængeligt
+                      {propertyData.energyLabel && (
                           <p className="text-sm text-gray-600">
                             Energimærke: {propertyData.energyLabel}
                           </p>
