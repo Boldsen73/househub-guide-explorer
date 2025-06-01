@@ -65,21 +65,21 @@ const PropertyData = () => {
           description: 'Adresse skal udfyldes.',
           variant: 'destructive'
         });
-        setIsSubmitting(false); // Sæt isSubmitting tilbage, hvis validering fejler
+        setIsSubmitting(false);
         return;
       }
 
       // NY VALIDERING: Byggeår
-      const currentYear = new Date().getFullYear(); // Får det aktuelle år (2025)
+      const currentYear = new Date().getFullYear(); // Får det aktuelle år
       const buildYear = parseInt(formData.byggeår);
 
-      if (isNaN(buildYear) || formData.byggeår.length !== 4 || buildYear <= 1500 || buildYear > currentYear) { // Antager ingen huse ældre end 1500
+      if (isNaN(buildYear) || formData.byggeår.length !== 4 || buildYear <= 1500 || buildYear > currentYear) {
         toast({
           title: 'Fejl',
           description: `Byggeår skal være et gyldigt 4-cifret årstal, ikke nyere end ${currentYear}.`,
           variant: 'destructive'
         });
-        setIsSubmitting(false); // Sæt isSubmitting tilbage, hvis validering fejler
+        setIsSubmitting(false);
         return;
       }
 
@@ -91,20 +91,20 @@ const PropertyData = () => {
         city: formData.city,
         propertyType: formData.boligtype,
         size: parseInt(formData.størrelse) || 0,
-        buildYear: buildYear, // Brug den parsede og validerede byggeår
+        buildYear: buildYear,
         rooms: parseInt(formData.rooms) || 0,
         // 'notes' er fjernet herfra
       };
 
-      localStorage.setItem('propertyData', JSON.stringify(propertyFormData)); // Gemmer som 'propertyData' for at matche PriceInfo.tsx
+      localStorage.setItem('propertyData', JSON.stringify(propertyFormData));
 
       toast({
         title: 'Succes',
         description: 'Boligdata er gemt.'
       });
 
-      // Naviger til næste trin
-      navigate('/saelger/salgsoensker');
+      // NAVIGER TIL NÆSTE TRIN (RETTET STI MED 'ø')
+      navigate('/saelger/salgsønsker'); // KORREKT STI
     } catch (error) {
       toast({
         title: 'Fejl',
