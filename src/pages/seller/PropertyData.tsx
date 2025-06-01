@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,10 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 import PropertyAddressSection from '../../components/seller/PropertyAddressSection';
-// FJERNEDE: import PropertyNotesSection from '../../components/seller/PropertyNotesSection'; // Fjerner denne import
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ROUTES } from '@/constants/routes';
 
 const PropertyData = () => {
   const { toast } = useToast();
@@ -103,8 +104,8 @@ const PropertyData = () => {
         description: 'Boligdata er gemt.'
       });
 
-      // NAVIGER TIL NÆSTE TRIN (RETTET STI UDEN 'ø')
-      navigate('/saelger/salgsoensker'); // KORREKT STI UDEN 'ø'
+      // NAVIGER TIL NÆSTE TRIN (KORREKT STI UDEN 'ø')
+      navigate(ROUTES.SELLER_WISHES);
     } catch (error) {
       toast({
         title: 'Fejl',
@@ -188,17 +189,11 @@ const PropertyData = () => {
             </div>
             {/* SLUT Boligdetaljer sektion */}
 
-            {/* FJERNEDE: Kommentarer sektion (PropertyNotesSection) - den skal kun være på næste side */}
-            {/* <PropertyNotesSection 
-              formData={formData} 
-              onInputChange={handleInputChange} 
-            /> */}
-
             {/* Gem knap */}
             <div className="flex justify-end space-x-4">
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/saelger/dashboard')}
+                onClick={() => navigate(ROUTES.SELLER_DASHBOARD)}
               >
                 Tilbage til dashboard
               </Button>

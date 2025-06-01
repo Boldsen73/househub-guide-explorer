@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authenticateUser, getCurrentUser, logoutUser } from '@/utils/authentication';
 import { initializeSystem } from '@/utils/systemInit';
+import { ROUTES } from '@/constants/routes';
 
 interface AuthUser {
   id: string;
@@ -58,19 +59,19 @@ export const useAuth = () => {
         setTimeout(() => {
           switch (authenticatedUser.role) {
             case 'admin':
-              navigate('/admin/dashboard');
+              navigate(ROUTES.ADMIN_DASHBOARD);
               break;
             case 'seller':
               // Check if seller has existing case, if so go to Min sag, otherwise dashboard
               const hasCase = localStorage.getItem('seller_has_active_case') === 'true';
-              navigate(hasCase ? '/saelger/min-sag' : '/saelger/dashboard');
+              navigate(hasCase ? ROUTES.SELLER_MY_CASE : ROUTES.SELLER_DASHBOARD);
               break;
             case 'agent':
               // Agents go to browse cases (Åbne sager)
-              navigate('/maegler/gennemse-sager');
+              navigate(ROUTES.AGENT_BROWSE_CASES);
               break;
             default:
-              navigate('/');
+              navigate(ROUTES.HOME);
           }
         }, 100);
         
@@ -99,7 +100,7 @@ export const useAuth = () => {
       }
     });
     
-    navigate('/');
+    navigate(ROUTES.HOME);
   };
 
   const isAdmin = () => user?.role === 'admin';

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -12,7 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Link } from 'react-router-dom';
 import { Clock, Target, Heart, Info, Gift } from 'lucide-react';
-const SalePreferences = () => {
+import { ROUTES } from '@/constants/routes';
+
+const SellerWishes = () => {
   const [formData, setFormData] = useState(() => {
     const savedData = localStorage.getItem('salePreferencesForm');
     if (savedData) {
@@ -227,12 +230,12 @@ const SalePreferences = () => {
                 </div>
                 
                 <div className="flex gap-4 pt-6">
-                  <Link to="/saelger/boligdata" className="flex-1">
+                  <Link to={ROUTES.SELLER_PROPERTY_DATA} className="flex-1">
                     <Button type="button" variant="outline" className="w-full">
                       Tilbage
                     </Button>
                   </Link>
-                  <Link to="/saelger/prisinfo" className="flex-1">
+                  <Link to={ROUTES.SELLER_PRICE_INFO} className="flex-1">
                     <Button className="w-full">
                       Næste
                     </Button>
@@ -247,4 +250,5 @@ const SalePreferences = () => {
       <Footer />
     </div>;
 };
-export default SalePreferences;
+
+export default SellerWishes;

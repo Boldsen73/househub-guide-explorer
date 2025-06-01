@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -138,6 +139,10 @@ const PriceInfo: React.FC = () => {
       publicValuation: formattedPublicValuation,
       publicValuationValue: currentValuation!,
 
+      // Add required properties for TestCase compatibility
+      price: formattedPublicValuation, // Use public valuation as price
+      priceValue: currentValuation!, // Use current valuation as priceValue
+
       flexiblePrice: salePreferences!.flexiblePrice || false,
       timeframe: salePreferences!.timeframe || undefined,
       timeframeType: salePreferences!.timeframeType || undefined,
@@ -157,7 +162,7 @@ const PriceInfo: React.FC = () => {
     localStorage.removeItem('propertyData');
     localStorage.removeItem('salePreferences');
 
-    navigate('/saelger/dashboard');
+    navigate('/seller/dashboard');
   };
 
   const propertyDetails = propertyData
@@ -232,7 +237,7 @@ const PriceInfo: React.FC = () => {
             </div>
 
             <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={() => navigate('/saelger/salgsoensker')}> {/* Rettet til salgsoensker uden 'ø' */}
+              <Button variant="outline" onClick={() => navigate('/seller/seller-wishes')}>
                 Tilbage
               </Button>
               <Button onClick={handleFinalizeCase}>

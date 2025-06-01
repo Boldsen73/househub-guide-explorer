@@ -4,16 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Home, LogOut, User } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getDisplayName } from '@/utils/userNameUtils';
+import { ROUTES } from '@/constants/routes';
 
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const navItems = [
-    { path: '/', label: 'Forside' },
-    { path: '/hvordan-virker-det', label: 'Sådan virker det' },
-    { path: '/om-os', label: 'Om HouseHub' },
-    { path: '/kontakt', label: 'Kontakt os' },
+    { path: ROUTES.HOME, label: 'Forside' },
+    { path: ROUTES.HOW_IT_WORKS, label: 'Sådan virker det' },
+    { path: ROUTES.ABOUT_US, label: 'Om HouseHub' },
+    { path: ROUTES.CONTACT, label: 'Kontakt os' },
   ];
 
   // Korrekt initialisering og tjek af bruger
@@ -25,7 +26,7 @@ const Navigation = () => {
   }
   const isLoggedIn = !!(currentUser && typeof currentUser === 'object' && currentUser.id);
 
-  const isSellerLoggedIn = isLoggedIn && (location.pathname.includes('/saelger/') || currentUser.role === 'seller');
+  const isSellerLoggedIn = isLoggedIn && (location.pathname.includes('/seller/') || currentUser.role === 'seller');
   const isAgentLoggedIn = isLoggedIn && (location.pathname.includes('/maegler/') || currentUser.role === 'agent');
 
   const handleLogout = () => {
@@ -43,13 +44,13 @@ const Navigation = () => {
     });
     
     console.log('Redirecting to home page...');
-    navigate('/');
+    navigate(ROUTES.HOME);
   };
 
   const getHomeLinkPath = () => {
-    if (isSellerLoggedIn) return '/saelger/dashboard';
-    if (isAgentLoggedIn) return '/maegler/dashboard';
-    return '/';
+    if (isSellerLoggedIn) return ROUTES.SELLER_DASHBOARD;
+    if (isAgentLoggedIn) return ROUTES.AGENT_DASHBOARD;
+    return ROUTES.HOME;
   };
 
   const getUserName = () => {
@@ -104,7 +105,7 @@ const Navigation = () => {
                 </Button>
               </div>
             ) : (
-              <Link to="/login">
+              <Link to={ROUTES.LOGIN}>
                 <Button variant="outline" size="sm" className="flex items-center font-sans">
                   Login
                 </Button>
@@ -124,7 +125,7 @@ const Navigation = () => {
                 </Button>
               </div>
             ) : (
-              <Link to="/login">
+              <Link to={ROUTES.LOGIN}>
                 <Button variant="ghost" size="icon">
                   <Home className="h-5 w-5" />
                   <span className="sr-only">Login</span>

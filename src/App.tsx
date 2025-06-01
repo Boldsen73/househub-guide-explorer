@@ -1,9 +1,11 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from './components/ScrollToTop';
+import { ROUTES } from './constants/routes';
 
 // Pages
 import Index from "./pages/Index";
@@ -23,7 +25,7 @@ import SellerLogin from "./pages/seller/SellerLogin";
 import SellerDashboard from "./pages/seller/SellerDashboard";
 import PropertyData from "./pages/seller/PropertyData";
 import PropertyDataExtended from "./pages/seller/PropertyDataExtended";
-import SalePreferences from "./pages/seller/SalePreferences";
+import SellerWishes from "./pages/seller/SellerWishes";
 import PriceInfo from "./pages/seller/PriceInfo";
 import SellerMyCase from "./pages/seller/SellerMyCase";
 import SellerOffers from "./pages/seller/SellerOffers";
@@ -79,73 +81,73 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           {/* General routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/landing" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/tak" element={<Thanks />} />
-          <Route path="/om" element={<About />} />
-          <Route path="/om-os" element={<AboutUs />} />
-          <Route path="/kontakt" element={<Contact />} />
-          <Route path="/hvordan-virker-det" element={<HowItWorks />} />
+          <Route path={ROUTES.HOME} element={<Index />} />
+          <Route path={ROUTES.LANDING} element={<LandingPage />} />
+          <Route path={ROUTES.LOGIN} element={<Login />} />
+          <Route path={ROUTES.THANKS} element={<Thanks />} />
+          <Route path={ROUTES.ABOUT} element={<About />} />
+          <Route path={ROUTES.ABOUT_US} element={<AboutUs />} />
+          <Route path={ROUTES.CONTACT} element={<Contact />} />
+          <Route path={ROUTES.HOW_IT_WORKS} element={<HowItWorks />} />
 
           {/* Seller routes */}
-          <Route path="/saelger" element={<SellerStart />} />
-          <Route path="/saelger/start" element={<SellerStart />} />
-          <Route path="/saelger/opret-bruger" element={<SellerSignup />} />
-          <Route path="/saelger/login" element={<SellerLogin />} />
-          <Route path="/saelger/dashboard" element={<SellerDashboard />} />
-          <Route path="/saelger/boligdata" element={<PropertyData />} />
-          <Route path="/saelger/boligdata-ny" element={<PropertyData />} />
-          <Route path="/saelger/boligdata-udvidet" element={<PropertyDataExtended />} />
-          <Route path="/saelger/salgsoensker" element={<SalePreferences />} /> {/* OPDATERET: salgsoensker uden 'ø' */}
-          <Route path="/saelger/prisinfo" element={<PriceInfo />} />
-          <Route path="/saelger/prisoplysninger" element={<PriceInfo />} />
-          <Route path="/saelger/min-sag" element={<SellerMyCase />} />
-          <Route path="/saelger/tilbud" element={<SellerOffers />} />
-          <Route path="/saelger/beskeder" element={<SellerMessages />} />
-          <Route path="/saelger/sælger-info" element={<SellerInfo />} />
-          <Route path="/saelger/vilkaar" element={<SellerTerms />} />
-          <Route path="/saelger/indstillinger" element={<SellerSettings />} />
-          <Route path="/saelger/betaling" element={<SellerPayment />} />
-          <Route path="/saelger/bekræftelse" element={<SellerConfirmation />} />
-          <Route path="/saelger/tak" element={<SellerThankYou />} />
-          <Route path="/saelger/tak-side" element={<SellerThankYouPage />} />
-          <Route path="/saelger/endelig-bekræftelse" element={<SellerFinalConfirmation />} />
-          <Route path="/saelger/sag-status" element={<SellerCaseStatus />} />
-          <Route path="/saelger/upload-dokumenter" element={<UploadDocuments />} />
-          <Route path="/saelger/venter-på-tilbud" element={<WaitingForOffers />} />
+          <Route path={ROUTES.SELLER_START} element={<SellerStart />} />
+          <Route path="/seller/start" element={<SellerStart />} />
+          <Route path={ROUTES.SELLER_SIGNUP} element={<SellerSignup />} />
+          <Route path={ROUTES.SELLER_LOGIN} element={<SellerLogin />} />
+          <Route path={ROUTES.SELLER_DASHBOARD} element={<SellerDashboard />} />
+          <Route path={ROUTES.SELLER_PROPERTY_DATA} element={<PropertyData />} />
+          <Route path={ROUTES.SELLER_PROPERTY_DATA_NEW} element={<PropertyData />} />
+          <Route path={ROUTES.SELLER_PROPERTY_DATA_EXTENDED} element={<PropertyDataExtended />} />
+          <Route path={ROUTES.SELLER_WISHES} element={<SellerWishes />} />
+          <Route path={ROUTES.SELLER_PRICE_INFO} element={<PriceInfo />} />
+          <Route path={ROUTES.SELLER_PRICE_DETAILS} element={<PriceInfo />} />
+          <Route path={ROUTES.SELLER_MY_CASE} element={<SellerMyCase />} />
+          <Route path={ROUTES.SELLER_OFFERS} element={<SellerOffers />} />
+          <Route path={ROUTES.SELLER_MESSAGES} element={<SellerMessages />} />
+          <Route path={ROUTES.SELLER_INFO} element={<SellerInfo />} />
+          <Route path={ROUTES.SELLER_TERMS} element={<SellerTerms />} />
+          <Route path={ROUTES.SELLER_SETTINGS} element={<SellerSettings />} />
+          <Route path={ROUTES.SELLER_PAYMENT} element={<SellerPayment />} />
+          <Route path={ROUTES.SELLER_CONFIRMATION} element={<SellerConfirmation />} />
+          <Route path={ROUTES.SELLER_THANK_YOU} element={<SellerThankYou />} />
+          <Route path={ROUTES.SELLER_THANK_YOU_PAGE} element={<SellerThankYouPage />} />
+          <Route path={ROUTES.SELLER_FINAL_CONFIRMATION} element={<SellerFinalConfirmation />} />
+          <Route path={ROUTES.SELLER_CASE_STATUS} element={<SellerCaseStatus />} />
+          <Route path={ROUTES.SELLER_UPLOAD_DOCUMENTS} element={<UploadDocuments />} />
+          <Route path={ROUTES.SELLER_WAITING_FOR_OFFERS} element={<WaitingForOffers />} />
 
           {/* Agent routes */}
-          <Route path="/maegler" element={<AgentStart />} />
+          <Route path={ROUTES.AGENT_START} element={<AgentStart />} />
           <Route path="/maegler/start" element={<AgentStart />} />
-          <Route path="/maegler/opret-bruger" element={<AgentSignup />} />
-          <Route path="/maegler/login" element={<AgentLogin />} />
-          <Route path="/maegler/dashboard" element={<AgentDashboard />} />
-          <Route path="/maegler/gennemse-sager" element={<AgentBrowseCases />} />
-          <Route path="/maegler/browse-cases" element={<BrowseCases />} />
-          <Route path="/maegler/case/:id" element={<CaseDetailsPage />} />
-          <Route path="/maegler/sag/:id" element={<AgentCaseDetail />} />
-          <Route path="/maegler/afgiv-tilbud/:id" element={<SubmitOffer />} />
-          <Route path="/maegler/tilbud/:id" element={<ViewOffer />} />
-          <Route path="/maegler/mine-tilbud" element={<AgentMyOffers />} />
-          <Route path="/maegler/beskeder" element={<AgentMessages />} />
-          <Route path="/maegler/profil" element={<AgentProfile />} />
-          <Route path="/maegler/indstillinger" element={<AgentSettings />} />
-          <Route path="/maegler/statistik" element={<AgentStatistics />} />
-          <Route path="/maegler/arkiv" element={<AgentArchive />} />
-          <Route path="/maegler/vilkaar" element={<AgentTerms />} />
-          <Route path="/maegler/bekræftelse" element={<AgentConfirmation />} />
+          <Route path={ROUTES.AGENT_SIGNUP} element={<AgentSignup />} />
+          <Route path={ROUTES.AGENT_LOGIN} element={<AgentLogin />} />
+          <Route path={ROUTES.AGENT_DASHBOARD} element={<AgentDashboard />} />
+          <Route path={ROUTES.AGENT_BROWSE_CASES} element={<AgentBrowseCases />} />
+          <Route path={ROUTES.AGENT_BROWSE_CASES_ALT} element={<BrowseCases />} />
+          <Route path={ROUTES.AGENT_CASE_DETAIL} element={<CaseDetailsPage />} />
+          <Route path={ROUTES.AGENT_CASE_DETAIL_ALT} element={<AgentCaseDetail />} />
+          <Route path={ROUTES.AGENT_SUBMIT_OFFER} element={<SubmitOffer />} />
+          <Route path={ROUTES.AGENT_VIEW_OFFER} element={<ViewOffer />} />
+          <Route path={ROUTES.AGENT_MY_OFFERS} element={<AgentMyOffers />} />
+          <Route path={ROUTES.AGENT_MESSAGES} element={<AgentMessages />} />
+          <Route path={ROUTES.AGENT_PROFILE} element={<AgentProfile />} />
+          <Route path={ROUTES.AGENT_SETTINGS} element={<AgentSettings />} />
+          <Route path={ROUTES.AGENT_STATISTICS} element={<AgentStatistics />} />
+          <Route path={ROUTES.AGENT_ARCHIVE} element={<AgentArchive />} />
+          <Route path={ROUTES.AGENT_TERMS} element={<AgentTerms />} />
+          <Route path={ROUTES.AGENT_CONFIRMATION} element={<AgentConfirmation />} />
 
           {/* Admin routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path={ROUTES.ADMIN_LOGIN} element={<AdminLogin />} />
+          <Route path={ROUTES.ADMIN_DASHBOARD} element={<AdminDashboard />} />
 
           {/* Legal routes */}
-          <Route path="/privatlivspolitik" element={<PrivatlivsPolitik />} />
-          <Route path="/vilkaar" element={<Vilkaar />} />
+          <Route path={ROUTES.PRIVACY_POLICY} element={<PrivatlivsPolitik />} />
+          <Route path={ROUTES.TERMS_AND_CONDITIONS} element={<Vilkaar />} />
 
           {/* 404 route */}
-          <Route path="*" element={<NotFound />} />
+          <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
