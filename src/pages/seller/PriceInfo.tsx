@@ -8,21 +8,21 @@ import { Home, TrendingUp, Info, FileText } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { ROUTES } from '@/constants/routes';
-import { saveCase } from '@/utils/caseManagement';
-import { generateSagsnummer } from '@/utils/caseManagement';
+import { saveCase } from '@/utils/caseManagement'; // Ensure this import is correct
+import { generateSagsnummer } from '@/utils/caseManagement'; // Ensure this import is correct
 
 const PriceInfo = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [propertyData, setPropertyData] = useState(null);
-  const [salePreferences, setSalePreferences] = useState(null);
-  const [publicValuation, setPublicValuation] = useState(null);
+  const [propertyData, setPropertyData] = useState<any>(null); // Explicitly use 'any' or define a type for propertyData
+  const [salePreferences, setSalePreferences] = useState<any>(null); // Explicitly use 'any' or define a type for salePreferences
+  const [publicValuation, setPublicValuation] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingCase, setIsCreatingCase] = useState(false);
 
   useEffect(() => {
     const storedPropertyData = localStorage.getItem('propertyData');
-    const storedSalePreferences = localStorage.getItem('salePreferencesForm');
+    const storedSalePreferences = localStorage.getItem('salePreferencesForm'); // Ensure this key matches SellerWishes
 
     if (storedPropertyData && storedSalePreferences) {
       setPropertyData(JSON.parse(storedPropertyData));
@@ -83,9 +83,9 @@ const PriceInfo = () => {
         flexiblePrice: salePreferences?.flexiblePrice || false,
         marketingBudget: salePreferences?.marketingBudget || 0,
         freeIfNotSold: salePreferences?.freeIfNotSold || false,
-        description: propertyData?.notes || '',
+        // description: propertyData?.notes || '', // DENNE LINJE ER FJERNET!
         buildYear: propertyData?.buildYear || 0,
-        energyLabel: propertyData?.energyLabel || '', // Tilføjet/rettet for at løse TypeScript-fejlen
+        energyLabel: propertyData?.energyLabel || '',
       };
 
       console.log('Creating case:', newCase);
@@ -157,6 +157,11 @@ const PriceInfo = () => {
                       <p className="text-sm text-gray-600">
                         {propertyData.size} m² • {propertyData.propertyType} • Bygget {propertyData.buildYear}
                       </p>
+                      {propertyData.energyLabel && ( // Vis kun hvis energimærke er tilgængeligt
+                          <p className="text-sm text-gray-600">
+                            Energimærke: {propertyData.energyLabel}
+                          </p>
+                      )}
                       {salePreferences && salePreferences.expectedPrice && salePreferences.expectedPrice.length > 0 && (
                         <p className="text-sm text-gray-600">
                           Forventet pris: {(salePreferences.expectedPrice[0] / 1000000).toFixed(1)} mio. kr
@@ -214,7 +219,6 @@ const PriceInfo = () => {
               )}
               
               <div className="flex gap-4 pt-8">
-                {/* Rettet til at bruge ROUTES.SELLER_WISHES for konsistens */}
                 <Button 
                   type="button" 
                   variant="outline" 
