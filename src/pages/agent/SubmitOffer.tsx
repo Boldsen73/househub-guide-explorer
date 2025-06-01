@@ -138,7 +138,7 @@ const SubmitOffer = () => {
                       <span className="font-medium">Værelser:</span> {caseData.rooms}
                     </div>
                     <div>
-                      <span className="font-medium">Byggeår:</span> {caseData.constructionYear}
+                      <span className="font-medium">Byggeår:</span> {caseData.buildYear}
                     </div>
                   </div>
                   

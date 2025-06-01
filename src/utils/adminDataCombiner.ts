@@ -10,7 +10,7 @@ export const combineAllCases = (userDataCases: Case[], sellerCases: Case[]): Cas
     sellerEmail: c.sellerEmail || 'Ikke angivet',
     sellerPhone: c.sellerPhone || 'Ikke angivet',
     postnummer: c.postnummer || '',
-    buildYear: c.buildYear || c.constructionYear || new Date().getFullYear()
+    buildYear: c.buildYear || new Date().getFullYear()
   }));
 
   // Convert seller cases to proper Case format
@@ -18,7 +18,7 @@ export const combineAllCases = (userDataCases: Case[], sellerCases: Case[]): Cas
     ...sc,
     id: typeof sc.id === 'string' ? sc.id : String(sc.id),
     postnummer: sc.postnummer || '',
-    buildYear: sc.buildYear || sc.constructionYear || new Date().getFullYear()
+    buildYear: sc.buildYear || new Date().getFullYear()
   }));
 
   const combinedCases: Case[] = [...processedUserDataCases, ...processedSellerCases];

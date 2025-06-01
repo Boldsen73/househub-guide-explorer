@@ -1,4 +1,3 @@
-
 import { getUsers, getCases, User, Case } from '@/utils/userData';
 
 interface ProcessedSellerCase {
@@ -47,7 +46,7 @@ export const loadCasesData = (): Case[] => {
     ...caseItem,
     id: typeof caseItem.id === 'string' ? caseItem.id : String(caseItem.id),
     postnummer: (caseItem as any).postnummer || '',
-    buildYear: (caseItem as any).buildYear || caseItem.constructionYear || new Date().getFullYear()
+    buildYear: (caseItem as any).buildYear || new Date().getFullYear()
   })) as Case[];
   
   return processedCases;
@@ -126,8 +125,7 @@ export const loadSellerCasesFromStorage = (allUsers: User[]): Case[] => {
             messages: [],
             rooms: caseData.rooms || "Ikke angivet",
             description: caseData.notes || caseData.comments || `${caseData.propertyType || 'Bolig'} i ${caseData.municipality || caseData.city || 'Danmark'}`,
-            energyLabel: caseData.energyLabel || "Ikke angivet",
-            constructionYear: caseData.buildYear || new Date().getFullYear()
+            energyLabel: caseData.energyLabel || "Ikke angivet"
           };
 
           // Add showing information if available
