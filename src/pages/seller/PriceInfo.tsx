@@ -30,6 +30,9 @@ const PriceInfo: React.FC = () => {
   const [valuationLoading, setValuationLoading] = useState<boolean>(false);
   const [valuationError, setValuationError] = useState<string | null>(null);
 
+  // NY STATE: Til at holde den forventede pris fra SalePreferences
+  const [expectedSalePriceFromPreferences, setExpectedSalePriceFromPreferences] = useState<number | null>(null);
+
   useEffect(() => {
     const storedPropertyData = localStorage.getItem('propertyData');
     const storedSalePreferences = localStorage.getItem('salePreferences');
@@ -51,6 +54,14 @@ const PriceInfo: React.FC = () => {
       const parsedSalePreferences = JSON.parse(storedSalePreferences);
       setSalePreferences(parsedSalePreferences);
       console.log('Parsed salePreferences:', parsedSalePreferences);
+
+      // Sæt den forventede salgspris fra SalePreferences
+      // Antager at 'expectedPrice' er en nøgle i salePreferences objektet.
+      // Hvis din SalePreferences side har et felt til "forventet pris",
+      // skal navnet på det felt her matche navnet på den nøgle, du gemmer i localStorage.
+      if (parsedSalePreferences.expectedPrice) { 
+        setExpectedSalePriceFromPreferences(parseFloat(parsedSalePreferences.expectedPrice)); // Parse som float/number
+      }
     } else {
       console.warn('SalePreferences not found in localStorage.');
     }
@@ -62,7 +73,7 @@ const PriceInfo: React.FC = () => {
       const baseValuation = parsedPropertyData && parsedPropertyData.size ? parseInt(parsedPropertyData.size) * 20000 : 2000000; 
       const simulatedValuation = Math.floor(baseValuation + (Math.random() * baseValuation * 0.5 - baseValuation * 0.25));
       setPublicValuation(simulatedValuation);
-      setCurrentValuation(simulatedValuation);
+      setCurrentValuation(simulatedValuation); // Denne bruges til den offentlige/simulerede vurdering
       setValuationLoading(false);
     }, 1500);
   }, []); // <-- TOMT AFHÆNGIGHEDSARRAY: Kører kun én gang ved mount
@@ -72,19 +83,21 @@ const PriceInfo: React.FC = () => {
   };
 
   const handleFinalizeCase = () => {
-    // Log for at fejlfinde, hvad der mangler
     console.log('Finalizing case...');
     console.log('currentUser:', currentUser);
     console.log('propertyData:', propertyData);
     console.log('salePreferences:', salePreferences);
-    console.log('currentValuation:', currentValuation);
+    console.log('currentValuation (public/simulated):', currentValuation);
+    console.log('expectedSalePriceFromPreferences (from SalePreferences):', expectedSalePriceFromPreferences);
 
     let missingInfo = [];
-    // Tilføj en mere robust check for currentUser, f.eks. om id eksisterer
     if (!currentUser || !currentUser.id) missingInfo.push('Brugeroplysninger (log venligst ind)');
     if (!propertyData) missingInfo.push('Boligdata');
     if (!salePreferences) missingInfo.push('Salgsoensker');
     if (currentValuation === null) missingInfo.push('Boligvurdering');
+    // Overvej om expectedSalePriceFromPreferences skal være obligatorisk for at finalisere sagen
+    // if (expectedSalePriceFromPreferences === null) missingInfo.push('Forventet salgspris');
+
 
     if (missingInfo.length > 0) {
       toast({
@@ -97,13 +110,14 @@ const PriceInfo: React.FC = () => {
     }
 
     const sagsnummer = generateSagsnummer();
-    const formattedPrice = new Intl.NumberFormat('da-DK', {
+    const formattedPublicValuation = new Intl.NumberFormat('da-DK', {
       style: 'currency',
       currency: 'DKK',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(currentValuation!);
 
+    // Opret newCase med både forventet pris (fra SalePreferences) og offentlig vurdering
     const newCase = {
       id: Date.now().toString(),
       sagsnummer: sagsnummer,
@@ -116,8 +130,14 @@ const PriceInfo: React.FC = () => {
       buildYear: parseInt(propertyData!.buildYear) || new Date().getFullYear(),
       rooms: propertyData!.rooms || 'Ikke angivet',
 
-      expectedPrice: formattedPrice,
-      expectedPriceValue: currentValuation!,
+      // Den pris sælgeren HAR ANGIVET i SalePreferences
+      expectedPrice: expectedSalePriceFromPreferences ? new Intl.NumberFormat('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(expectedSalePriceFromPreferences) : 'Ikke angivet',
+      expectedPriceValue: expectedSalePriceFromPreferences || 0, // Gemmer rå værdi
+
+      // Den offentlige/simulerede vurdering
+      publicValuation: formattedPublicValuation,
+      publicValuationValue: currentValuation!,
+
       flexiblePrice: salePreferences!.flexiblePrice || false,
       timeframe: salePreferences!.timeframe || undefined,
       timeframeType: salePreferences!.timeframeType || undefined,
@@ -167,9 +187,10 @@ const PriceInfo: React.FC = () => {
               <p className="font-semibold text-blue-800">
                 {propertyDetails}
               </p>
-              {currentValuation && (
+              {/* Viser den forventede salgspris fra SalePreferences, hvis den findes */}
+              {expectedSalePriceFromPreferences !== null && (
                 <p className="mt-2 text-blue-700">
-                  Forventet pris: <span className="font-bold">{new Intl.NumberFormat('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(currentValuation)}</span>
+                  Forventet salgspris: <span className="font-bold">{new Intl.NumberFormat('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(expectedSalePriceFromPreferences)}</span>
                 </p>
               )}
             </div>
@@ -211,7 +232,7 @@ const PriceInfo: React.FC = () => {
             </div>
 
             <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={() => navigate('/saelger/salgsønsker')}>
+              <Button variant="outline" onClick={() => navigate('/saelger/salgsoensker')}> {/* Rettet til salgsoensker uden 'ø' */}
                 Tilbage
               </Button>
               <Button onClick={handleFinalizeCase}>
