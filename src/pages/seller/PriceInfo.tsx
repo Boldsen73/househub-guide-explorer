@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { saveTestCase, generateSagsnummer } from '@/utils/testData';
-import ProgressSteps from '@/components/seller/ProgressSteps'; 
-import Footer from '@/components/Footer';     
-import Navigation from '@/components/Navigation'; 
+import ProgressSteps from '@/components/seller/ProgressSteps';
+import Footer from '@/components/Footer';     // Retten importsti baseret på din filstruktur
+import Navigation from '@/components/Navigation'; // Retten importsti baseret på din filstruktur
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -14,7 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Checkbox } => '@/components/ui/checkbox';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const PriceInfo: React.FC = () => {
   const navigate = useNavigate();
@@ -38,12 +38,11 @@ const PriceInfo: React.FC = () => {
       setSalePreferences(JSON.parse(storedSalePreferences));
     }
 
-    // Simulate fetching public valuation
     setValuationLoading(true);
     setTimeout(() => {
       const simulatedValuation = Math.floor(Math.random() * (5000000 - 1000000 + 1)) + 1000000;
       setPublicValuation(simulatedValuation);
-      setCurrentValuation(simulatedValuation); 
+      setCurrentValuation(simulatedValuation);
       setValuationLoading(false);
     }, 1500);
   }, []);
@@ -110,14 +109,13 @@ const PriceInfo: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
       <div className="container mx-auto px-4 py-8 flex-grow">
-        {/* RETTET: Alle nødvendige props til ProgressSteps er nu inkluderet med korrekte typer */}
-        <ProgressSteps 
-          currentStep="data_entered" 
+        <ProgressSteps
+          currentStep="data_entered"
           agentsContacted={0}
           agentsResponded={0}
           agentsRejected={0}
           agentsPending={0}
-        />
+        /> 
         <Card className="max-w-3xl mx-auto mt-8">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-900">Prisoplysninger</CardTitle>
