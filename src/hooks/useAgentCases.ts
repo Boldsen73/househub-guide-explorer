@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { CaseStatus, AgentOffer } from '@/types/agent';
 import { Case } from '@/types/case';
@@ -77,10 +76,10 @@ export const useAgentCases = () => {
               id: numericId,
               address: caseData.address,
               municipality: caseData.municipality || 'Ikke angivet',
-              type: caseData.type || caseData.propertyType || 'Ikke angivet',
+              type: caseData.type || 'Ikke angivet',
               size: caseData.size || 'Ikke angivet',
-              price: caseData.price || caseData.expectedPrice || caseData.estimatedPrice || 'Ikke angivet',
-              priceValue: caseData.priceValue || caseData.expectedPriceValue || parseInt((caseData.expectedPrice || caseData.estimatedPrice || '0').replace(/[^\d]/g, '') || '0'),
+              price: caseData.price || 'Ikke angivet',
+              priceValue: caseData.priceValue || parseInt((caseData.price || '0').replace(/[^\d]/g, '') || '0'),
               buildYear: caseData.buildYear || new Date().getFullYear(),
               status: caseData.status || 'waiting_for_offers',
               sellerId: caseData.sellerId,
@@ -145,10 +144,10 @@ export const useAgentCases = () => {
                     id: parseInt(caseId),
                     address: caseData.address,
                     municipality: caseData.municipality || caseData.city || 'Ikke angivet',
-                    type: caseData.propertyType || caseData.type || 'Ikke angivet',
+                    type: caseData.type || 'Ikke angivet',
                     size: caseData.size ? (typeof caseData.size === 'string' ? caseData.size : `${caseData.size} m²`) : 'Ikke angivet',
-                    price: caseData.expectedPrice || caseData.estimatedPrice || caseData.price || 'Ikke angivet',
-                    priceValue: caseData.expectedPriceValue || caseData.priceValue || parseInt((caseData.expectedPrice || caseData.estimatedPrice || '0').replace(/[^\d]/g, '') || '0'),
+                    price: caseData.price || 'Ikke angivet',
+                    priceValue: caseData.priceValue || parseInt((caseData.price || '0').replace(/[^\d]/g, '') || '0'),
                     buildYear: caseData.buildYear || new Date().getFullYear(),
                     status: 'waiting_for_offers' as const,
                     sellerId: caseData.sellerId,
