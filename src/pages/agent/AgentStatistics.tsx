@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -46,8 +47,6 @@ const AgentStatistics = () => {
           </Badge>
         </div>
 
-        {/* ... keep existing code (KPI Cards, Charts, Performance Summary) */}
-        
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl">
@@ -148,7 +147,7 @@ const AgentStatistics = () => {
         {/* Performance Summary */}
         <Card className="transition-all duration-300 ease-in-out hover:shadow-xl">
           <CardHeader>
-            <CardTitle>Performance sammenfatning</CardHeader>
+            <CardTitle>Performance sammenfatning</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
