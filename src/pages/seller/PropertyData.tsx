@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -70,20 +69,44 @@ const PropertyData = () => {
         return;
       }
 
-      // NY VALIDERING: Byggeår
-      const currentYear = new Date().getFullYear(); // Får det aktuelle år
-      const buildYear = parseInt(formData.byggeår);
+      // IMPROVED BYGGEAR VALIDATION
+      if (formData.byggeår.trim()) {
+        const currentYear = new Date().getFullYear();
+        const buildYear = parseInt(formData.byggeår);
 
-      if (isNaN(buildYear) || formData.byggeår.length !== 4 || buildYear <= 1500 || buildYear > currentYear) {
-        toast({
-          title: 'Fejl',
-          description: `Byggeår skal være et gyldigt 4-cifret årstal, ikke nyere end ${currentYear}.`,
-          variant: 'destructive'
-        });
-        setIsSubmitting(false);
-        return;
+        // Check if it's exactly 4 digits
+        if (formData.byggeår.length !== 4) {
+          toast({
+            title: 'Fejl',
+            description: 'Byggeår skal være et 4-cifret årstal.',
+            variant: 'destructive'
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Check if it's a valid number
+        if (isNaN(buildYear)) {
+          toast({
+            title: 'Fejl',
+            description: 'Byggeår skal være et gyldigt årstal.',
+            variant: 'destructive'
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Check if it's within reasonable range
+        if (buildYear < 1500 || buildYear > currentYear) {
+          toast({
+            title: 'Fejl',
+            description: `Byggeår skal være mellem 1500 og ${currentYear}.`,
+            variant: 'destructive'
+          });
+          setIsSubmitting(false);
+          return;
+        }
       }
-
 
       // Gem kun formular-data, ikke som sag!
       const propertyFormData = {
@@ -92,9 +115,8 @@ const PropertyData = () => {
         city: formData.city,
         propertyType: formData.boligtype,
         size: parseInt(formData.størrelse) || 0,
-        buildYear: buildYear,
+        buildYear: formData.byggeår ? parseInt(formData.byggeår) : undefined,
         rooms: parseInt(formData.rooms) || 0,
-        // 'notes' er fjernet herfra
       };
 
       localStorage.setItem('propertyData', JSON.stringify(propertyFormData));
@@ -104,7 +126,7 @@ const PropertyData = () => {
         description: 'Boligdata er gemt.'
       });
 
-      // NAVIGER TIL NÆSTE TRIN (KORREKT STI UDEN 'ø')
+      // NAVIGER TIL NÆSTE TRIN
       navigate(ROUTES.SELLER_WISHES);
     } catch (error) {
       toast({
@@ -135,7 +157,7 @@ const PropertyData = () => {
               onInputChange={handleInputChange} 
             />
 
-            {/* Boligdetaljer sektion - Direkte indsat i PropertyData.tsx */}
+            {/* Boligdetaljer sektion */}
             <div className="space-y-4">
                 <Label htmlFor="boligtype">Boligtype</Label>
                 <Select
@@ -170,11 +192,18 @@ const PropertyData = () => {
                 <Label htmlFor="byggeår">Byggeår</Label>
                 <Input
                     id="byggeår"
-                    type="number"
+                    type="text"
                     value={formData.byggeår}
-                    onChange={(e) => handleInputChange('byggeår', e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                      handleInputChange('byggeår', value);
+                    }}
                     placeholder="f.eks. 1985"
+                    maxLength={4}
                 />
+                <p className="text-sm text-gray-500">
+                  Indtast byggeår som 4 cifre (f.eks. 1985)
+                </p>
             </div>
 
             <div className="space-y-4">
@@ -187,7 +216,6 @@ const PropertyData = () => {
                     placeholder="f.eks. 3"
                 />
             </div>
-            {/* SLUT Boligdetaljer sektion */}
 
             {/* Gem knap */}
             <div className="flex justify-end space-x-4">

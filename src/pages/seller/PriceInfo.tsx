@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
@@ -8,6 +9,8 @@ import { Home, TrendingUp, Info, FileText } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { ROUTES } from '@/constants/routes';
+import { saveCase } from '@/utils/caseManagement';
+import { generateSagsnummer } from '@/utils/caseManagement';
 
 const PriceInfo = () => {
   const { toast } = useToast();
@@ -41,9 +44,60 @@ const PriceInfo = () => {
   const handleCreateCase = async () => {
     setIsCreatingCase(true);
     try {
-      // Simulerer oprettelse af sag
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Get current user
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
+      if (!currentUser.id) {
+        throw new Error('No user found');
+      }
 
+      // Simulate case creation delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Create the case with all collected data
+      const caseId = Date.now().toString();
+      const sagsnummer = generateSagsnummer();
+
+      const newCase = {
+        id: caseId,
+        sagsnummer: sagsnummer,
+        sellerId: currentUser.id,
+        sellerName: currentUser.name,
+        sellerEmail: currentUser.email,
+        sellerPhone: currentUser.phone || '',
+        address: propertyData?.address || '',
+        municipality: propertyData?.city || '',
+        postalCode: propertyData?.postalCode || '',
+        type: propertyData?.propertyType || 'villa',
+        size: propertyData?.size?.toString() || '0',
+        constructionYear: propertyData?.buildYear || 0,
+        rooms: propertyData?.rooms || 0,
+        price: salePreferences?.expectedPrice ? `${(salePreferences.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : 'Ikke angivet',
+        priceValue: salePreferences?.expectedPrice?.[0] || 0,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        timeframe: salePreferences?.timeframe || 6,
+        timeframeType: salePreferences?.timeframeType || 'months',
+        priorities: salePreferences?.priorities || { speed: false, price: false, service: false },
+        specialRequests: salePreferences?.specialRequests || '',
+        flexiblePrice: salePreferences?.flexiblePrice || false,
+        marketingBudget: salePreferences?.marketingBudget || 0,
+        freeIfNotSold: salePreferences?.freeIfNotSold || false,
+        description: propertyData?.notes || '',
+        buildYear: propertyData?.buildYear || 0
+      };
+
+      console.log('Creating case:', newCase);
+
+      // Save the case
+      saveCase(newCase);
+
+      // Clean up form data
+      localStorage.removeItem('propertyData');
+      localStorage.removeItem('salePreferencesForm');
+
+      // Set flag that user has active case
       localStorage.setItem('seller_has_active_case', 'true');
 
       toast({
@@ -51,8 +105,14 @@ const PriceInfo = () => {
         description: 'Din sag er nu oprettet og mæglere kan byde på den.',
       });
 
+      // Dispatch events to notify other components
+      window.dispatchEvent(new CustomEvent('caseCreated', { detail: newCase }));
+      window.dispatchEvent(new CustomEvent('caseUpdated', { detail: newCase }));
+      window.dispatchEvent(new CustomEvent('casesChanged', { detail: { case: newCase } }));
+
       navigate(ROUTES.SELLER_MY_CASE);
     } catch (error) {
+      console.error('Error creating case:', error);
       toast({
         title: 'Fejl',
         description: 'Der opstod en fejl ved oprettelse af sagen.',
