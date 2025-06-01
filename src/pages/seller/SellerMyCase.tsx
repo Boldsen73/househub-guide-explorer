@@ -91,7 +91,8 @@ const SellerMyCase: React.FC = () => {
 
     }, [id]);
 
-    const handleShowingBooked = (date: string, time: string, notes: string) => {
+    const handleShowingBooked = (showingData: any) => {
+        const { date, time, notes } = showingData;
         const newShowingDetails = { date, time, notes };
         setBookedShowingDetails(newShowingDetails);
         setShowBookingForm(false);
