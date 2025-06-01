@@ -15,12 +15,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/hooks/use-toast'; // Tilføjet useToast
+import { useToast } from '@/hooks/use-toast';
 
 const PriceInfo: React.FC = () => {
   const navigate = useNavigate();
-  const { user: currentUser } = useAuth(); 
-  const { toast } = useToast(); // Initialiser useToast
+  const { user: currentUser } = useAuth();
+  const { toast } = useToast();
 
   const [propertyData, setPropertyData] = useState<any>(null);
   const [salePreferences, setSalePreferences] = useState<any>(null);
@@ -38,8 +38,9 @@ const PriceInfo: React.FC = () => {
     console.log('Stored propertyData:', storedPropertyData);
     console.log('Stored salePreferences:', storedSalePreferences);
 
+    let parsedPropertyData = null; 
     if (storedPropertyData) {
-      const parsedPropertyData = JSON.parse(storedPropertyData);
+      parsedPropertyData = JSON.parse(storedPropertyData);
       setPropertyData(parsedPropertyData);
       console.log('Parsed propertyData:', parsedPropertyData);
     } else {
@@ -54,16 +55,17 @@ const PriceInfo: React.FC = () => {
       console.warn('SalePreferences not found in localStorage.');
     }
 
+    // Simulering af offentlig vurdering kører kun én gang
     setValuationLoading(true);
     setTimeout(() => {
-      // Simuleret offentlig vurdering baseret på propertyData.size for at gøre det mere dynamisk
-      const baseValuation = propertyData ? parseInt(propertyData.size) * 20000 : 2000000; // Eksempel: 20.000 DKK per m²
-      const simulatedValuation = Math.floor(baseValuation + (Math.random() * baseValuation * 0.5 - baseValuation * 0.25)); // +/- 25% variation
+      // Brug den lokale parsedPropertyData, som er tilgængelig her
+      const baseValuation = parsedPropertyData && parsedPropertyData.size ? parseInt(parsedPropertyData.size) * 20000 : 2000000; 
+      const simulatedValuation = Math.floor(baseValuation + (Math.random() * baseValuation * 0.5 - baseValuation * 0.25));
       setPublicValuation(simulatedValuation);
       setCurrentValuation(simulatedValuation);
       setValuationLoading(false);
     }, 1500);
-  }, [propertyData]); // Tilføj propertyData til dependency array, så den kan bruges i valuation simulation
+  }, []); // <-- TOMT AFHÆNGIGHEDSARRAY: Kører kun én gang ved mount
 
   const handlePriceChange = (value: number[]) => {
     setCurrentValuation(value[0]);
@@ -78,10 +80,11 @@ const PriceInfo: React.FC = () => {
     console.log('currentValuation:', currentValuation);
 
     let missingInfo = [];
-    if (!currentUser) missingInfo.push('Brugeroplysninger');
+    // Tilføj en mere robust check for currentUser, f.eks. om id eksisterer
+    if (!currentUser || !currentUser.id) missingInfo.push('Brugeroplysninger (log venligst ind)');
     if (!propertyData) missingInfo.push('Boligdata');
     if (!salePreferences) missingInfo.push('Salgsoensker');
-    if (currentValuation === null) missingInfo.push('Boligvurdering'); // Tjek for null
+    if (currentValuation === null) missingInfo.push('Boligvurdering');
 
     if (missingInfo.length > 0) {
       toast({
@@ -99,12 +102,12 @@ const PriceInfo: React.FC = () => {
       currency: 'DKK',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(currentValuation!); // Brug ! for at indikere, at den ikke er null her
+    }).format(currentValuation!);
 
     const newCase = {
       id: Date.now().toString(),
       sagsnummer: sagsnummer,
-      sellerId: currentUser!.id, // Brug ! for at indikere, at den ikke er null her
+      sellerId: currentUser!.id,
       address: propertyData!.address || 'Ikke angivet',
       postnummer: propertyData!.postalCode || 'Ikke angivet',
       municipality: propertyData!.city || 'Ikke angivet',
