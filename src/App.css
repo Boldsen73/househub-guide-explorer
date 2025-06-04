@@ -1,83 +1,162 @@
+// src/App.tsx
 
-@import './styles/enhanced-ui.css';
+import React from 'react';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToTop from './components/ScrollToTop';
+import { ROUTES } from './constants/routes';
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+// Import all your page components
+// General pages
+import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
+import Thanks from "./pages/Thanks";
+import About from "./pages/About";
+import AboutUs from "./pages/AboutUs";
+import Contact from "./pages/Contact";
+import HowItWorks from "./pages/HowItWorks";
+
+// Seller pages (dobbelttjek disse stier, hvis du får fejl)
+import SellerStart from "./pages/seller/SellerStart";
+import SellerSignup from "./pages/seller/SellerSignup";
+import SellerLogin from "./pages/seller/SellerLogin";
+import SellerDashboard from "./pages/seller/SellerDashboard";
+import PropertyData from "./pages/seller/PropertyData"; // Bruges for PropertyData & PropertyDataNew
+import PropertyDataExtended from "./pages/seller/PropertyDataExtended";
+import SellerWishes from "./pages/seller/SellerWishes";
+import PriceInfo from "./pages/seller/PriceInfo"; // Bruges for PriceInfo & PriceDetails
+import SellerMyCase from "./pages/seller/SellerMyCase";
+import SellerOffers from "./pages/seller/SellerOffers";
+import SellerMessages from "./pages/seller/SellerMessages";
+import SellerInfo from "./pages/seller/SellerInfo";
+import SellerTerms from "./pages/seller/SellerTerms";
+import SellerSettings from "./pages/seller/SellerSettings";
+import SellerPayment from "./pages/seller/SellerPayment";
+import SellerConfirmation from "./pages/seller/SellerConfirmation";
+import SellerThankYou from "./pages/seller/SellerThankYou";
+import SellerThankYouPage from "./pages/seller/SellerThankYouPage";
+import SellerFinalConfirmation from "./pages/seller/SellerFinalConfirmation";
+import SellerCaseStatus from "./pages/seller/SellerCaseStatus";
+import SellerUploadDocuments from "./pages/seller/SellerUploadDocuments";
+import SellerWaitingForOffers from "./pages/seller/SellerWaitingForOffers";
+
+// Agent pages (dobbelttjek disse stier, hvis du får fejl)
+import AgentStart from "./pages/agent/AgentStart";
+import AgentSignup from "./pages/agent/AgentSignup";
+import AgentLogin from "./pages/agent/AgentLogin";
+import AgentDashboard from "./pages/agent/AgentDashboard";
+import BrowseCases from "./pages/agent/BrowseCases"; // Antager denne er den primære for /agent/browse-cases
+import AgentBrowseCases from "./pages/agent/AgentBrowseCases"; // Hvis du har en 'AgentBrowseCases.tsx' for ALT ruten
+import CaseDetailsPage from "./pages/agent/CaseDetailsPage"; // Antager denne er den primære for /agent/case/:id
+import AgentCaseDetail from "./pages/agent/AgentCaseDetail"; // Hvis du har en 'AgentCaseDetail.tsx' for ALT ruten
+import SubmitOffer from "./pages/agent/SubmitOffer";
+import ViewOffer from "./pages/agent/ViewOffer";
+import AgentMyOffers from "./pages/agent/AgentMyOffers";
+import AgentMessages from "./pages/agent/AgentMessages";
+import AgentProfile from "./pages/agent/AgentProfile";
+import AgentSettings from "./pages/agent/AgentSettings";
+import AgentStatistics from "./pages/agent/AgentStatistics";
+import AgentArchive from "./pages/agent/AgentArchive";
+import AgentTerms from "./pages/agent/AgentTerms";
+import AgentConfirmation from "./pages/agent/AgentConfirmation";
+
+// Admin pages (dobbelttjek disse stier, hvis du får fejl)
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+
+// Legal pages (dobbelttjek disse stier, hvis du får fejl)
+import PrivatlivsPolitik from "./pages/legal/PrivatlivsPolitik"; // Overvej at omdøbe filen til PrivacyPolicy.tsx
+import Vilkaar from "./pages/legal/Vilkaar"; // Overvej at omdøbe filen til TermsAndConditions.tsx
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <TooltipProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            {/* General routes */}
+            <Route path={ROUTES.HOME} element={<Index />} />
+            <Route path={ROUTES.LANDING} element={<LandingPage />} />
+            <Route path={ROUTES.LOGIN} element={<Login />} />
+            <Route path={ROUTES.THANKS} element={<Thanks />} />
+            <Route path={ROUTES.ABOUT} element={<About />} />
+            <Route path={ROUTES.ABOUT_US} element={<AboutUs />} />
+            <Route path={ROUTES.CONTACT} element={<Contact />} />
+            <Route path={ROUTES.HOW_IT_WORKS} element={<HowItWorks />} />
+
+            {/* Seller routes */}
+            <Route path={ROUTES.SELLER_START} element={<SellerStart />} />
+            <Route path={ROUTES.SELLER_SIGNUP} element={<SellerSignup />} />
+            <Route path={ROUTES.SELLER_LOGIN} element={<SellerLogin />} />
+            <Route path={ROUTES.SELLER_DASHBOARD} element={<SellerDashboard />} />
+            <Route path={ROUTES.SELLER_PROPERTY_DATA} element={<PropertyData />} />
+            <Route path={ROUTES.SELLER_PROPERTY_DATA_NEW} element={<PropertyData />} />
+            <Route path={ROUTES.SELLER_PROPERTY_DATA_EXTENDED} element={<PropertyDataExtended />} />
+            <Route path={ROUTES.SELLER_WISHES} element={<SellerWishes />} />
+            <Route path={ROUTES.SELLER_PRICE_INFO} element={<PriceInfo />} />
+            <Route path={ROUTES.SELLER_PRICE_DETAILS} element={<PriceInfo />} />
+            <Route path={ROUTES.SELLER_MY_CASE} element={<SellerMyCase />} />
+            <Route path={ROUTES.SELLER_OFFERS} element={<SellerOffers />} />
+            <Route path={ROUTES.SELLER_MESSAGES} element={<SellerMessages />} />
+            <Route path={ROUTES.SELLER_INFO} element={<SellerInfo />} />
+            <Route path={ROUTES.SELLER_TERMS} element={<SellerTerms />} />
+            <Route path={ROUTES.SELLER_SETTINGS} element={<SellerSettings />} />
+            <Route path={ROUTES.SELLER_PAYMENT} element={<SellerPayment />} />
+            <Route path={ROUTES.SELLER_CONFIRMATION} element={<SellerConfirmation />} />
+            <Route path={ROUTES.SELLER_THANK_YOU} element={<SellerThankYou />} />
+            <Route path={ROUTES.SELLER_THANK_YOU_PAGE} element={<SellerThankYouPage />} />
+            <Route path={ROUTES.SELLER_FINAL_CONFIRMATION} element={<SellerFinalConfirmation />} />
+            <Route path={ROUTES.SELLER_CASE_STATUS} element={<SellerCaseStatus />} />
+            <Route path={ROUTES.SELLER_UPLOAD_DOCUMENTS} element={<SellerUploadDocuments />} />
+            <Route path={ROUTES.SELLER_WAITING_FOR_OFFERS} element={<SellerWaitingForOffers />} />
+
+            {/* Agent routes */}
+            <Route path={ROUTES.AGENT_START} element={<AgentStart />} />
+            <Route path={ROUTES.AGENT_SIGNUP} element={<AgentSignup />} />
+            <Route path={ROUTES.AGENT_LOGIN} element={<AgentLogin />} />
+            <Route path={ROUTES.AGENT_DASHBOARD} element={<AgentDashboard />} />
+            <Route path={ROUTES.AGENT_BROWSE_CASES} element={<BrowseCases />} />
+            {/* Behold kun denne, hvis 'AgentBrowseCases' er en separat komponent for den ALT rute */}
+            <Route path={ROUTES.AGENT_BROWSE_CASES_ALT} element={<AgentBrowseCases />} />
+            <Route path={ROUTES.AGENT_CASE_DETAIL} element={<CaseDetailsPage />} />
+            {/* Behold kun denne, hvis 'AgentCaseDetail' er en separat komponent for den ALT rute */}
+            <Route path={ROUTES.AGENT_CASE_DETAIL_ALT} element={<AgentCaseDetail />} />
+            <Route path={ROUTES.AGENT_SUBMIT_OFFER} element={<SubmitOffer />} />
+            <Route path={ROUTES.AGENT_VIEW_OFFER} element={<ViewOffer />} />
+            <Route path={ROUTES.AGENT_MY_OFFERS} element={<AgentMyOffers />} />
+            <Route path={ROUTES.AGENT_MESSAGES} element={<AgentMessages />} />
+            <Route path={ROUTES.AGENT_PROFILE} element={<AgentProfile />} />
+            <Route path={ROUTES.AGENT_SETTINGS} element={<AgentSettings />} />
+            <Route path={ROUTES.AGENT_STATISTICS} element={<AgentStatistics />} />
+            <Route path={ROUTES.AGENT_ARCHIVE} element={<AgentArchive />} />
+            <Route path={ROUTES.AGENT_TERMS} element={<AgentTerms />} />
+            <Route path={ROUTES.AGENT_CONFIRMATION} element={<AgentConfirmation />} />
+
+            {/* Admin routes */}
+            <Route path={ROUTES.ADMIN_LOGIN} element={<AdminLogin />} />
+            <Route path={ROUTES.ADMIN_DASHBOARD} element={<AdminDashboard />} />
+
+            {/* Legal routes */}
+            <Route path={ROUTES.PRIVACY_POLICY} element={<PrivatlivsPolitik />} />
+            <Route path={ROUTES.TERMS_AND_CONDITIONS} element={<Vilkaar />} />
+
+            {/* 404 route - Catch-all for undefined routes */}
+            <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+      <Toaster />
+      <Sonner />
+    </TooltipProvider>
+  );
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-/* Enhanced button styles */
-.btn-primary {
-  @apply btn-primary-enhanced;
-}
-
-.btn-secondary {
-  @apply btn-secondary-enhanced;
-}
-
-.btn-success {
-  @apply btn-success-enhanced;
-}
-
-.btn-danger {
-  @apply btn-danger-enhanced;
-}
-
-/* Enhanced form elements */
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="number"],
-input[type="password"],
-textarea,
-select {
-  @apply input-enhanced;
-}
-
-/* Enhanced cards */
-.card {
-  @apply card-hover-enhanced;
-}
-
-/* Clean spacing for components */
-.component-spacing {
-  @apply spacing-clean;
-}
+export default App;
