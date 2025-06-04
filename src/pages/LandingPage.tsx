@@ -3,14 +3,14 @@
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import HeroSection from '../components/landing/HeroSection';
-import BenefitsSection from '../components/landing/BenefitsSection'; // <--- KORRIGERET STI HER
+import BenefitsSection from '../components/landing/BenefitsSection';
 import StatisticsSection from '../components/landing/StatisticsSection';
 import TrustIndicatorsSection from '../components/landing/TrustIndicatorsSection';
 import TestimonialsSection from '../components/landing/TestimonialsSection';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Building } from 'lucide-react';
-import { ROUTES } from '../constants/routes'; // Vigtigt: Import af ROUTES
+import { ROUTES } from '../constants/routes';
 
 const LandingPage = () => {
   return (
