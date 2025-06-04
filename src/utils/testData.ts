@@ -153,17 +153,16 @@ export const addTestUser = (user: TestUser) => {
   }
 };
 
-// **VIGTIGT:** Denne funktion skal tillade at hente cases, hvis du vil se dem!
-// Returnerer alle gemte sager fra localStorage
+// Clean environment - NO TEST CASES should be returned
 export const getTestCases = (): TestCase[] => {
-  const cases = localStorage.getItem('test_cases');
-  return cases ? JSON.parse(cases) : [];
+  // Always return empty array for completely clean environment
+  return [];
 };
 
-// Get cases for specific user only - STRICT filtering
+// Get cases for specific user only - Clean environment returns empty
 export const getTestCasesForUser = (userId: string): TestCase[] => {
-  const allCases = getTestCases(); // Få alle sager
-  return allCases.filter(c => c.sellerId === userId); // Filtrer baseret på sellerId
+  // Always return empty array for completely clean environment
+  return [];
 };
 
 

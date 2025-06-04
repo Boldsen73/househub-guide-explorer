@@ -157,6 +157,11 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked, initia
 
       console.log('Showing booked successfully');
 
+      // Dispatch events for real-time updates to admin dashboard
+      window.dispatchEvent(new CustomEvent('showingBooked', { detail: showingData }));
+      window.dispatchEvent(new CustomEvent('caseUpdated', { detail: showingData }));
+      window.dispatchEvent(new Event('storage'));
+
       // Reset form if it's a new booking, not just editing
       if (!initialDate && !initialTime) {
         setSelectedDate(undefined);

@@ -193,20 +193,15 @@ const SellerMyCase: React.FC = () => {
     };
 
     const handleShowingBooked = (showingData: any) => {
-        const { date, time, notes } = showingData;
-        const newShowingDetails = { date, time, notes };
+        console.log('Showing booked with data:', showingData);
+        const newShowingDetails = { ...showingData, status: 'booked' };
         setBookedShowingDetails(newShowingDetails);
         setShowBookingForm(false);
-        setShowingCompleted(false);
         
-        // Format the date properly for display
-        const formattedDate = date instanceof Date 
-            ? format(date, 'EEEE d. MMMM yyyy', { locale: da })
-            : date;
-            
+        // Show success message
         toast({
-            title: "Fremvisning booket!",
-            description: `Din fremvisning er booket til ${formattedDate} kl. ${time}.`,
+            title: "Fremvisning booket",
+            description: "Du vender nu tilbage til dit sagsoversigt hvor du kan se den opdaterede status.",
         });
         setCaseDetails((prevDetails: any) => ({
             ...prevDetails,

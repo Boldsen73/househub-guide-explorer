@@ -126,6 +126,8 @@ const App = () => (
           <Route path={ROUTES.AGENT_DASHBOARD} element={<AgentDashboard />} />
           <Route path={ROUTES.AGENT_BROWSE_CASES} element={<BrowseCases />} />
           <Route path={ROUTES.AGENT_CASE_DETAIL} element={<CaseDetailsPage />} />
+          {/* Fix for missing route causing blank screen */}
+          <Route path="/agent/cases/:id" element={<CaseDetailsPage />} />
           <Route path={ROUTES.AGENT_SUBMIT_OFFER} element={<SubmitOffer />} />
           <Route path={ROUTES.AGENT_VIEW_OFFER} element={<ViewOffer />} />
           <Route path={ROUTES.AGENT_MY_OFFERS} element={<AgentMyOffers />} />
