@@ -93,6 +93,7 @@ const App = () => (
           {/* Seller routes */}
           <Route path={ROUTES.SELLER_START} element={<SellerStart />} />
           <Route path="/seller/start" element={<SellerStart />} />
+          <Route path="/saelger/start" element={<SellerStart />} /> {/* Danish route */}
           <Route path={ROUTES.SELLER_SIGNUP} element={<SellerSignup />} />
           <Route path={ROUTES.SELLER_LOGIN} element={<SellerLogin />} />
           <Route path={ROUTES.SELLER_DASHBOARD} element={<SellerDashboard />} />
