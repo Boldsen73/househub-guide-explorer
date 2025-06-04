@@ -36,8 +36,7 @@ const Index = () => {
             <p className="text-xl text-gray-600 mb-8">
               Tilmeld dig HouseHub og få adgang til nye kunder og salgsmuligheder
             </p>
-            {/* <Link to="/maegler/start"> */}
-            <Link to={ROUTES.AGENT_START}> {/* <--- KORRIGERET: Bruger ROUTES.AGENT_START */}
+            <Link to={ROUTES.AGENT_START}>
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
                 <Building className="mr-2 h-5 w-5" />
                 Opret mæglerprofil her

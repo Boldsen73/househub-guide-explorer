@@ -121,6 +121,21 @@ const App = () => (
           {/* Agent routes - updated to English paths */}
           <Route path={ROUTES.AGENT_START} element={<AgentStart />} />
           <Route path="/agent/start" element={<AgentStart />} />
+          <Route path={ROUTES.AGENT_SIGNUP} element={<AgentSignup />} />
+          <Route path={ROUTES.AGENT_LOGIN} element={<AgentLogin />} />
+          <Route path={ROUTES.AGENT_DASHBOARD} element={<AgentDashboard />} />
+          <Route path={ROUTES.AGENT_BROWSE_CASES} element={<BrowseCases />} />
+          <Route path={ROUTES.AGENT_CASE_DETAIL} element={<CaseDetailsPage />} />
+          <Route path={ROUTES.AGENT_SUBMIT_OFFER} element={<SubmitOffer />} />
+          <Route path={ROUTES.AGENT_VIEW_OFFER} element={<ViewOffer />} />
+          <Route path={ROUTES.AGENT_MY_OFFERS} element={<AgentMyOffers />} />
+          <Route path={ROUTES.AGENT_MESSAGES} element={<AgentMessages />} />
+          <Route path={ROUTES.AGENT_PROFILE} element={<AgentProfile />} />
+          <Route path={ROUTES.AGENT_SETTINGS} element={<AgentSettings />} />
+          <Route path={ROUTES.AGENT_STATISTICS} element={<AgentStatistics />} />
+          <Route path={ROUTES.AGENT_ARCHIVE} element={<AgentArchive />} />
+          <Route path={ROUTES.AGENT_TERMS} element={<AgentTerms />} />
+          <Route path={ROUTES.AGENT_CONFIRMATION} element={<AgentConfirmation />} />
           {/* Legacy redirects - keep for backwards compatibility */}
           <Route path="/maegler" element={<Navigate to="/agent" replace />} />
           <Route path="/maegler/opret-bruger" element={<Navigate to="/agent/signup" replace />} />
