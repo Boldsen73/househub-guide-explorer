@@ -5,11 +5,11 @@ export const ROUTES = {
   HOME: '/',
   LANDING: '/landing',
   LOGIN: '/login',
-  THANKS: '/tak',
-  ABOUT: '/om',
-  ABOUT_US: '/om-os',
-  CONTACT: '/kontakt',
-  HOW_IT_WORKS: '/hvordan-virker-det', // Overvej at ændre denne til /how-it-works for konsistens
+  THANKS: '/tak', // Overvej at ændre til /thank-you for konsistens
+  ABOUT: '/om', // Overvej at ændre til /about for konsistens
+  ABOUT_US: '/om-os', // Overvej at ændre til /about-us for konsistens
+  CONTACT: '/kontakt', // Overvej at ændre til /contact for konsistens
+  HOW_IT_WORKS: '/hvordan-virker-det', // Overvej at ændre til /how-it-works for konsistens
 
   // Seller routes (disse er nu konsistente og bruger 'seller')
   SELLER_START: '/seller',
@@ -37,7 +37,7 @@ export const ROUTES = {
   SELLER_UPLOAD_DOCUMENTS: '/seller/upload-documents',
   SELLER_WAITING_FOR_OFFERS: '/seller/waiting-for-offers',
 
-  // Agent routes (disse er nu KORRIGERET og bruger 'agent' og engelske termer)
+  // Agent routes (DISSE ER NU KORRIGERET og bruger 'agent' og engelske termer)
   AGENT_START: '/agent',
   AGENT_SIGNUP: '/agent/signup',
   AGENT_LOGIN: '/agent/login',
@@ -55,16 +55,17 @@ export const ROUTES = {
   AGENT_TERMS: '/agent/terms',
   AGENT_CONFIRMATION: '/agent/confirmation',
 
-  // Overvej at fjerne disse alternative ruter, hvis de ikke bruges aktivt,
-  // da de kan skabe forvirring og duplikering.
-  AGENT_BROWSE_CASES_ALT: '/agent/browse-cases-alt', // Hvis du kun har én browse-cases, fjern denne
-  AGENT_CASE_DETAIL_ALT: '/agent/case-detail-alt/:id', // Hvis du kun har én case-detail, fjern denne
+  // Overvej stærkt at fjerne disse alternative ruter, hvis de ikke bruges aktivt.
+  // De kan skabe forvirring og duplikering. Hvis du beslutter at beholde dem,
+  // skal du sikre, at de også bruger 'agent' korrekt.
+  AGENT_BROWSE_CASES_ALT: '/agent/browse-cases-alt',
+  AGENT_CASE_DETAIL_ALT: '/agent/case-detail-alt/:id',
 
   // Admin routes
   ADMIN_LOGIN: '/admin/login',
   ADMIN_DASHBOARD: '/admin/dashboard',
 
-  // Legal routes
+  // Legal routes (Overvej at ændre filnavnene i src/pages/legal/ til engelsk for konsistens)
   PRIVACY_POLICY: '/privacy-policy', // Tidligere /privatlivs-politik
   TERMS_AND_CONDITIONS: '/terms-and-conditions', // Tidligere /vilkaar
 
