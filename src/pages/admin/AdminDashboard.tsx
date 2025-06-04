@@ -37,7 +37,7 @@ const AdminDashboard = () => {
         name: caseData.sellerName || 'Ukendt sælger',
         email: caseData.sellerEmail || 'Ikke angivet',
         phone: caseData.sellerPhone || 'Ikke angivet',
-        expectedTimeframe: '3-6 måneder',
+        expectedTimeframe: 'Ikke angivet',
         priorities: ['Høj pris', 'Hurtig salg']
       },
       offers: [],

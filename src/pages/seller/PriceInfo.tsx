@@ -77,7 +77,7 @@ const PriceInfo = () => {
         status: 'active' as const,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        timeframe: salePreferences?.timeframe || 6,
+        timeframe: salePreferences?.timeframe?.[0] || salePreferences?.timeframe || 6,
         timeframeType: salePreferences?.timeframeType || 'months',
         priorities: salePreferences?.priorities || { speed: false, price: false, service: false },
         specialRequests: salePreferences?.specialRequests || '',
@@ -85,7 +85,7 @@ const PriceInfo = () => {
         marketingBudget: salePreferences?.marketingBudget || 0,
         freeIfNotSold: salePreferences?.freeIfNotSold || false,
         buildYear: propertyData?.buildYear || 0,
-        energyLabel: propertyData?.energyLabel || '',
+        
       };
 
       console.log('Creating case:', newCase);
@@ -157,11 +157,6 @@ const PriceInfo = () => {
                       <p className="text-sm text-gray-600">
                         {propertyData.size} m² • {propertyData.propertyType} • Bygget {propertyData.buildYear}
                       </p>
-                      {propertyData.energyLabel && (
-                          <p className="text-sm text-gray-600">
-                            Energimærke: {propertyData.energyLabel}
-                          </p>
-                      )}
                       {salePreferences && salePreferences.expectedPrice && salePreferences.expectedPrice.length > 0 && (
                         <p className="text-sm text-gray-600">
                           Forventet pris: {(salePreferences.expectedPrice[0] / 1000000).toFixed(1)} mio. kr

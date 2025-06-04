@@ -386,7 +386,7 @@ const SellerCaseStatus = () => {
                   
                   <div className="space-y-2 text-sm">
                     <p><strong>Byggeår:</strong> 1920</p>
-                    <p><strong>Energimærke:</strong> C</p>
+                    
                     <p><strong>Offentlig vurdering:</strong> 3.800.000 DKK</p>
                   </div>
                 </div>

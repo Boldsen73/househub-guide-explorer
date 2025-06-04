@@ -111,7 +111,7 @@ const UploadDocuments = () => {
                     <ul className="text-sm text-blue-700 space-y-1">
                       <li>• Skøde eller ejerskifte</li>
                       <li>• Seneste BBR-udskrift</li>
-                      <li>• Energimærke</li>
+                      
                       <li>• Forsikringsoplysninger</li>
                       <li>• Huseftersynsrapport (hvis tilgængelig)</li>
                       <li>• Billeder af boligen</li>

@@ -31,7 +31,7 @@ const PropertyDataExtended = () => {
       hasGarden: false,
       hasBalcony: false,
       hasParking: false,
-      energyLabel: '',
+      
       notes: ''
     };
   });
@@ -186,27 +186,6 @@ const PropertyDataExtended = () => {
                           <SelectItem value="velholdt">Velholdt</SelectItem>
                           <SelectItem value="tiltrængerRenovering">Tiltrænger renovering</SelectItem>
                           <SelectItem value="totalRenovering">Total renovering nødvendig</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="energyLabel">Energimærke</Label>
-                      <Select
-                        value={formData.energyLabel}
-                        onValueChange={(value) => setFormData({...formData, energyLabel: value})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Vælg energimærke" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="A">A</SelectItem>
-                          <SelectItem value="B">B</SelectItem>
-                          <SelectItem value="C">C</SelectItem>
-                          <SelectItem value="D">D</SelectItem>
-                          <SelectItem value="E">E</SelectItem>
-                          <SelectItem value="F">F</SelectItem>
-                          <SelectItem value="G">G</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

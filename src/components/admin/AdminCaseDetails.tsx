@@ -76,7 +76,7 @@ const AdminCaseDetails: React.FC<AdminCaseDetailsProps> = ({
           name: realSellerData.name || 'Ukendt sælger',
           email: realSellerData.email || 'Ikke angivet',
           phone: realSellerData.phone || 'Ikke angivet',
-          expectedTimeframe: detailedCaseData.sellerExpectedTimeframe || '3-6 måneder',
+          expectedTimeframe: detailedCaseData.sellerExpectedTimeframe || 'Ikke angivet',
           priorities: detailedCaseData.sellerPriorities || ['Høj pris', 'Hurtig salg']
         },
         sellerName: realSellerData.name || 'Ukendt sælger',
@@ -152,7 +152,7 @@ const AdminCaseDetails: React.FC<AdminCaseDetailsProps> = ({
       name: realSellerData.name || 'Ukendt sælger',
       email: realSellerData.email || 'Ikke angivet',
       phone: realSellerData.phone || 'Ikke angivet',
-      expectedTimeframe: detailedCaseData.sellerExpectedTimeframe || '3-6 måneder',
+      expectedTimeframe: detailedCaseData.sellerExpectedTimeframe || 'Ikke angivet',
       priorities: detailedCaseData.sellerPriorities || ['Høj pris', 'Hurtig salg']
     } : caseData.seller
   } : caseData;
@@ -316,7 +316,7 @@ const AdminCaseDetails: React.FC<AdminCaseDetailsProps> = ({
                 </div>
                 <div>
                   <Label>Ønsket tidsramme</Label>
-                  <p className="text-sm">{displayData.seller?.expectedTimeframe || '3-6 måneder'}</p>
+                  <p className="text-sm">{displayData.seller?.expectedTimeframe || 'Ikke angivet'}</p>
                 </div>
                 <div>
                   <Label className="flex items-center gap-2">
