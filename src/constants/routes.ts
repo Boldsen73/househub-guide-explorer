@@ -1,3 +1,4 @@
+// src/constants/routes.ts
 
 export const ROUTES = {
   // General routes
@@ -8,9 +9,9 @@ export const ROUTES = {
   ABOUT: '/om',
   ABOUT_US: '/om-os',
   CONTACT: '/kontakt',
-  HOW_IT_WORKS: '/hvordan-virker-det',
+  HOW_IT_WORKS: '/hvordan-virker-det', // Overvej at ændre denne til /how-it-works for konsistens
 
-  // Seller routes
+  // Seller routes (disse er nu konsistente og bruger 'seller')
   SELLER_START: '/seller',
   SELLER_SIGNUP: '/seller/signup',
   SELLER_LOGIN: '/seller/login',
@@ -36,15 +37,15 @@ export const ROUTES = {
   SELLER_UPLOAD_DOCUMENTS: '/seller/upload-documents',
   SELLER_WAITING_FOR_OFFERS: '/seller/waiting-for-offers',
 
-  // Agent routes - converted to English
+  // Agent routes (disse er nu KORRIGERET og bruger 'agent' og engelske termer)
   AGENT_START: '/agent',
   AGENT_SIGNUP: '/agent/signup',
   AGENT_LOGIN: '/agent/login',
   AGENT_DASHBOARD: '/agent/dashboard',
   AGENT_BROWSE_CASES: '/agent/browse-cases',
-  AGENT_CASE_DETAIL: '/agent/case/:id',
+  AGENT_CASE_DETAIL: '/agent/case/:id', // Den primære rute for sagsdetaljer
   AGENT_SUBMIT_OFFER: '/agent/submit-offer/:id',
-  AGENT_VIEW_OFFER: '/agent/offer/:id',
+  AGENT_VIEW_OFFER: '/agent/view-offer/:id',
   AGENT_MY_OFFERS: '/agent/my-offers',
   AGENT_MESSAGES: '/agent/messages',
   AGENT_PROFILE: '/agent/profile',
@@ -54,14 +55,19 @@ export const ROUTES = {
   AGENT_TERMS: '/agent/terms',
   AGENT_CONFIRMATION: '/agent/confirmation',
 
+  // Overvej at fjerne disse alternative ruter, hvis de ikke bruges aktivt,
+  // da de kan skabe forvirring og duplikering.
+  AGENT_BROWSE_CASES_ALT: '/agent/browse-cases-alt', // Hvis du kun har én browse-cases, fjern denne
+  AGENT_CASE_DETAIL_ALT: '/agent/case-detail-alt/:id', // Hvis du kun har én case-detail, fjern denne
+
   // Admin routes
   ADMIN_LOGIN: '/admin/login',
   ADMIN_DASHBOARD: '/admin/dashboard',
 
   // Legal routes
-  PRIVACY_POLICY: '/privatlivspolitik',
-  TERMS_AND_CONDITIONS: '/vilkaar',
+  PRIVACY_POLICY: '/privacy-policy', // Tidligere /privatlivs-politik
+  TERMS_AND_CONDITIONS: '/terms-and-conditions', // Tidligere /vilkaar
 
-  // 404 route
-  NOT_FOUND: '*',
+  // 404 Not Found route
+  NOT_FOUND: '*', // Standard catch-all for ukendte ruter
 };
