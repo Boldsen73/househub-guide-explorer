@@ -27,7 +27,7 @@ const Navigation = () => {
   const isLoggedIn = !!(currentUser && typeof currentUser === 'object' && currentUser.id);
 
   const isSellerLoggedIn = isLoggedIn && (location.pathname.includes('/seller/') || currentUser.role === 'seller');
-  const isAgentLoggedIn = isLoggedIn && (location.pathname.includes('/maegler/') || currentUser.role === 'agent');
+  const isAgentLoggedIn = isLoggedIn && (location.pathname.includes('/agent/') || currentUser.role === 'agent');
 
   const handleLogout = () => {
     console.log('Logging out user...');

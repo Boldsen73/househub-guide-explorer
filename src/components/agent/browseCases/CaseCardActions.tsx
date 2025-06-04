@@ -22,7 +22,7 @@ const CaseCardActions: React.FC<CaseCardActionsProps> = ({
 }) => {
   const handleContactSeller = () => {
     // Navigate to messages page with this case pre-selected
-    window.location.href = `/maegler/beskeder?case=${caseId}`;
+    window.location.href = `/agent/messages?case=${caseId}`;
   };
 
   return (
@@ -32,7 +32,7 @@ const CaseCardActions: React.FC<CaseCardActionsProps> = ({
           <Button 
             size="sm" 
             className="flex-1 bg-green-600 hover:bg-green-700"
-            onClick={() => window.location.href = `/maegler/sag/${caseId}`}
+            onClick={() => window.location.href = `/agent/case/${caseId}`}
           >
             Se sag & afgiv tilbud
           </Button>
@@ -52,7 +52,7 @@ const CaseCardActions: React.FC<CaseCardActionsProps> = ({
           <Button 
             size="sm" 
             className="flex-1 bg-blue-600 hover:bg-blue-700"
-            onClick={() => window.location.href = `/maegler/sag/${caseId}`}
+            onClick={() => window.location.href = `/agent/case/${caseId}`}
           >
             Se afgivet tilbud
             {newMessageCount > 0 && (
@@ -89,7 +89,7 @@ const CaseCardActions: React.FC<CaseCardActionsProps> = ({
             size="sm" 
             variant="outline"
             className="flex-1"
-            onClick={() => window.location.href = `/maegler/sag/${caseId}`}
+            onClick={() => window.location.href = `/agent/case/${caseId}`}
           >
             Se vundet sag
           </Button>

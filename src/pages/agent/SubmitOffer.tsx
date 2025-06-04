@@ -92,7 +92,7 @@ const SubmitOffer = () => {
               <Badge variant="outline" className="text-green-600 border-green-600">
                 {currentUser?.name || 'Mægler'} - Aktiv
               </Badge>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/maegler/gennemse-sager')}>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/agent/browse-cases')}>
                 Log ud
               </Button>
             </div>
@@ -103,7 +103,7 @@ const SubmitOffer = () => {
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <Link to="/maegler/gennemse-sager" className="text-blue-600 hover:underline mb-2 inline-block">
+            <Link to="/agent/browse-cases" className="text-blue-600 hover:underline mb-2 inline-block">
               ← Tilbage til sager
             </Link>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -259,12 +259,12 @@ const SubmitOffer = () => {
                   </div>
                   
                   <div className="flex gap-4 pt-6">
-                    <Link to="/maegler/gennemse-sager" className="flex-1">
+                    <Link to="/agent/browse-cases" className="flex-1">
                       <Button type="button" variant="outline" className="w-full">
                         Gem som kladde
                       </Button>
                     </Link>
-                    <Link to="/maegler/betingelser" className="flex-1">
+                    <Link to="/agent/terms" className="flex-1">
                       <Button className="w-full">
                         Fortsæt til betingelser
                       </Button>

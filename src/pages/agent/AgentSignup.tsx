@@ -195,7 +195,7 @@ const AgentSignup = () => {
 
                 <div className="text-center text-sm text-gray-600">
                   Har du allerede en profil?{' '}
-                  <a href="/maegler/login" className="text-blue-600 hover:underline font-medium">
+                  <a href="/agent/login" className="text-blue-600 hover:underline font-medium">
                     Log ind her
                   </a>
                 </div>

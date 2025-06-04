@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from './components/ScrollToTop';
 import { ROUTES } from './constants/routes';
 
@@ -121,39 +121,25 @@ const App = () => (
           {/* Agent routes - updated to English paths */}
           <Route path={ROUTES.AGENT_START} element={<AgentStart />} />
           <Route path="/agent/start" element={<AgentStart />} />
-          <Route path="/maegler" element={<AgentStart />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_SIGNUP} element={<AgentSignup />} />
-          <Route path="/maegler/opret-bruger" element={<AgentSignup />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_LOGIN} element={<AgentLogin />} />
-          <Route path="/maegler/login" element={<AgentLogin />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_DASHBOARD} element={<AgentDashboard />} />
-          <Route path="/maegler/dashboard" element={<AgentDashboard />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_BROWSE_CASES} element={<BrowseCases />} />
-          <Route path="/maegler/gennemse-sager" element={<BrowseCases />} /> {/* Legacy redirect */}
-          <Route path="/maegler/browse-cases" element={<BrowseCases />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_CASE_DETAIL} element={<CaseDetailsPage />} />
-          <Route path="/maegler/case/:id" element={<CaseDetailsPage />} /> {/* Legacy redirect */}
-          <Route path="/maegler/sag/:id" element={<AgentCaseDetail />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_SUBMIT_OFFER} element={<SubmitOffer />} />
-          <Route path="/maegler/afgiv-tilbud/:id" element={<SubmitOffer />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_VIEW_OFFER} element={<ViewOffer />} />
-          <Route path="/maegler/tilbud/:id" element={<ViewOffer />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_MY_OFFERS} element={<AgentMyOffers />} />
-          <Route path="/maegler/mine-tilbud" element={<AgentMyOffers />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_MESSAGES} element={<AgentMessages />} />
-          <Route path="/maegler/beskeder" element={<AgentMessages />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_PROFILE} element={<AgentProfile />} />
-          <Route path="/maegler/profil" element={<AgentProfile />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_SETTINGS} element={<AgentSettings />} />
-          <Route path="/maegler/indstillinger" element={<AgentSettings />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_STATISTICS} element={<AgentStatistics />} />
-          <Route path="/maegler/statistik" element={<AgentStatistics />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_ARCHIVE} element={<AgentArchive />} />
-          <Route path="/maegler/arkiv" element={<AgentArchive />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_TERMS} element={<AgentTerms />} />
-          <Route path="/maegler/vilkaar" element={<AgentTerms />} /> {/* Legacy redirect */}
-          <Route path={ROUTES.AGENT_CONFIRMATION} element={<AgentConfirmation />} />
-          <Route path="/maegler/bekræftelse" element={<AgentConfirmation />} /> {/* Legacy redirect */}
+          {/* Legacy redirects - keep for backwards compatibility */}
+          <Route path="/maegler" element={<Navigate to="/agent" replace />} />
+          <Route path="/maegler/opret-bruger" element={<Navigate to="/agent/signup" replace />} />
+          <Route path="/maegler/login" element={<Navigate to="/agent/login" replace />} />
+          <Route path="/maegler/dashboard" element={<Navigate to="/agent/dashboard" replace />} />
+          <Route path="/maegler/gennemse-sager" element={<Navigate to="/agent/browse-cases" replace />} />
+          <Route path="/maegler/browse-cases" element={<Navigate to="/agent/browse-cases" replace />} />
+          <Route path="/maegler/case/:id" element={<Navigate to="/agent/case/:id" replace />} />
+          <Route path="/maegler/sag/:id" element={<Navigate to="/agent/case/:id" replace />} />
+          <Route path="/maegler/afgiv-tilbud/:id" element={<Navigate to="/agent/submit-offer/:id" replace />} />
+          <Route path="/maegler/tilbud/:id" element={<Navigate to="/agent/view-offer/:id" replace />} />
+          <Route path="/maegler/mine-tilbud" element={<Navigate to="/agent/my-offers" replace />} />
+          <Route path="/maegler/beskeder" element={<Navigate to="/agent/messages" replace />} />
+          <Route path="/maegler/profil" element={<Navigate to="/agent/profile" replace />} />
+          <Route path="/maegler/indstillinger" element={<Navigate to="/agent/settings" replace />} />
+          <Route path="/maegler/statistik" element={<Navigate to="/agent/statistics" replace />} />
+          <Route path="/maegler/arkiv" element={<Navigate to="/agent/archive" replace />} />
+          <Route path="/maegler/vilkaar" element={<Navigate to="/agent/terms" replace />} />
+          <Route path="/maegler/bekræftelse" element={<Navigate to="/agent/confirmation" replace />} />
 
           {/* Admin routes */}
           <Route path={ROUTES.ADMIN_LOGIN} element={<AdminLogin />} />

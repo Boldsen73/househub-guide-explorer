@@ -33,7 +33,7 @@ const CaseStatusAlerts: React.FC<CaseStatusAlertsProps> = ({
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => navigate(`/maegler/rediger-tilbud/${caseId}`)}
+                onClick={() => navigate(`/agent/edit-offer/${caseId}`)}
                 className="border-blue-300 text-blue-700 hover:bg-blue-100"
               >
                 <Edit className="h-4 w-4 mr-2" />

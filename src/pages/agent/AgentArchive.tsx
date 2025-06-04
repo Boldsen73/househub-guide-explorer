@@ -94,7 +94,7 @@ const AgentArchive = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link to="/maegler/dashboard">
+            <Link to="/agent/dashboard">
               <Button variant="outline" size="sm" className="transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-md">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Tilbage til dashboard

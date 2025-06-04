@@ -53,7 +53,7 @@ const AdminViewAsAgent: React.FC<AdminViewAsAgentProps> = ({
       id: 3,
       name: 'Lars Petersen',
       agency: 'Boligmægleren',
-      email: 'lars@boligmaegleren.dk',
+      email: 'lars@realestate.dk',
       casesWon: 15,
       averageCommission: 65000,
       responseRate: 92

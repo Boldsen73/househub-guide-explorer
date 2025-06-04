@@ -51,7 +51,7 @@ const ViewOffer = () => {
       <nav className="bg-white shadow-sm border-b border-gray-100">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/maegler/gennemse-sager" className="flex items-center text-blue-600 hover:text-blue-700">
+            <Link to="/agent/browse-cases" className="flex items-center text-blue-600 hover:text-blue-700">
               <ArrowLeft className="mr-2 h-5 w-5" />
               <span className="text-lg font-medium">Tilbage til sager</span>
             </Link>
@@ -164,13 +164,13 @@ const ViewOffer = () => {
               Dit tilbud er nu hos sælgeren. Du vil modtage besked, så snart sælgeren har taget en beslutning.
             </p>
             <div className="flex gap-4">
-              <Link to="/maegler/gennemse-sager">
+              <Link to="/agent/browse-cases">
                 <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-100">
                   <Eye className="w-4 h-4 mr-2" />
                   Se andre sager
                 </Button>
               </Link>
-              <Link to="/maegler/dashboard">
+              <Link to="/agent/dashboard">
                 <Button className="bg-blue-600 hover:bg-blue-700">
                   Gå til dashboard
                 </Button>

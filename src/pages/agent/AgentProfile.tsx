@@ -163,7 +163,7 @@ const AgentProfile = () => {
       <div className="container mx-auto px-6 py-8">
         <Button 
           variant="ghost" 
-          onClick={() => navigate('/maegler/dashboard')}
+          onClick={() => navigate('/agent/dashboard')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

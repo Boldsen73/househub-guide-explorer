@@ -18,7 +18,7 @@ const CaseActions: React.FC<CaseActionsProps> = ({ agentStatus, caseId }) => {
         <Button 
           size="lg" 
           className="bg-green-600 hover:bg-green-700"
-          onClick={() => navigate(`/maegler/afgiv-tilbud/${caseId}`)}
+          onClick={() => navigate(`/agent/submit-offer/${caseId}`)}
         >
           <DollarSign className="h-5 w-5 mr-2" />
           Afgiv tilbud
@@ -29,7 +29,7 @@ const CaseActions: React.FC<CaseActionsProps> = ({ agentStatus, caseId }) => {
         <Button 
           size="lg" 
           variant="outline"
-          onClick={() => navigate(`/maegler/rediger-tilbud/${caseId}`)}
+          onClick={() => navigate(`/agent/edit-offer/${caseId}`)}
         >
           <Edit className="h-5 w-5 mr-2" />
           Ret tilbud
@@ -38,7 +38,7 @@ const CaseActions: React.FC<CaseActionsProps> = ({ agentStatus, caseId }) => {
       
       <Button 
         variant="outline" 
-        onClick={() => navigate('/maegler/gennemse-sager')}
+        onClick={() => navigate('/agent/browse-cases')}
       >
         Tilbage til oversigt
       </Button>

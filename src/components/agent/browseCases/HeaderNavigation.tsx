@@ -19,7 +19,7 @@ const HeaderNavigation = () => {
     localStorage.clear();
     sessionStorage.clear();
     // Navigate to login page
-    navigate('/maegler');
+    navigate('/agent');
   };
 
   // Get current user from localStorage with proper fallback logic
@@ -60,7 +60,7 @@ const HeaderNavigation = () => {
     <nav className="bg-white shadow-sm border-b border-gray-100">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/maegler/dashboard" className="flex items-center space-x-2">
+          <Link to="/agent/dashboard" className="flex items-center space-x-2">
             <Home className="h-8 w-8 text-blue-600" />
             <span className="text-2xl font-bold text-gray-900">HouseHub</span>
             <span className="text-lg text-gray-500">| Mægler Portal</span>
@@ -78,7 +78,7 @@ const HeaderNavigation = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link to="/maegler/profil" className="flex items-center cursor-pointer">
+                  <Link to="/agent/profile" className="flex items-center cursor-pointer">
                     Min profil
                   </Link>
                 </DropdownMenuItem>

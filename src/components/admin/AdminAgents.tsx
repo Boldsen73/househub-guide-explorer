@@ -73,7 +73,7 @@ const AdminAgents: React.FC<AdminAgentsProps> = ({ onLoginAsUser }) => {
       id: 3,
       name: "Michael Pedersen",
       agency: "Boligmægleren",
-      email: "michael.pedersen@boligmaegleren.dk",
+      email: "michael.pedersen@realestate.dk",
       phone: "+45 65 43 21 09",
       status: "Inaktiv",
       casesCount: 15,
