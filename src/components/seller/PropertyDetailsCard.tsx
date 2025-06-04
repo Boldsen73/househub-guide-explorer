@@ -61,15 +61,6 @@ const PropertyDetailsCard: React.FC<PropertyDetailsCardProps> = ({ caseDetails }
               </div>
             </div>
 
-            {caseDetails.energyLabel && (
-              <div className="flex items-center gap-3">
-                <TrendingUp className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Energimærke</p>
-                  <p className="font-medium">{caseDetails.energyLabel}</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </CardContent>

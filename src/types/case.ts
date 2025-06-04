@@ -66,7 +66,7 @@ export interface Case {
   rooms: string;
   buildYear: number;
   status: 'missing_info' | 'waiting_for_offers' | 'offers_received' | 'broker_selected' | 'completed' | 'draft' | 'active' | 'showing_booked' | 'showing_completed' | 'realtor_selected' | 'archived' | 'withdrawn';
-  energyLabel: string;
+  
   sellerComments?: string;
   comments?: string;
   publicValuation?: number | null;

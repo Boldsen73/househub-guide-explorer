@@ -87,7 +87,6 @@ export const useAgentCases = () => {
               sellerEmail: sellerInfo.email,
               sellerPhone: sellerInfo.phone,
               rooms: caseData.rooms?.toString() || "Ikke angivet",
-              energyLabel: caseData.energyLabel || "C",
               agentStatus: 'active' as CaseStatus,
               deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
             };
@@ -155,7 +154,7 @@ export const useAgentCases = () => {
                     sellerEmail: sellerInfo.email,
                     sellerPhone: sellerInfo.phone,
                     rooms: caseData.rooms?.toString() || "Ikke angivet",
-                    energyLabel: caseData.energyLabel || "C",
+                    
                     agentStatus: 'active' as CaseStatus,
                     deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
                   };
@@ -192,7 +191,7 @@ export const useAgentCases = () => {
           sellerEmail: "test@example.com",
           sellerPhone: "12345678",
           rooms: "3 værelses",
-          energyLabel: "C",
+          
           agentStatus: 'active' as CaseStatus,
           deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
         };

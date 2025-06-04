@@ -144,7 +144,7 @@ const SellerMyCase: React.FC = () => {
                         constructionYear: parsed.buildYear || enrichedCase.constructionYear || enrichedCase.buildYear,
                         rooms: parsed.rooms || enrichedCase.rooms,
                         description: parsed.notes || enrichedCase.description,
-                        energyLabel: parsed.energyLabel || enrichedCase.energyLabel
+                        
                     };
                 } catch (error) {
                     console.error('Error parsing property data:', error);

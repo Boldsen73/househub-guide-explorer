@@ -12,7 +12,6 @@ interface CaseHeaderProps {
   rooms: string;
   buildYear: number;
   municipality: string;
-  energyLabel: string;
   timeRemaining?: {
     text: string;
     color: string;
@@ -30,7 +29,6 @@ const CaseHeader: React.FC<CaseHeaderProps> = ({
   rooms,
   buildYear,
   municipality,
-  energyLabel,
   timeRemaining,
   agentStatus,
   detailedCaseData
@@ -45,7 +43,7 @@ const CaseHeader: React.FC<CaseHeaderProps> = ({
   const displayRooms = detailedCaseData?.rooms || rooms;
   const displayBuildYear = detailedCaseData?.buildYear || buildYear;
   const displayMunicipality = detailedCaseData?.municipality || municipality;
-  const displayEnergyLabel = detailedCaseData?.energyLabel || energyLabel;
+  
 
   return (
     <Card className="mb-6">
@@ -92,9 +90,6 @@ const CaseHeader: React.FC<CaseHeaderProps> = ({
         <div className="mt-4 flex items-center gap-2">
           <MapPin className="h-4 w-4 text-gray-500" />
           <span className="text-gray-600">{displayMunicipality}</span>
-          <Badge variant="outline" className="ml-2">
-            Energimærke {displayEnergyLabel}
-          </Badge>
         </div>
       </CardContent>
     </Card>

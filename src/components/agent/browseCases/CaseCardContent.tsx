@@ -78,13 +78,6 @@ const CaseCardContent: React.FC<CaseCardContentProps> = ({
         <span>{caseItem.address}</span>
       </div>
 
-      {/* Energy Label */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-500">Energimærke:</span>
-        <Badge variant="outline" className="text-xs">
-          {caseItem.energyLabel}
-        </Badge>
-      </div>
     </CardContent>
   );
 };

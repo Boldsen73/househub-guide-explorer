@@ -25,7 +25,7 @@ const PropertyData = () => {
     størrelse: '',
     byggeår: '',
     rooms: '',
-    energyLabel: '', // <--- Tilføjet energyLabel til formData state
+    
   });
 
   // Indlæs brugerens adressedata ved komponent-mount
@@ -117,7 +117,7 @@ const PropertyData = () => {
         size: parseInt(formData.størrelse) || 0,
         buildYear: formData.byggeår ? parseInt(formData.byggeår) : undefined,
         rooms: parseInt(formData.rooms) || 0,
-        energyLabel: formData.energyLabel, // <--- Tilføjet energyLabel til localStorage data
+        
       };
 
       localStorage.setItem('propertyData', JSON.stringify(propertyFormData));
@@ -218,21 +218,6 @@ const PropertyData = () => {
                 />
             </div>
 
-            {/* NY SEKTION: Energimærke */}
-            <div className="space-y-4">
-                <Label htmlFor="energyLabel">Energimærke</Label>
-                <Input
-                    id="energyLabel"
-                    type="text" // Eller 'select' hvis du har faste muligheder
-                    value={formData.energyLabel}
-                    onChange={(e) => handleInputChange('energyLabel', e.target.value)}
-                    placeholder="f.eks. A, B, C, A2020"
-                />
-                <p className="text-sm text-gray-500">
-                  Indtast energimærke (f.eks. A, B, C, A2020)
-                </p>
-            </div>
-            {/* SLUT NY SEKTION: Energimærke */}
 
 
             {/* Gem knap */}
