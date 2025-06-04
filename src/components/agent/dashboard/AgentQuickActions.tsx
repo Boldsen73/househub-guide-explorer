@@ -22,7 +22,7 @@ const AgentQuickActions: React.FC = () => {
               <p className="text-gray-600 mb-4">
                 Gennemse tilgængelige boligsager og afgiv tilbud
               </p>
-              <Link to="/maegler/gennemse-sager">
+              <Link to="/agent/browse-cases">
                 <Button className="w-full">
                   Gennemse sager
                 </Button>
@@ -39,7 +39,7 @@ const AgentQuickActions: React.FC = () => {
               <p className="text-gray-600 mb-4">
                 Kommuniker med sælgere og følg op på tilbud
               </p>
-              <Link to="/maegler/beskeder">
+              <Link to="/agent/messages">
                 <Button variant="outline" className="w-full">
                   Åbn beskeder
                 </Button>
@@ -56,7 +56,7 @@ const AgentQuickActions: React.FC = () => {
               <p className="text-gray-600 mb-4">
                 Se din performance og succesrate
               </p>
-              <Link to="/maegler/statistik">
+              <Link to="/agent/statistics">
                 <Button variant="outline" className="w-full">
                   Se statistikker
                 </Button>

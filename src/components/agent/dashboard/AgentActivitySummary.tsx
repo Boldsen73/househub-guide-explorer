@@ -80,12 +80,12 @@ const AgentActivitySummary: React.FC = () => {
         </div>
 
         <div className="space-x-0 md:space-x-4 space-y-4 md:space-y-0 flex flex-col md:flex-row justify-center items-center">
-          <Link to="/maegler/gennemse-sager">
+          <Link to="/agent/browse-cases">
             <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-auto">
               Gennemse sager
             </Button>
           </Link>
-          <Link to="/maegler/statistik">
+          <Link to="/agent/statistics">
             <Button size="lg" variant="outline" className="w-full md:w-auto">
               Se statistikker
             </Button>

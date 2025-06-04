@@ -61,11 +61,11 @@ export const useTestAuth = () => {
             case 'seller':
               // Check if seller has existing case, if so go to Min sag, otherwise dashboard
               const hasCase = localStorage.getItem('seller_has_active_case') === 'true';
-              navigate(hasCase ? '/saelger/min-sag' : '/saelger/dashboard');
+              navigate(hasCase ? '/seller/my-case' : '/seller/dashboard');
               break;
             case 'agent':
               // Agents go to browse cases (Åbne sager)
-              navigate('/maegler/gennemse-sager');
+              navigate('/agent/browse-cases');
               break;
             default:
               navigate('/');

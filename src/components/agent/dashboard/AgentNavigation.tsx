@@ -68,7 +68,7 @@ const AgentNavigation: React.FC = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link to="/maegler/profil" className="flex items-center cursor-pointer">
+                  <Link to="/agent/profile" className="flex items-center cursor-pointer">
                     Min profil
                   </Link>
                 </DropdownMenuItem>

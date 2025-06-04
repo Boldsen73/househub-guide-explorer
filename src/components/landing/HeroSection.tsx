@@ -47,7 +47,7 @@ const HeroSection = () => {
               </p>
               
               <div className="flex justify-start">
-                <Link to="/saelger/dashboard">
+                <Link to="/seller/dashboard">
                   <Button size="lg" className="px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 rounded-lg bg-white text-blue-900 hover:bg-blue-50 font-semibold hover:scale-105">
                     <ArrowRight className="mr-2 h-5 w-5" />
                     Vend tilbage til Min side
@@ -79,7 +79,7 @@ const HeroSection = () => {
               
               <div className="flex justify-start">
                 <div className="text-left">
-                  <Link to="/saelger/start">
+                  <Link to="/seller/start">
                     <Button size="lg" className="px-10 py-5 text-xl shadow-xl hover:shadow-2xl transition-all duration-300 rounded-lg bg-white text-blue-900 hover:bg-blue-50 font-semibold hover:scale-105">
                       <Home className="mr-3 h-6 w-6" />
                       Start dit boligsalg her

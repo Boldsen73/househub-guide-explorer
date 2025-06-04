@@ -45,7 +45,7 @@ const AgentHeroSection: React.FC = () => {
           Klar til at finde din næste sag? Se nye tilbud og administrer din portefølje.
         </p>
         <div className="mt-6">
-          <Link to="/maegler/gennemse-sager">
+          <Link to="/agent/browse-cases">
             <Button size="lg" className="bg-green-500 hover:bg-green-600 text-white">
               Se aktuelle sager
             </Button>

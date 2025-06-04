@@ -31,7 +31,7 @@ const SellerStart = () => {
             </CardHeader>
             <CardContent className="p-8 space-y-8"> {/* Increased spacing */}
               <div>
-                <Link to="/saelger/opret-bruger" className="block">
+                <Link to="/seller/signup" className="block">
                   <Button size="lg" className="w-full h-16 text-lg">
                     <UserPlus className="mr-2 h-5 w-5" /> Opret ny bruger
                   </Button>
@@ -43,7 +43,7 @@ const SellerStart = () => {
               
               <div>
                 {/* Updated link to point to the new seller login page */}
-                <Link to="/saelger/login" className="block"> 
+                <Link to="/seller/login" className="block"> 
                   <Button size="lg" variant="outline" className="w-full h-16 text-lg">
                     <LogIn className="mr-2 h-5 w-5" /> Log ind
                   </Button>

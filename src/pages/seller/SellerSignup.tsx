@@ -176,7 +176,7 @@ const SellerSignup = () => {
         title: 'Succes',
         description: 'Din bruger er oprettet.',
       });
-      navigate('/saelger/dashboard');
+      navigate('/seller/dashboard');
     } catch (error) {
       toast({
         title: 'Fejl',
