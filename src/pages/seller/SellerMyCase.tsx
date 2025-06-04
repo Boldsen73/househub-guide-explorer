@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { da } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Navigation from '../../components/Navigation';
@@ -196,9 +198,15 @@ const SellerMyCase: React.FC = () => {
         setBookedShowingDetails(newShowingDetails);
         setShowBookingForm(false);
         setShowingCompleted(false);
+        
+        // Format the date properly for display
+        const formattedDate = date instanceof Date 
+            ? format(date, 'EEEE d. MMMM yyyy', { locale: da })
+            : date;
+            
         toast({
             title: "Fremvisning booket!",
-            description: `Din fremvisning er booket til ${date} kl. ${time}.`,
+            description: `Din fremvisning er booket til ${formattedDate} kl. ${time}.`,
         });
         setCaseDetails((prevDetails: any) => ({
             ...prevDetails,
