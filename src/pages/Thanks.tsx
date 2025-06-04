@@ -34,7 +34,7 @@ const Thanks = () => {
                   <div className="space-y-2 text-sm text-gray-600">
                     <p>• Læse vores guide til <Link to="/hvordan-det-virker" className="text-blue-600 hover:underline">hvordan HouseHub virker</Link></p>
                     <p>• Besøge vores <Link to="/om-househub" className="text-blue-600 hover:underline">Om os side</Link> for mere information</p>
-                    <p>• Starte din <Link to="/saelger/start" className="text-blue-600 hover:underline">boligsalg proces</Link></p>
+                    <p>• Starte din <Link to="/seller" className="text-blue-600 hover:underline">boligsalg proces</Link></p>
                   </div>
                 </div>
                 

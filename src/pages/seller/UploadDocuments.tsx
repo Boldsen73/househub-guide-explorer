@@ -200,12 +200,12 @@ const UploadDocuments = () => {
               </div>
               
               <div className="flex gap-4 pt-6">
-                <Link to="/saelger/salgsonsker" className="flex-1">
+                <Link to="/seller/seller-wishes" className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     Tilbage
                   </Button>
                 </Link>
-                <Link to="/saelger/betingelser" className="flex-1">
+                <Link to="/seller/terms" className="flex-1">
                   <Button className="w-full">
                     Næste
                   </Button>

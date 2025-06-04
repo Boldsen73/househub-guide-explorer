@@ -77,12 +77,12 @@ const SellerTerms = () => {
                 </div>
                 
                 <div className="flex gap-4 pt-6">
-                  <Link to="/saelger/prisinfo" className="flex-1">
+                  <Link to="/seller/price-info" className="flex-1">
                     <Button type="button" variant="outline" className="w-full">
                       Tilbage
                     </Button>
                   </Link>
-                  <Link to="/saelger/info" className="flex-1">
+                  <Link to="/seller/seller-info" className="flex-1">
                     <Button 
                       className="w-full"
                       disabled={!acceptTerms || !acceptPrivacy}

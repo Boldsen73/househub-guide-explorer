@@ -206,12 +206,12 @@ const WaitingForOffers = () => {
 
           {/* Navigation */}
           <div className="flex justify-between items-center mt-8">
-            <Link to="/saelger/dashboard">
+            <Link to="/seller/dashboard">
               <Button variant="outline">
                 Tilbage til dashboard
               </Button>
             </Link>
-            <Link to="/saelger/min-sag">
+            <Link to="/seller/my-case">
               <Button className="flex items-center gap-2">
                 Se min sag
                 <ArrowRight className="h-4 w-4" />

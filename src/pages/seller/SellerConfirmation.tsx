@@ -76,7 +76,7 @@ const SellerConfirmation = () => {
                       Til forsiden
                     </Button>
                   </Link>
-                  <Link to="/saelger/min-sag" className="flex-1"> {/* Added Link to Min Sag */}
+                  <Link to="/seller/my-case" className="flex-1"> {/* Added Link to Min Sag */}
                     <Button className="w-full">
                        Se Min Sag
                     </Button>

@@ -50,7 +50,7 @@ export const useAdminAuth = () => {
       }
 
       // Regular user login for sellers
-      if (email.includes('saelger') || email.includes('seller')) {
+      if (email.includes('seller')) {
         const sellerUser: User = {
           id: 'seller-1',
           email,
@@ -59,7 +59,7 @@ export const useAdminAuth = () => {
         };
         localStorage.setItem('currentUser', JSON.stringify(sellerUser));
         setUser(sellerUser);
-        navigate('/saelger/min-sag');
+        navigate('/seller/my-case');
         return { success: true };
       }
 
@@ -73,7 +73,7 @@ export const useAdminAuth = () => {
       };
       localStorage.setItem('currentUser', JSON.stringify(agentUser));
       setUser(agentUser);
-      navigate('/maegler/dashboard');
+      navigate('/agent/dashboard');
       return { success: true };
 
     } catch (error) {

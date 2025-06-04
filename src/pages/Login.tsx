@@ -108,7 +108,7 @@ const Login = () => {
                   <Home className="w-4 h-4 mr-1" /> Tilbage til forsiden
                 </Link>
                 <Link
-                  to="/saelger/opret-bruger"
+                  to="/seller/signup"
                   className="text-blue-600 hover:underline"
                 >
                   Opret ny bruger

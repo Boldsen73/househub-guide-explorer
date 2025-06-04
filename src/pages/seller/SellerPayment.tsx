@@ -65,7 +65,7 @@ const SellerPayment = () => {
 
       // Redirect to confirmation
       setTimeout(() => {
-        navigate('/saelger/bekraeftelse');
+        navigate('/seller/confirmation');
       }, 1000);
 
     } catch (error) {
@@ -235,7 +235,7 @@ const SellerPayment = () => {
                 </div>
                 
                 <div className="flex gap-4 pt-6">
-                  <Link to="/saelger/info" className="flex-1">
+                  <Link to="/seller/seller-info" className="flex-1">
                     <Button type="button" variant="outline" className="w-full" disabled={isProcessing}>
                       Tilbage
                     </Button>

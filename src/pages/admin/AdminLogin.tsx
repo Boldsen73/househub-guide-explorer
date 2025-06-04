@@ -110,7 +110,7 @@ const AdminLogin = () => {
                   <Home className="w-4 h-4 mr-1" /> Til forsiden
                 </Link>
                 <Link
-                  to="/saelger/opret-bruger"
+                  to="/seller/signup"
                   className="text-blue-600 hover:underline"
                 >
                   Opret sælger-bruger

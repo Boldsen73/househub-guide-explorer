@@ -251,12 +251,12 @@ const PropertyDataExtended = () => {
                 </div>
                 
                 <div className="flex gap-4 pt-6">
-                  <Link to="/saelger/dashboard" className="flex-1">
+                  <Link to="/seller/dashboard" className="flex-1">
                     <Button type="button" variant="outline" className="w-full">
                       Tilbage
                     </Button>
                   </Link>
-                  <Link to="/saelger/salgsønsker" className="flex-1">
+                  <Link to="/seller/seller-wishes" className="flex-1">
                     <Button 
                       className="w-full"
                       disabled={!formData.address || !formData.postalCode || !formData.city || !formData.propertyType || !formData.size}

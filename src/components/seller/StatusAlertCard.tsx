@@ -27,7 +27,7 @@ const StatusAlertCard: React.FC<StatusAlertCardProps> = ({ status, details, brok
       content = (
         <>
           <p className="text-yellow-700 mb-4">{details || "Der mangler vigtige oplysninger om din bolig."}</p>
-          <Link to="/saelger/boligdata">
+          <Link to="/seller/property-data">
             <Button variant="outline">Udfyld oplysninger</Button>
           </Link>
         </>

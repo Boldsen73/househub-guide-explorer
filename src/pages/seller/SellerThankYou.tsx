@@ -53,7 +53,7 @@ const SellerThankYou = () => {
                 Til forsiden
               </Button>
               <Button 
-                onClick={() => navigate('/saelger/min-sag')}
+                onClick={() => navigate('/seller/my-case')}
                 className="flex-1 bg-blue-600 hover:bg-blue-700"
               >
                 Se min sag

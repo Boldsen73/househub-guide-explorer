@@ -127,12 +127,12 @@ const SellerInfo = () => {
               </div>
               
               <div className="flex gap-4 pt-6">
-                <Link to="/saelger/betingelser" className="flex-1">
+                <Link to="/seller/terms" className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     Tilbage
                   </Button>
                 </Link>
-                <Link to="/saelger/betaling" className="flex-1">
+                <Link to="/seller/payment" className="flex-1">
                   <Button className="w-full flex items-center">
                     Fortsæt til betaling
                     <ArrowDown className="ml-2 h-4 w-4 rotate-[-90deg]" />

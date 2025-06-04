@@ -31,7 +31,7 @@ const SellerMessages = () => {
               <AlertCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h2 className="text-xl font-semibold mb-2">Ingen aktiv sag</h2>
               <p className="text-gray-600 mb-4">Du har ikke nogen aktiv sag endnu.</p>
-              <Link to="/saelger/dashboard">
+              <Link to="/seller/dashboard">
                 <Button>Tilbage til dashboard</Button>
               </Link>
             </CardContent>
@@ -101,7 +101,7 @@ const SellerMessages = () => {
                   Når mæglere tilmelder sig din sag, kan du kommunikere med dem her.
                 </p>
                 {sellerCase.status === 'active' && (
-                  <Link to="/saelger/min-sag">
+                  <Link to="/seller/my-case">
                     <Button>Book fremvisning først</Button>
                   </Link>
                 )}
@@ -110,7 +110,7 @@ const SellerMessages = () => {
           )}
 
           <div className="flex justify-center mt-8">
-            <Link to="/saelger/dashboard">
+            <Link to="/seller/dashboard">
               <Button variant="outline">Tilbage til dashboard</Button>
             </Link>
           </div>

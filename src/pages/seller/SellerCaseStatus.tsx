@@ -489,7 +489,7 @@ const SellerCaseStatus = () => {
           )}
 
           <div className="flex justify-between items-center mt-8">
-            <Link to="/saelger/dashboard">
+            <Link to="/seller/dashboard">
               <Button variant="outline">
                 Tilbage til dashboard
               </Button>

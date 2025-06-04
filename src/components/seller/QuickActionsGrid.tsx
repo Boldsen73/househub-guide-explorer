@@ -7,7 +7,7 @@ import { Home, Eye, MessageSquare, Plus } from 'lucide-react';
 const QuickActionsGrid = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <Link to="/saelger/opret-sag">
+      <Link to="/seller/property-data-new">
         <Card className="hover:shadow-2xl transition-all duration-300 ease-in-out border-2 border-transparent hover:border-blue-200 cursor-pointer group hover:scale-105 hover:-translate-y-1">
           <CardContent className="p-6">
             <div className="flex items-center">
@@ -23,7 +23,7 @@ const QuickActionsGrid = () => {
         </Card>
       </Link>
 
-      <Link to="/saelger/min-sag">
+      <Link to="/seller/my-case">
         <Card className="hover:shadow-2xl transition-all duration-300 ease-in-out border-2 border-transparent hover:border-green-200 cursor-pointer group hover:scale-105 hover:-translate-y-1">
           <CardContent className="p-6">
             <div className="flex items-center">

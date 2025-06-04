@@ -31,7 +31,7 @@ const SellerThankYouPage = () => {
               Du kan se status for din sag, inklusiv den valgte mægler, på din sagsside.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link to="/saelger/min-sag">
+              <Link to="/seller/my-case">
                 <Button variant="outline" className="w-full sm:w-auto">
                   <CheckCircle className="mr-2 h-5 w-5" />
                   Tilbage til Min Sag

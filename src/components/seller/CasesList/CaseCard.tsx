@@ -95,13 +95,13 @@ const CaseCard: React.FC<CaseCardProps> = ({ case_ }) => {
         <CaseEnhancedInfo case_={case_} />
 
         <div className="flex gap-3">
-          <Link to={`/saelger/min-sag`} className="flex-1">
+          <Link to={`/seller/my-case`} className="flex-1">
             <Button className="w-full" variant="default">
               <TrendingUp className="h-4 w-4 mr-2" />
               Se tilbud
             </Button>
           </Link>
-          <Link to={`/saelger/beskeder`} className="flex-1">
+          <Link to={`/seller/messages`} className="flex-1">
             <Button className="w-full" variant="outline">
               <MessageSquare className="h-4 w-4 mr-2" />
               Beskeder
