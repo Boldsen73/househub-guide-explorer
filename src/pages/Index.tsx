@@ -1,3 +1,4 @@
+// src/pages/Index.tsx
 
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
@@ -9,12 +10,13 @@ import TestimonialsSection from '../components/landing/TestimonialsSection';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Building } from 'lucide-react';
+import { ROUTES } from '../constants/routes'; // <--- Vigtigt: Import af ROUTES
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
-      
+
       <HeroSection />
       <BenefitsSection />
       <StatisticsSection />
@@ -34,7 +36,8 @@ const Index = () => {
             <p className="text-xl text-gray-600 mb-8">
               Tilmeld dig HouseHub og få adgang til nye kunder og salgsmuligheder
             </p>
-            <Link to="/maegler/start">
+            {/* <Link to="/maegler/start"> */}
+            <Link to={ROUTES.AGENT_START}> {/* <--- KORRIGERET: Bruger ROUTES.AGENT_START */}
               <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
                 <Building className="mr-2 h-5 w-5" />
                 Opret mæglerprofil her
