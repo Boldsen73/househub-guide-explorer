@@ -128,6 +128,8 @@ const App = () => (
           <Route path={ROUTES.AGENT_CASE_DETAIL} element={<CaseDetailsPage />} />
           {/* Fix for missing route causing blank screen */}
           <Route path="/agent/cases/:id" element={<CaseDetailsPage />} />
+          {/* Additional route fix for agent case details */}
+          <Route path="/agent/case/:id" element={<CaseDetailsPage />} />
           <Route path={ROUTES.AGENT_SUBMIT_OFFER} element={<SubmitOffer />} />
           <Route path={ROUTES.AGENT_VIEW_OFFER} element={<ViewOffer />} />
           <Route path={ROUTES.AGENT_MY_OFFERS} element={<AgentMyOffers />} />

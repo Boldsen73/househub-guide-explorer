@@ -82,8 +82,15 @@ const SellerSignup = () => {
 
   // Check if email already exists
   const checkEmailExists = (email: string) => {
-    const existingUsers = getTestUsers();
-    return existingUsers.some(user => user.email.toLowerCase() === email.toLowerCase());
+    try {
+      const testUsers = getTestUsers();
+      const realUsers = JSON.parse(localStorage.getItem('users') || '[]');
+      const allUsers = [...testUsers, ...realUsers];
+      return allUsers.some(user => user.email.toLowerCase() === email.toLowerCase());
+    } catch (error) {
+      console.error('Error checking email exists:', error);
+      return false; // Allow signup if check fails
+    }
   };
 
   // Validering
@@ -188,20 +195,45 @@ const SellerSignup = () => {
     }
   };
 
+  // Add debugging for validation
+  const emailValid = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email);
+  const postalCodeValid = lookupCity(formData.postalCode);
+  const passwordMatch = formData.password === formData.confirmPassword;
+  const passwordLengthValid = formData.password.length >= 8;
+  const emailDuplicationCheck = !checkEmailExists(formData.email);
+
+  console.log('Validation debug:', {
+    name: !!formData.name,
+    email: !!formData.email,
+    emailValid,
+    emailDuplicationCheck,
+    phone: !!formData.phone,
+    address: !!formData.address,
+    postalCode: !!formData.postalCode,
+    postalCodeValid,
+    city: !!formData.city,
+    password: !!formData.password,
+    confirmPassword: !!formData.confirmPassword,
+    acceptTerms: formData.acceptTerms,
+    passwordMatch,
+    passwordLengthValid
+  });
+
   const allFieldsValid =
     formData.name &&
     formData.email &&
+    emailValid &&
+    emailDuplicationCheck &&
     formData.phone &&
     formData.address &&
     formData.postalCode &&
+    postalCodeValid &&
     formData.city &&
     formData.password &&
     formData.confirmPassword &&
     formData.acceptTerms &&
-    formData.password === formData.confirmPassword &&
-    formData.password.length >= 8 &&
-    /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email) &&
-    lookupCity(formData.postalCode);
+    passwordMatch &&
+    passwordLengthValid;
 
   return (
     <>

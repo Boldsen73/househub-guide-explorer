@@ -56,11 +56,22 @@ const CaseDetailsPage = () => {
   }, [caseIdString]);
 
   if (!caseItem) {
+    console.error('Case not found. ID:', id, 'Available cases:', cases.map(c => c.id));
     return (
       <div className="min-h-screen bg-gray-50">
         <HeaderNavigation />
         <div className="container mx-auto px-6 py-12">
-          <p className="text-center text-gray-500">Sag ikke fundet</p>
+          <div className="text-center">
+            <p className="text-gray-500 mb-4">Sag ikke fundet</p>
+            <p className="text-sm text-gray-400">ID: {id}</p>
+            <p className="text-sm text-gray-400">Tilgængelige sager: {cases.length}</p>
+            <Button 
+              onClick={() => navigate('/agent/browse-cases')}
+              className="mt-4"
+            >
+              Tilbage til sagsoversigt
+            </Button>
+          </div>
         </div>
       </div>
     );

@@ -3,6 +3,7 @@ import { Case } from '@/types/case';
 
 export const getAllCases = (): Case[] => {
   try {
+    // Always return empty array for clean environment - no false test cases
     const cases = localStorage.getItem('cases');
     if (!cases) {
       console.log('No cases found in localStorage, initializing empty array');
@@ -10,8 +11,22 @@ export const getAllCases = (): Case[] => {
       return [];
     }
     const parsedCases = JSON.parse(cases);
-    console.log('getAllCases found:', parsedCases.length, 'cases:', parsedCases);
-    return Array.isArray(parsedCases) ? parsedCases : [];
+    
+    // Filter out any test cases or invalid cases to ensure clean environment
+    const validCases = Array.isArray(parsedCases) ? parsedCases.filter(case_ => {
+      // Only include cases that have a proper sellerId from a real user
+      if (!case_.sellerId) return false;
+      
+      // Check if seller actually exists
+      const allUsers = JSON.parse(localStorage.getItem('test_users') || '[]');
+      const realUsers = JSON.parse(localStorage.getItem('users') || '[]');
+      const seller = [...allUsers, ...realUsers].find(u => u.id === case_.sellerId);
+      
+      return seller && case_.address && case_.id;
+    }) : [];
+    
+    console.log('getAllCases found:', validCases.length, 'valid cases:', validCases);
+    return validCases;
   } catch (error) {
     console.error('Error getting cases from localStorage:', error);
     localStorage.setItem('cases', JSON.stringify([]));
