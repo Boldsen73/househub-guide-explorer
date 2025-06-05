@@ -21,7 +21,27 @@ export const combineAllCases = (userDataCases: Case[], sellerCases: Case[]): Cas
     buildYear: sc.buildYear || new Date().getFullYear()
   }));
 
-  const combinedCases: Case[] = [...processedUserDataCases, ...processedSellerCases];
+  // Deduplicate cases by ID - prioritize userDataCases over sellerCases
+  const seenIds = new Set<string>();
+  const deduplicatedCases: Case[] = [];
+  
+  // Add userDataCases first (higher priority)
+  processedUserDataCases.forEach(case_ => {
+    if (!seenIds.has(case_.id)) {
+      seenIds.add(case_.id);
+      deduplicatedCases.push(case_);
+    }
+  });
+  
+  // Add sellerCases only if not already seen
+  processedSellerCases.forEach(case_ => {
+    if (!seenIds.has(case_.id)) {
+      seenIds.add(case_.id);
+      deduplicatedCases.push(case_);
+    }
+  });
+
+  const combinedCases: Case[] = deduplicatedCases;
   
   console.log('Final combined data:', { 
     users: 0, // Will be filled by caller

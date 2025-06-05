@@ -3,7 +3,6 @@ import { Case } from '@/types/case';
 
 export const getAllCases = (): Case[] => {
   try {
-    // Always return empty array for clean environment - no false test cases
     const cases = localStorage.getItem('cases');
     if (!cases) {
       console.log('No cases found in localStorage, initializing empty array');

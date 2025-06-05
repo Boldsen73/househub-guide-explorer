@@ -24,10 +24,14 @@ const CaseDetailsPage = () => {
   // Ensure we have a valid string ID
   const caseIdString = id || '';
 
-  // Convert id to number for finding the case
-  const numericId = id ? parseInt(id) : 0;
+  // Handle both string and numeric IDs properly
   const caseItem = cases.find(c => {
-    return c.id === numericId; // Since id is now explicitly a number, we can compare directly
+    // Try exact string match first
+    if (typeof c.id === 'string' && c.id === id) return true;
+    // Try numeric match (convert both to numbers)
+    const numericCaseId = typeof c.id === 'string' ? parseInt(c.id) : c.id;
+    const numericParamId = id ? parseInt(id) : 0;
+    return numericCaseId === numericParamId;
   });
 
   // State for showing data

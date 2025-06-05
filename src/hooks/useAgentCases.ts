@@ -172,31 +172,10 @@ export const useAgentCases = () => {
       
       console.log('All cases found for agents:', userCases);
       
+      // No test cases - clean environment means no false data shown to agents
       if (!userCases || userCases.length === 0) {
-        console.log('No cases found for agents - creating test case for demonstration');
-        
-        // Create a test case to demonstrate the interface
-        const testCase: CaseWithStatus = {
-          id: 1,
-          address: "Vesterbrogade 115",
-          municipality: "København V",
-          type: "Lejlighed",
-          size: "76 m²",
-          price: "Ikke angivet",
-          priceValue: 0,
-          buildYear: 1920,
-          status: 'waiting_for_offers',
-          sellerId: "test-seller",
-          sellerName: "Test Sælger",
-          sellerEmail: "test@example.com",
-          sellerPhone: "12345678",
-          rooms: "3 værelses",
-          
-          agentStatus: 'active' as CaseStatus,
-          deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-        };
-        
-        setCases([testCase]);
+        console.log('No cases found for agents - clean environment with no test cases');
+        setCases([]);
         return;
       }
       

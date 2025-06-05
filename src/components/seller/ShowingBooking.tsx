@@ -152,10 +152,15 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked, initia
 
       toast({
         title: "Fremvisning booket",
-        description: `Fremvisning er planlagt til ${format(selectedDate, 'EEEE d. MMMM yyyy', { locale: da })} kl. ${selectedTime}`,
+        description: `Fremvisning er planlagt til ${format(selectedDate, 'EEEE d. MMMM yyyy', { locale: da })} kl. ${selectedTime}. Du vender nu tilbage til dit sagsoversigt.`,
       });
 
       console.log('Showing booked successfully');
+      
+      // Force navigation back to seller my-case page to show updated status
+      setTimeout(() => {
+        window.location.href = '/seller/my-case';
+      }, 1500);
 
       // Dispatch events for real-time updates to admin dashboard
       window.dispatchEvent(new CustomEvent('showingBooked', { detail: showingData }));
