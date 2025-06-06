@@ -1,4 +1,5 @@
-// Test environment setup and data management - MOCK DATABASE VERSION
+// src/utils/testData.ts
+
 export interface TestUser {
   id: string;
   email: string;
@@ -11,6 +12,8 @@ export interface TestUser {
   primaryRegion?: string;
   specialties?: string[];
   address?: string;
+  postnummer?: string;
+  city?: string;
   isActive?: boolean;
 }
 
@@ -94,212 +97,203 @@ export interface TestMessage {
   archived: boolean;
 }
 
-// 👥 Realistiske mock-brugere
-export const initializeMockUsers = () => {
-  const existingUsers = localStorage.getItem('test_users');
-  if (existingUsers && JSON.parse(existingUsers).length > 0) return;
-
-  const mockUsers: TestUser[] = [
-    {
-      id: 'admin-1',
-      email: 'admin@hh.dk',
-      password: '12345678',
-      name: 'Admin',
-      role: 'admin',
-      isActive: true
-    },
-    {
-      id: 'agent-1',
-      email: 'm1@hh.dk',
-      password: '12345678',
-      name: 'Mads Mægler',
-      role: 'agent',
-      company: 'TopMæglerne ApS',
-      isActive: true
-    },
-    {
-      id: 'agent-2',
-      email: 'm2@hh.dk',
-      password: '12345678',
-      name: 'Tina Tinglytter',
-      role: 'agent',
-      company: 'BoligEksperten',
-      isActive: true
-    },
-    {
-      id: 'seller-1',
-      email: 's1@hh.dk',
-      password: '12345678',
-      name: 'Sanne Sælger',
-      role: 'seller',
-      address: 'Hovedgaden 1, 8800 Viborg',
-      isActive: true
-    },
-    {
-      id: 'seller-2',
-      email: 's2@hh.dk',
-      password: '12345678',
-      name: 'Bent Boligejer',
-      role: 'seller',
-      address: 'Vestergade 42, 8900 Randers',
-      isActive: true
-    }
-  ];
-
-  localStorage.setItem('test_users', JSON.stringify(mockUsers));
-};
-
-// 🧼 Ryd alt og initialiser tomme arrays
-export const initializeTestEnvironment = () => {
-  localStorage.clear();
-  initializeMockUsers();
-  localStorage.setItem('test_cases', JSON.stringify([]));
-  localStorage.setItem('agent_notifications', JSON.stringify([]));
-  localStorage.setItem('case_messages', JSON.stringify([]));
-  localStorage.setItem('agentCaseStates', JSON.stringify({}));
-  localStorage.setItem('system_audit_log', JSON.stringify([]));
-};
-
-// 📥 User-funktioner
-export const getTestUsers = (): TestUser[] => {
-  const users = localStorage.getItem('test_users');
-  return users ? JSON.parse(users) : [];
-};
-
-export const addTestUser = (user: TestUser) => {
-  const users = getTestUsers();
-  const existingUser = users.find(u => u.email.toLowerCase() === user.email.toLowerCase());
-  if (existingUser) throw new Error('Email already exists');
-  users.push(user);
-  localStorage.setItem('test_users', JSON.stringify(users));
-  if (user.role === 'seller' && user.address) {
-    localStorage.setItem('seller_address_cache', user.address);
+// ✅ Testdata – 1 admin, 10 sælgere, 5 mæglere
+export const DEFAULT_TEST_USERS: TestUser[] = [
+  {
+    id: 'admin-1',
+    email: 'admin@hh.dk',
+    password: '12345678',
+    name: 'Administrator',
+    role: 'admin',
+    isActive: true
+  },
+  {
+    id: 's1',
+    name: 'Lars Nielsen',
+    email: 's1@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '12 34 56 78',
+    address: 'Vesterbrogade 1',
+    postnummer: '1620',
+    city: 'København V',
+    isActive: true
+  },
+  {
+    id: 's2',
+    name: 'Anne Andersen',
+    email: 's2@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '23 45 67 89',
+    address: 'Nørrebrogade 23',
+    postnummer: '2200',
+    city: 'København N',
+    isActive: true
+  },
+  {
+    id: 's3',
+    name: 'Peter Hansen',
+    email: 's3@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '34 56 78 90',
+    address: 'Østerbrogade 45',
+    postnummer: '2100',
+    city: 'København Ø',
+    isActive: true
+  },
+  {
+    id: 's4',
+    name: 'Maria Christensen',
+    email: 's4@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '45 67 89 01',
+    address: 'Amager Boulevard 67',
+    postnummer: '2300',
+    city: 'København S',
+    isActive: true
+  },
+  {
+    id: 's5',
+    name: 'Jens Johansen',
+    email: 's5@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '56 78 90 12',
+    address: 'Frederiksberg Allé 89',
+    postnummer: '1820',
+    city: 'Frederiksberg',
+    isActive: true
+  },
+  {
+    id: 's6',
+    name: 'Susanne Madsen',
+    email: 's6@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '67 89 01 23',
+    address: 'Valby Langgade 12',
+    postnummer: '2500',
+    city: 'Valby',
+    isActive: true
+  },
+  {
+    id: 's7',
+    name: 'Thomas Sørensen',
+    email: 's7@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '78 90 12 34',
+    address: 'Gl. Kongevej 99',
+    postnummer: '1850',
+    city: 'Frederiksberg',
+    isActive: true
+  },
+  {
+    id: 's8',
+    name: 'Karen Petersen',
+    email: 's8@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '89 01 23 45',
+    address: 'Hellerupvej 54',
+    postnummer: '2900',
+    city: 'Hellerup',
+    isActive: true
+  },
+  {
+    id: 's9',
+    name: 'Morten Holm',
+    email: 's9@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '90 12 34 56',
+    address: 'Gentoftegade 11',
+    postnummer: '2820',
+    city: 'Gentofte',
+    isActive: true
+  },
+  {
+    id: 's10',
+    name: 'Louise Lund',
+    email: 's10@hh.dk',
+    password: '12345678',
+    role: 'seller',
+    phone: '01 23 45 67',
+    address: 'Bagsværd Hovedgade 8',
+    postnummer: '2880',
+    city: 'Bagsværd',
+    isActive: true
+  },
+  {
+    id: 'm1',
+    name: 'Jesper Høj',
+    email: 'm1@hh.dk',
+    password: '12345678',
+    role: 'agent',
+    phone: '31 31 31 31',
+    company: 'Høj Mæglerfirma',
+    primaryRegion: 'Storkøbenhavn',
+    specialties: ['Villa', 'Lejlighed'],
+    isActive: true
+  },
+  {
+    id: 'm2',
+    name: 'Camilla Mægler',
+    email: 'm2@hh.dk',
+    password: '12345678',
+    role: 'agent',
+    phone: '32 32 32 32',
+    company: 'Camilla Bolig',
+    primaryRegion: 'Nordsjælland',
+    specialties: ['Rækkehus', 'Sommerhus'],
+    isActive: true
+  },
+  {
+    id: 'm3',
+    name: 'Anders Holm',
+    email: 'm3@hh.dk',
+    password: '12345678',
+    role: 'agent',
+    phone: '33 33 33 33',
+    company: 'Holm & Co',
+    primaryRegion: 'Midtjylland',
+    specialties: ['Lejlighed', 'Erhverv'],
+    isActive: true
+  },
+  {
+    id: 'm4',
+    name: 'Pernille Ejendom',
+    email: 'm4@hh.dk',
+    password: '12345678',
+    role: 'agent',
+    phone: '34 34 34 34',
+    company: 'Pernille Ejendomsmægler',
+    primaryRegion: 'Fyn',
+    specialties: ['Grund'],
+    isActive: true
+  },
+  {
+    id: 'm5',
+    name: 'Rasmus Bolig',
+    email: 'm5@hh.dk',
+    password: '12345678',
+    role: 'agent',
+    phone: '35 35 35 35',
+    company: 'BoligPartner',
+    primaryRegion: 'Sydsjælland',
+    specialties: ['Villa'],
+    isActive: true
   }
-};
+];
 
-export const updateTestUser = (userId: string, updatedData: Partial<TestUser>) => {
-  const users = getTestUsers();
-  const updatedUsers = users.map(user => user.id === userId ? { ...user, ...updatedData } : user);
-  localStorage.setItem('test_users', JSON.stringify(updatedUsers));
-  return updatedUsers;
-};
-
-export const deactivateTestUser = (userId: string) => {
-  return updateTestUser(userId, { isActive: false });
-};
-
-export const deleteTestUser = (userId: string) => {
-  const users = getTestUsers();
-  const updatedUsers = users.filter(user => user.id !== userId);
-  localStorage.setItem('test_users', JSON.stringify(updatedUsers));
-  const auditLog = JSON.parse(localStorage.getItem('system_audit_log') || '[]');
-  auditLog.push({
-    action: 'USER_DELETED',
-    userId,
-    timestamp: new Date().toISOString(),
-    adminId: JSON.parse(localStorage.getItem('currentUser') || '{}').id
-  });
-  localStorage.setItem('system_audit_log', JSON.stringify(auditLog));
-  return updatedUsers;
-};
-
-// 🔐 Login
-export const authenticateTestUser = (email: string, password: string): TestUser | null => {
-  const users = getTestUsers();
-  const user = users.find(u => u.email === email && u.password === password);
-  if (user && user.isActive !== false) {
-    localStorage.setItem('currentUser', JSON.stringify({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      name: user.name,
-      agencyName: user.company,
-      primaryRegion: user.primaryRegion,
-      specialties: user.specialties,
-      address: user.address
-    }));
-    return user;
-  }
-  return null;
-};
-
-// 📦 Cases og beskeder
-export const getTestCases = (): TestCase[] => {
-  return [];
-};
-
-export const getTestCasesForUser = (userId: string): TestCase[] => {
-  return [];
-};
-
-export const saveTestCase = (testCase: TestCase) => {
-  const cases = getTestCases();
-  const existingIndex = cases.findIndex(c => c.id === testCase.id);
-  if (existingIndex > -1) {
-    cases[existingIndex] = testCase;
-  } else {
-    cases.push(testCase);
-  }
-  localStorage.setItem('test_cases', JSON.stringify(cases));
-  console.log('Test case saved:', testCase.sagsnummer);
-};
-
-export const updateCaseStatus = (caseId: string, newStatus: TestCase['status']) => {
-  const cases = getTestCases();
-  const updatedCases = cases.map(c => c.id === caseId ? { ...c, status: newStatus } : c);
-  localStorage.setItem('test_cases', JSON.stringify(updatedCases));
-  console.log(`Case ${caseId} status updated to ${newStatus}`);
-};
-
-export const getTestCaseById = (id: string): TestCase | null => {
-  const cases = getTestCases();
-  return cases.find(c => c.id === id) || null;
-};
-
-export const getTestCaseBySagsnummer = (sagsnummer: string): TestCase | null => {
-  const cases = getTestCases();
-  return cases.find(c => c.sagsnummer === sagsnummer) || null;
-};
-
-export const generateSagsnummer = (): string => {
-  const year = new Date().getFullYear();
-  const timestamp = Date.now().toString().slice(-4);
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `HH-${year}-${timestamp}${random}`;
-};
-
-// 📨 Beskeder
-export const getCaseMessages = (caseId: string, includeArchived: boolean = false): TestMessage[] => {
-  const messages = JSON.parse(localStorage.getItem('case_messages') || '[]');
-  return messages.filter((msg: TestMessage) => msg.caseId === caseId && (includeArchived || !msg.archived));
-};
-
-export const sendMessage = (message: Omit<TestMessage, 'id' | 'timestamp'>) => {
-  const messages = JSON.parse(localStorage.getItem('case_messages') || '[]');
-  const newMessage: TestMessage = {
-    ...message,
-    id: Date.now().toString(),
-    timestamp: new Date().toISOString()
-  };
-  messages.push(newMessage);
-  localStorage.setItem('case_messages', JSON.stringify(messages));
-  return newMessage;
-};
-
-export const archiveCaseMessages = (caseId: string) => {
-  const messages = JSON.parse(localStorage.getItem('case_messages') || '[]');
-  const updatedMessages = messages.map((msg: TestMessage) =>
-    msg.caseId === caseId ? { ...msg, archived: true } : msg
-  );
-  localStorage.setItem('case_messages', JSON.stringify(updatedMessages));
-};
-
-// 🔁 Genstart miljøet
-export const resetTestEnvironment = () => {
-  initializeTestEnvironment();
-};
-
-// 🧠 Auto-udfyld
-export const getCachedSellerAddress = (): string | null => {
-  return localStorage.getItem('seller_address_cache');
+// Brug kun ved første load
+export const seedTestUsers = () => {
+  const existing = JSON.parse(localStorage.getItem('test_users') || '[]');
+  const emails = existing.map((u: TestUser) => u.email.toLowerCase());
+  const toAdd = DEFAULT_TEST_USERS.filter(user => !emails.includes(user.email.toLowerCase()));
+  const updated = [...existing, ...toAdd];
+  localStorage.setItem('test_users', JSON.stringify(updated));
 };
