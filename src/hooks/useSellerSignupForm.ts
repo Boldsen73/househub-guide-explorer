@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { danishPostalCodes } from '../data/postalCodes';
-import { getTestUsers, addTestUser } from '../utils/testData';
 import { formatPhoneNumber, validateSellerSignupForm } from '../utils/sellerSignupValidation';
-
+import { getUsers as getTestUsers, addUser as addTestUser } from '@/utils/userManagement';
 interface FormData {
   name: string;
   email: string;
