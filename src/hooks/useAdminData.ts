@@ -7,7 +7,8 @@ import {
 import {
   getTestUsers,
   TestUser as User
-} from '@/utils/testData'; // ✅ BRUG mock-brugere herfra
+} from '@/utils/userManagement'; // ✅ Opdateret import
+
 import { useCaseStatusManager } from './useCaseStatusManager';
 import { useAdminDataEvents } from './useAdminDataEvents';
 import { combineAllCases, logDataBreakdown } from '@/utils/adminDataCombiner';
