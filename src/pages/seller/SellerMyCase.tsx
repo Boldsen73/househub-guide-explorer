@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'; // Import useLocation
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { da } from 'date-fns/locale';
@@ -24,17 +23,21 @@ const SellerMyCase: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { toast } = useToast();
-    
-    // Use the dedicated hook instead of custom logic
-    const { sellerCase, isLoading, scheduleShowing, markShowingCompleted, refreshCase } = useSellerCase();
-    
-    const [showBookingForm, setShowBookingForm] = useState(false);
+    const location = useLocation(); // Brug useLocation til at få adgang til state
 
-    // Convert useSellerCase data to expected format
+    // Use the dedicated hook instead of custom logic
+    const { sellerCase, isLoading, scheduleShowing, markShowingCompleted, refreshCase } = useSellerCase(id); // Vigtigt: Send ID til useSellerCase!
+    
+    // Initialiser showBookingForm baseret på location.state
+    const [showBookingForm, setShowBookingForm] = useState(
+        (location.state as { openShowingBooking?: boolean })?.openShowingBooking || false
+    );
+
+    // Konverter useSellerCase data til forventet format (dette kan muligvis forenkles i useSellerCase hook)
     const caseDetails = sellerCase ? {
         ...sellerCase,
         sagsnummer: sellerCase.id.includes('HH-') ? sellerCase.id : `HH-${new Date().getFullYear()}-${sellerCase.id.slice(-6)}`,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(), // Antager dette, hvis det ikke kommer fra hook
         offers: sellerCase.offers || [],
         agentRegistrations: sellerCase.agentRegistrations || []
     } : null;
@@ -58,7 +61,6 @@ const SellerMyCase: React.FC = () => {
             description: "Din fremvisning er nu planlagt og mæglerne er blevet notificeret.",
         });
     };
-
 
     const handleChangeShowing = () => {
         setShowBookingForm(true);
@@ -86,7 +88,12 @@ const SellerMyCase: React.FC = () => {
     };
 
     const handleViewOffers = () => {
-        navigate(ROUTES.SELLER_OFFERS);
+        // Naviger til tilbuds-siden for den specifikke sag
+        if (caseDetails?.id) {
+            navigate(`${ROUTES.SELLER_OFFERS}/${caseDetails.id}`);
+        } else {
+            navigate(ROUTES.SELLER_OFFERS); // Fallback hvis sags-ID ikke er tilgængeligt
+        }
     };
 
     const getMainButtonText = useCallback(() => {
@@ -120,7 +127,7 @@ const SellerMyCase: React.FC = () => {
                 description: "Vent venligst på, at mæglerne afgiver tilbud.",
             });
         };
-    }, [caseDetails, bookedShowingDetails, showingCompleted, toast]);
+    }, [caseDetails, bookedShowingDetails, showingCompleted, toast, handleViewOffers]); // Tilføj handleViewOffers til dependencies
 
     if (isLoading) {
         return (
@@ -136,7 +143,7 @@ const SellerMyCase: React.FC = () => {
                 <Navigation />
                 <div className="container mx-auto px-6 py-20 text-center">
                     <h1 className="text-3xl font-bold text-gray-900 mb-4">Ingen sag fundet</h1>
-                    <p className="text-gray-600 mb-8">Der blev ikke fundet nogen sag for din bruger.</p>
+                    <p className="text-gray-600 mb-8">Der blev ikke fundet nogen sag for din bruger med ID: {id}.</p> {/* Tilføj ID for debugging */}
                     <Button onClick={() => navigate(ROUTES.SELLER_DASHBOARD)}>
                         Tilbage til dashboard
                     </Button>
@@ -220,14 +227,14 @@ const SellerMyCase: React.FC = () => {
                                         description: "Din sag er blevet annulleret.",
                                         variant: "destructive"
                                     });
-                                    navigate('/seller/dashboard');
+                                    navigate(ROUTES.SELLER_DASHBOARD);
                                 }}
                             />
                         </div>
                     </div>
 
-                    <AgentRegistrationsCard 
-                        agentRegistrations={caseDetails.agentRegistrations || []} 
+                    <AgentRegistrationsCard
+                        agentRegistrations={caseDetails.agentRegistrations || []}
                     />
                 </div>
             </div>
