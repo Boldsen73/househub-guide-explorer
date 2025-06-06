@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Home, MapPin, TrendingUp, MessageSquare, Calendar as CalendarIcon } from 'lucide-react';
 import CaseBasicInfo from './CaseBasicInfo';
 import CaseEnhancedInfo from './CaseEnhancedInfo';
+import { ROUTES } from '@/constants/routes'; // Import ROUTES
 
 interface Case {
   id: string;
@@ -89,25 +89,31 @@ const CaseCard: React.FC<CaseCardProps> = ({ case_ }) => {
           </Badge>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         <CaseBasicInfo case_={case_} />
         <CaseEnhancedInfo case_={case_} />
 
         <div className="flex gap-2">
-          <Link to={`/seller/my-case`} className="flex-1">
+          {/* Opdateret Link til 'Se tilbud' - navigerer til SELLER_OFFERS med sags-ID */}
+          <Link to={`${ROUTES.SELLER_OFFERS}/${case_.id}`} className="flex-1">
             <Button className="w-full" variant="default" size="sm">
               <TrendingUp className="h-4 w-4 mr-1" />
               Se tilbud
             </Button>
           </Link>
-          <Link to={`/seller/my-case`} className="flex-1">
+          {/* Opdateret Link til 'Book fremvisning' - navigerer til SELLER_MY_CASE med sags-ID og state */}
+          <Link
+            to={`${ROUTES.SELLER_MY_CASE.replace(':id', case_.id)}`} // Brug ROUTES.SELLER_MY_CASE og erstat :id
+            state={{ openShowingBooking: true }} // Send state for at åbne kalender
+            className="flex-1"
+          >
             <Button className="w-full" variant="outline" size="sm">
               <CalendarIcon className="h-4 w-4 mr-1" />
               Book fremvisning
             </Button>
           </Link>
-          <Link to={`/seller/messages`} className="flex-1">
+          <Link to={`${ROUTES.SELLER_MESSAGES}`} className="flex-1"> {/* Bruger ROUTES for konsistens */}
             <Button className="w-full" variant="outline" size="sm">
               <MessageSquare className="h-4 w-4 mr-1" />
               Beskeder
