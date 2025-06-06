@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { LogIn, Home } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { getTestUsers } from '@/utils/testData'; // ✅ Korrekt import
+import { getTestUsers } from '@/utils/userManagement'; // ✅ Ny korrekt import
 
 const SellerLogin = () => {
   const [email, setEmail] = useState('');
