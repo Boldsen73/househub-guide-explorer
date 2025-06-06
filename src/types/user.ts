@@ -25,7 +25,7 @@ export interface Case {
   sellerEmail?: string;
   sellerPhone?: string;
   address: string;
-  postnummer: string;
+  postalCode: string;
   municipality: string;
   type: string;
   size: number;

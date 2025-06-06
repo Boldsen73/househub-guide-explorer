@@ -39,16 +39,16 @@ const EditUserDialog = ({ user, isOpen, onClose, onUserUpdated }: EditUserDialog
     phone: user.phone || '',
     company: user.company || '',
     address: user.address || '',
-    postnummer: user.postnummer || '',
+    postalCode: user.postalCode || '',
     city: user.city || '',
   });
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     // Hvis postnummer opdateres, skal city også ændres automatisk
-    if (field === 'postnummer') {
+    if (field === 'postalCode') {
       const city = danishPostalCodes[value] || '';
-      setFormData(prev => ({ ...prev, postnummer: value, city }));
+      setFormData(prev => ({ ...prev, postalCode: value, city }));
     } else {
       setFormData(prev => ({ ...prev, [field]: value }));
     }
@@ -145,11 +145,11 @@ const EditUserDialog = ({ user, isOpen, onClose, onUserUpdated }: EditUserDialog
                 </div>
 
                 <div>
-                  <Label htmlFor="postnummer">Postnummer</Label>
+                  <Label htmlFor="postalCode">Postnummer</Label>
                   <Input
-                    id="postnummer"
-                    value={formData.postnummer}
-                    onChange={(e) => handleInputChange('postnummer', e.target.value)}
+                    id="postalCode"
+                    value={formData.postalCode}
+                    onChange={(e) => handleInputChange('postalCode', e.target.value)}
                     placeholder="Fx 2100"
                   />
                 </div>

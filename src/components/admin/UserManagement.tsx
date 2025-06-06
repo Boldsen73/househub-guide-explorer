@@ -128,8 +128,8 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
             <p className="flex items-center gap-2"><Mail className="h-4 w-4" /> {user.email}</p>
             {user.phone && <p className="flex items-center gap-2"><Phone className="h-4 w-4" /> {user.phone}</p>}
             {user.address && <p className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {user.address}</p>}
-            {user.postnummer && user.city && (
-              <p className="text-sm text-gray-500">{user.postnummer} {user.city}</p>
+            {user.postalCode && user.city && (
+              <p className="text-sm text-gray-500">{user.postalCode} {user.city}</p>
             )}
             {user.company && <p className="flex items-center gap-2"><Building2 className="h-4 w-4" /> {user.company}</p>}
             {user.primaryRegion && <p className="text-xs">Primært område: {user.primaryRegion}</p>}

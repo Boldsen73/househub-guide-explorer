@@ -7,7 +7,7 @@ interface FormData {
   email: string;
   phone: string;
   address: string;
-  postnummer: string;
+  postalCode: string;
   city: string;
   password: string;
   confirmPassword: string;
@@ -17,14 +17,14 @@ interface FormData {
 export const validateSellerSignupForm = (
   formData: FormData,
   checkEmailExists: (email: string) => boolean,
-  lookupCity: (postnummer: string) => string
+  lookupCity: (postalCode: string) => string
 ) => {
   const newErrors = {
     name: '',
     email: '',
     phone: '',
     address: '',
-    postnummer: '',
+    postalCode: '',
     city: '',
     password: '',
     confirmPassword: '',
@@ -46,8 +46,8 @@ export const validateSellerSignupForm = (
   newErrors.phone = formData.phone.trim() ? '' : 'Telefonnummer skal udfyldes.';
   newErrors.address = formData.address.trim() ? '' : 'Adresse skal udfyldes.';
 
-  newErrors.postnummer =
-    formData.postnummer.trim() && lookupCity(formData.postnummer)
+  newErrors.postalCode =
+    formData.postalCode.trim() && lookupCity(formData.postalCode)
       ? ''
       : 'Postnummer skal udfyldes og være gyldigt.';
 

@@ -10,7 +10,7 @@ interface FormData {
   email: string;
   phone: string;
   address: string;
-  postnummer: string;
+  postalCode: string;
   city: string;
   password: string;
   confirmPassword: string;
@@ -22,7 +22,7 @@ interface FormErrors {
   email: string;
   phone: string;
   address: string;
-  postnummer: string;
+  postalCode: string;
   city: string;
   password: string;
   confirmPassword: string;
@@ -39,7 +39,7 @@ export const useSellerSignupForm = () => {
     email: '',
     phone: '',
     address: '',
-    postnummer: '',
+    postalCode: '',
     city: '',
     password: '',
     confirmPassword: '',
@@ -51,15 +51,15 @@ export const useSellerSignupForm = () => {
     email: '',
     phone: '',
     address: '',
-    postnummer: '',
+    postalCode: '',
     city: '',
     password: '',
     confirmPassword: '',
     acceptTerms: '',
   });
 
-  const lookupCity = (postnummer: string) => {
-    return danishPostalCodes[postnummer] || '';
+  const lookupCity = (postalCode: string) => {
+    return danishPostalCodes[postalCode] || '';
   };
 
   const checkEmailExists = (email: string) => {
@@ -92,12 +92,12 @@ export const useSellerSignupForm = () => {
     const city = lookupCity(value);
     setFormData((prev) => ({
       ...prev,
-      postnummer: value,
+      postalCode: value,
       city,
     }));
     setErrors((prev) => ({
       ...prev,
-      postnummer: '',
+      postalCode: '',
       city: '',
     }));
   };
@@ -125,7 +125,7 @@ export const useSellerSignupForm = () => {
         email: formData.email,
         phone: formData.phone,
         address: formData.address,
-        postnummer: formData.postnummer,
+        postalCode: formData.postalCode,
         city: formData.city,
         role: 'seller' as const,
         type: 'seller',
@@ -167,7 +167,7 @@ export const useSellerSignupForm = () => {
 
   const getValidationStatus = () => {
     const emailValid = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email);
-    const postalCodeValid = lookupCity(formData.postnummer);
+    const postalCodeValid = lookupCity(formData.postalCode);
     const passwordMatch = formData.password === formData.confirmPassword;
     const passwordLengthValid = formData.password.length >= 8;
     const emailDuplicationCheck = !checkEmailExists(formData.email);
@@ -179,7 +179,7 @@ export const useSellerSignupForm = () => {
       emailDuplicationCheck,
       phone: !!formData.phone,
       address: !!formData.address,
-      postnummer: !!formData.postnummer,
+      postalCode: !!formData.postalCode,
       postalCodeValid,
       city: !!formData.city,
       password: !!formData.password,
@@ -198,7 +198,7 @@ export const useSellerSignupForm = () => {
     validationStatus.emailDuplicationCheck &&
     validationStatus.phone &&
     validationStatus.address &&
-    validationStatus.postnummer &&
+    validationStatus.postalCode &&
     validationStatus.postalCodeValid &&
     validationStatus.city &&
     validationStatus.password &&

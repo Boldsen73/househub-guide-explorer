@@ -12,7 +12,7 @@ export interface TestUser {
   primaryRegion?: string;
   specialties?: string[];
   address?: string;
-  postnummer?: string;
+  postalCode?: string;
   city?: string;
   isActive?: boolean;
 }
@@ -22,7 +22,7 @@ export interface TestCase {
   sagsnummer: string;
   sellerId: string;
   address: string;
-  postnummer: string;
+  postalCode: string;
   municipality: string;
   type: string;
   size: number;
@@ -115,7 +115,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '12 34 56 78',
     address: 'Vesterbrogade 1',
-    postnummer: '1620',
+    postalCode: '1620',
     city: 'København V',
     isActive: true
   },
@@ -127,7 +127,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '23 45 67 89',
     address: 'Nørrebrogade 23',
-    postnummer: '2200',
+    postalCode: '2200',
     city: 'København N',
     isActive: true
   },
@@ -139,7 +139,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '34 56 78 90',
     address: 'Østerbrogade 45',
-    postnummer: '2100',
+    postalCode: '2100',
     city: 'København Ø',
     isActive: true
   },
@@ -151,7 +151,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '45 67 89 01',
     address: 'Amager Boulevard 67',
-    postnummer: '2300',
+    postalCode: '2300',
     city: 'København S',
     isActive: true
   },
@@ -163,7 +163,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '56 78 90 12',
     address: 'Frederiksberg Allé 89',
-    postnummer: '1820',
+    postalCode: '1820',
     city: 'Frederiksberg',
     isActive: true
   },
@@ -175,7 +175,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '67 89 01 23',
     address: 'Valby Langgade 12',
-    postnummer: '2500',
+    postalCode: '2500',
     city: 'Valby',
     isActive: true
   },
@@ -187,7 +187,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '78 90 12 34',
     address: 'Gl. Kongevej 99',
-    postnummer: '1850',
+    postalCode: '1850',
     city: 'Frederiksberg',
     isActive: true
   },
@@ -199,7 +199,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '89 01 23 45',
     address: 'Hellerupvej 54',
-    postnummer: '2900',
+    postalCode: '2900',
     city: 'Hellerup',
     isActive: true
   },
@@ -211,7 +211,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '90 12 34 56',
     address: 'Gentoftegade 11',
-    postnummer: '2820',
+    postalCode: '2820',
     city: 'Gentofte',
     isActive: true
   },
@@ -223,7 +223,7 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
     role: 'seller',
     phone: '01 23 45 67',
     address: 'Bagsværd Hovedgade 8',
-    postnummer: '2880',
+    postalCode: '2880',
     city: 'Bagsværd',
     isActive: true
   },

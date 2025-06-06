@@ -1,4 +1,5 @@
-import { getTestUsers, getUsers, addUser } from './userManagement';
+import { getTestUsers, addTestUser } from './testData';
+import { getUsers } from './userManagement';
 
 export const initializeSystem = () => {
   console.log('Initializing HouseHub system...');
@@ -12,10 +13,10 @@ export const initializeSystem = () => {
 
   testUsers.forEach(testUser => {
     try {
-      addUser(testUser);
+      addTestUser(testUser);
       console.log('Added test user:', testUser.email, 'with address fields:', {
         address: testUser.address,
-        postnummer: testUser.postnummer,
+        postalCode: testUser.postalCode,
         city: testUser.city
       });
     } catch (error) {
