@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -23,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, updateUser } from '@/utils/userData';
 import { useToast } from '@/hooks/use-toast';
+import { danishPostalCodes } from '@/data/postalCodes';
 
 interface EditUserDialogProps {
   user: User;
@@ -38,12 +38,20 @@ const EditUserDialog = ({ user, isOpen, onClose, onUserUpdated }: EditUserDialog
     email: user.email || '',
     phone: user.phone || '',
     company: user.company || '',
-    address: user.address || ''
+    address: user.address || '',
+    postnummer: user.postnummer || '',
+    city: user.city || '',
   });
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    // Hvis postnummer opdateres, skal city også ændres automatisk
+    if (field === 'postnummer') {
+      const city = danishPostalCodes[value] || '';
+      setFormData(prev => ({ ...prev, postnummer: value, city }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
   };
 
   const handleSave = () => {
@@ -79,7 +87,7 @@ const EditUserDialog = ({ user, isOpen, onClose, onUserUpdated }: EditUserDialog
               Opdater oplysninger for {user.name}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div>
               <Label htmlFor="name">Navn</Label>
@@ -90,7 +98,7 @@ const EditUserDialog = ({ user, isOpen, onClose, onUserUpdated }: EditUserDialog
                 placeholder="Fulde navn"
               />
             </div>
-            
+
             <div>
               <Label htmlFor="email">E-mail</Label>
               <Input
@@ -101,7 +109,7 @@ const EditUserDialog = ({ user, isOpen, onClose, onUserUpdated }: EditUserDialog
                 placeholder="email@example.com"
               />
             </div>
-            
+
             <div>
               <Label htmlFor="phone">Telefonnummer</Label>
               <Input
@@ -111,7 +119,7 @@ const EditUserDialog = ({ user, isOpen, onClose, onUserUpdated }: EditUserDialog
                 placeholder="12 34 56 78"
               />
             </div>
-            
+
             {user.role === 'agent' && (
               <div>
                 <Label htmlFor="company">Firma</Label>
@@ -123,20 +131,42 @@ const EditUserDialog = ({ user, isOpen, onClose, onUserUpdated }: EditUserDialog
                 />
               </div>
             )}
-            
+
             {user.role === 'seller' && (
-              <div>
-                <Label htmlFor="address">Adresse</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Adresse"
-                />
-              </div>
+              <>
+                <div>
+                  <Label htmlFor="address">Adresse</Label>
+                  <Input
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    placeholder="Adresse"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="postnummer">Postnummer</Label>
+                  <Input
+                    id="postnummer"
+                    value={formData.postnummer}
+                    onChange={(e) => handleInputChange('postnummer', e.target.value)}
+                    placeholder="Fx 2100"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="city">By</Label>
+                  <Input
+                    id="city"
+                    value={formData.city}
+                    onChange={(e) => handleInputChange('city', e.target.value)}
+                    placeholder="København Ø"
+                  />
+                </div>
+              </>
             )}
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={onClose}>
               Annuller
