@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,8 +12,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Edit, UserMinus, Trash2 } from 'lucide-react';
-import { User, deactivateUser, deleteUser } from '@/utils/userData';
+import { Edit, UserMinus, Trash2, Lock } from 'lucide-react';
+import { TestUser as User, deactivateTestUser, deleteTestUser } from '@/utils/testData';
 import { useToast } from '@/hooks/use-toast';
 import EditUserDialog from './EditUserDialog';
 
@@ -39,7 +38,7 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
   const confirmDeactivation = () => {
     if (deactivatingUser) {
       try {
-        deactivateUser(deactivatingUser.id);
+        deactivateTestUser(deactivatingUser.id);
         toast({
           title: "Bruger deaktiveret",
           description: `${deactivatingUser.name} er blevet deaktiveret.`,
@@ -63,7 +62,7 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
   const confirmDeletion = () => {
     if (deletingUser) {
       try {
-        deleteUser(deletingUser.id);
+        deleteTestUser(deletingUser.id);
         toast({
           title: "Bruger slettet",
           description: `${deletingUser.name} og tilhørende data er blevet permanent fjernet.`,
@@ -81,52 +80,40 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
   };
 
   const renderUserCard = (user: User) => (
-    <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+    <div
+      key={user.id}
+      className={`flex items-center justify-between p-4 border rounded-lg ${user.isActive === false ? 'opacity-60' : ''}`}
+    >
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
           <p className="font-medium">{user.name}</p>
           {user.isActive === false && (
-            <Badge variant="destructive">Deaktiveret</Badge>
+            <>
+              <Badge variant="destructive">Deaktiveret</Badge>
+              <Lock className="h-4 w-4 text-gray-500" />
+            </>
           )}
         </div>
         <p className="text-sm text-gray-600">{user.email}</p>
-        {user.phone && (
-          <p className="text-sm text-gray-500">{user.phone}</p>
-        )}
-        {user.company && (
-          <p className="text-sm text-gray-500">{user.company}</p>
-        )}
-        {user.address && (
-          <p className="text-sm text-gray-500">{user.address}</p>
-        )}
+        {user.phone && <p className="text-sm text-gray-500">{user.phone}</p>}
+        {user.company && <p className="text-sm text-gray-500">{user.company}</p>}
+        {user.address && <p className="text-sm text-gray-500">{user.address}</p>}
       </div>
-      
+
       <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => setEditingUser(user)}
-        >
+        <Button size="sm" variant="outline" onClick={() => setEditingUser(user)}>
           <Edit className="h-4 w-4 mr-1" />
           Rediger
         </Button>
-        
+
         {user.isActive !== false && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleDeactivateUser(user)}
-          >
+          <Button size="sm" variant="outline" onClick={() => handleDeactivateUser(user)}>
             <UserMinus className="h-4 w-4 mr-1" />
             Deaktiver
           </Button>
         )}
-        
-        <Button
-          size="sm"
-          variant="destructive"
-          onClick={() => handleDeleteUser(user)}
-        >
+
+        <Button size="sm" variant="destructive" onClick={() => handleDeleteUser(user)}>
           <Trash2 className="h-4 w-4 mr-1" />
           Slet
         </Button>
@@ -144,9 +131,7 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
           {sellers.length === 0 ? (
             <p className="text-gray-500">Ingen sælgere endnu</p>
           ) : (
-            <div className="space-y-3">
-              {sellers.map(renderUserCard)}
-            </div>
+            <div className="space-y-3">{sellers.map(renderUserCard)}</div>
           )}
         </CardContent>
       </Card>
@@ -159,14 +144,11 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
           {agents.length === 0 ? (
             <p className="text-gray-500">Ingen mæglere endnu</p>
           ) : (
-            <div className="space-y-3">
-              {agents.map(renderUserCard)}
-            </div>
+            <div className="space-y-3">{agents.map(renderUserCard)}</div>
           )}
         </CardContent>
       </Card>
 
-      {/* Edit User Dialog */}
       {editingUser && (
         <EditUserDialog
           user={editingUser}
