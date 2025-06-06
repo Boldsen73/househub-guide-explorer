@@ -3,29 +3,108 @@ import { Case } from '@/types/case';
 
 export const getAllCases = (): Case[] => {
   try {
-    const cases = localStorage.getItem('cases');
-    if (!cases) {
-      console.log('No cases found in localStorage, initializing empty array');
-      localStorage.setItem('cases', JSON.stringify([]));
-      return [];
-    }
-    const parsedCases = JSON.parse(cases);
+    // Get cases from central storage
+    const centralCases = localStorage.getItem('cases');
+    const parsedCentralCases = centralCases ? JSON.parse(centralCases) : [];
     
-    // Filter out any test cases or invalid cases to ensure clean environment
-    const validCases = Array.isArray(parsedCases) ? parsedCases.filter(case_ => {
+    // Get cases from seller-specific storage
+    const sellerCases = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('seller_case_')) {
+        try {
+          const caseData = JSON.parse(localStorage.getItem(key) || '{}');
+          if (caseData && caseData.address && caseData.sellerId) {
+            const caseId = key.replace('seller_case_', '');
+            
+            // Enrich with form data for complete case information
+            const propertyForm = localStorage.getItem('propertyForm') || localStorage.getItem(`propertyForm_${caseId}`);
+            const salePreferences = localStorage.getItem('salePreferences') || localStorage.getItem(`salePreferences_${caseId}`);
+            
+            let enrichedCase = { ...caseData };
+            
+            // Add property form data
+            if (propertyForm) {
+              try {
+                const parsed = JSON.parse(propertyForm);
+                enrichedCase = {
+                  ...enrichedCase,
+                  propertyType: parsed.propertyType || enrichedCase.type,
+                  type: parsed.propertyType || enrichedCase.type,
+                  size: parsed.size ? `${parsed.size} m²` : enrichedCase.size,
+                  buildYear: parsed.buildYear || enrichedCase.buildYear,
+                  rooms: parsed.rooms || enrichedCase.rooms,
+                  notes: parsed.notes || enrichedCase.notes,
+                  municipality: parsed.city || enrichedCase.municipality,
+                  address: enrichedCase.address || `${parsed.address || 'Ukendt adresse'}, ${parsed.city || ''}`
+                };
+              } catch (error) {
+                console.error('Error parsing property form in getAllCases:', error);
+              }
+            }
+            
+            // Add sales preferences
+            if (salePreferences) {
+              try {
+                const parsed = JSON.parse(salePreferences);
+                if (parsed.expectedPrice && Array.isArray(parsed.expectedPrice) && parsed.expectedPrice[0]) {
+                  enrichedCase.price = `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr`;
+                  enrichedCase.priceValue = parsed.expectedPrice[0];
+                }
+                enrichedCase.timeframe = parsed.timeframe?.[0];
+                enrichedCase.timeframeType = parsed.timeframeType;
+                enrichedCase.priorities = {
+                  speed: parsed.prioritySpeed || false,
+                  price: parsed.priorityPrice || false,
+                  service: parsed.priorityService || false
+                };
+                enrichedCase.specialRequests = parsed.specialRequests;
+                enrichedCase.flexiblePrice = parsed.flexiblePrice;
+                enrichedCase.marketingBudget = parsed.marketingBudget?.[0];
+                enrichedCase.freeIfNotSold = parsed.freeIfNotSold;
+              } catch (error) {
+                console.error('Error parsing sales preferences in getAllCases:', error);
+              }
+            }
+            
+            // Ensure essential fields
+            enrichedCase.id = caseId;
+            enrichedCase.rooms = enrichedCase.rooms || 'Ikke angivet';
+            enrichedCase.size = enrichedCase.size || 'Ikke angivet';
+            enrichedCase.price = enrichedCase.price || 'Ikke angivet';
+            enrichedCase.type = enrichedCase.type || 'Ikke angivet';
+            enrichedCase.status = enrichedCase.status || 'active';
+            
+            sellerCases.push(enrichedCase);
+          }
+        } catch (error) {
+          console.error('Error parsing seller case in getAllCases:', error);
+        }
+      }
+    }
+    
+    // Combine all cases and remove duplicates
+    const allCases = [...Array.isArray(parsedCentralCases) ? parsedCentralCases : [], ...sellerCases];
+    
+    // Remove duplicates based on ID and filter valid cases
+    const uniqueCases = allCases.filter((case_, index, array) => {
       // Only include cases that have a proper sellerId from a real user
-      if (!case_.sellerId) return false;
+      if (!case_.sellerId || !case_.address || !case_.id) return false;
       
       // Check if seller actually exists
       const allUsers = JSON.parse(localStorage.getItem('test_users') || '[]');
       const realUsers = JSON.parse(localStorage.getItem('users') || '[]');
       const seller = [...allUsers, ...realUsers].find(u => u.id === case_.sellerId);
       
-      return seller && case_.address && case_.id;
-    }) : [];
+      // Check for duplicates
+      const firstIndex = array.findIndex(c => c.id === case_.id);
+      const isUnique = firstIndex === index;
+      
+      return seller && isUnique;
+    });
     
-    console.log('getAllCases found:', validCases.length, 'valid cases:', validCases);
-    return validCases;
+    console.log('getAllCases found:', uniqueCases.length, 'valid unique cases:', uniqueCases);
+    return uniqueCases;
   } catch (error) {
     console.error('Error getting cases from localStorage:', error);
     localStorage.setItem('cases', JSON.stringify([]));
