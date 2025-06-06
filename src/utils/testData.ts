@@ -289,9 +289,75 @@ export const DEFAULT_TEST_USERS: TestUser[] = [
   }
 ];
 
+// ✅ Export functions that other files need
+export const getTestUsers = (): TestUser[] => {
+  return JSON.parse(localStorage.getItem('test_users') || '[]');
+};
+
+export const authenticateTestUser = (email: string, password: string): TestUser | null => {
+  const users = getTestUsers();
+  return users.find(user => 
+    user.email.toLowerCase() === email.toLowerCase() && 
+    user.password === password &&
+    user.isActive !== false
+  ) || null;
+};
+
+export const addTestUser = (user: TestUser): void => {
+  const existing = getTestUsers();
+  const updated = [...existing, user];
+  localStorage.setItem('test_users', JSON.stringify(updated));
+};
+
+export const updateTestUser = (id: string, updates: Partial<TestUser>): void => {
+  const existing = getTestUsers();
+  const updated = existing.map(user => 
+    user.id === id ? { ...user, ...updates } : user
+  );
+  localStorage.setItem('test_users', JSON.stringify(updated));
+};
+
+export const deactivateTestUser = (id: string): void => {
+  updateTestUser(id, { isActive: false });
+};
+
+export const deleteTestUser = (id: string): void => {
+  const existing = getTestUsers();
+  const updated = existing.filter(user => user.id !== id);
+  localStorage.setItem('test_users', JSON.stringify(updated));
+};
+
+// ✅ Missing case-related functions
+export const getTestCases = (): TestCase[] => {
+  return JSON.parse(localStorage.getItem('test_cases') || '[]');
+};
+
+export const getTestCasesForUser = (userId: string): TestCase[] => {
+  const allCases = getTestCases();
+  return allCases.filter(testCase => testCase.sellerId === userId);
+};
+
+export const getCaseMessages = (caseId: string, includeArchived: boolean = false): TestMessage[] => {
+  const allMessages = JSON.parse(localStorage.getItem('test_messages') || '[]');
+  return allMessages.filter((msg: TestMessage) => 
+    msg.caseId === caseId && (includeArchived || !msg.archived)
+  );
+};
+
+export const sendMessage = (message: Omit<TestMessage, 'id' | 'timestamp'>): void => {
+  const existingMessages = JSON.parse(localStorage.getItem('test_messages') || '[]');
+  const newMessage: TestMessage = {
+    ...message,
+    id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    timestamp: new Date().toISOString()
+  };
+  const updated = [...existingMessages, newMessage];
+  localStorage.setItem('test_messages', JSON.stringify(updated));
+};
+
 // Brug kun ved første load
 export const seedTestUsers = () => {
-  const existing = JSON.parse(localStorage.getItem('test_users') || '[]');
+  const existing = getTestUsers();
   const emails = existing.map((u: TestUser) => u.email.toLowerCase());
   const toAdd = DEFAULT_TEST_USERS.filter(user => !emails.includes(user.email.toLowerCase()));
   const updated = [...existing, ...toAdd];

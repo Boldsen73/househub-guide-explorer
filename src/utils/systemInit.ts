@@ -17,7 +17,7 @@ export const initializeSystem = () => {
       addUser(testUser);
       console.log('Added test user:', testUser.email, 'with address fields:', {
         address: testUser.address,
-        postalCode: testUser.postalCode,
+        postnummer: testUser.postnummer,
         city: testUser.city
       });
     } catch (error) {

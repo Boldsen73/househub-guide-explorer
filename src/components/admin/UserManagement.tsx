@@ -184,10 +184,15 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
 
       {/* Rediger dialog */}
       {editingUser && (
-        <EditUserDialog user={editingUser} onClose={() => {
-          setEditingUser(null);
-          onUsersUpdated();
-        }} />
+        <EditUserDialog 
+          user={editingUser} 
+          isOpen={true}
+          onClose={() => setEditingUser(null)}
+          onUserUpdated={() => {
+            setEditingUser(null);
+            onUsersUpdated();
+          }} 
+        />
       )}
 
       {/* Deaktiveringsbekræftelse */}
