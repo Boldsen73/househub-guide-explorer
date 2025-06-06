@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  authenticateTestUser,
-  initializeMockUsers,
-  TestUser
-} from '@/utils/testData';
+import { authenticateTestUser } from '@/utils/testData';
+import { seedTestUsers } from '@/data/testUsers'; // Sikrer at testbrugere findes
 
 interface User {
   id: string;
@@ -20,8 +17,8 @@ export const useTestAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 💡 Initialiser mock-brugere ved første indlæsning
-    initializeMockUsers();
+    // Læg testbrugere ind én gang (uden at slette eksisterende)
+    seedTestUsers();
     checkAuthStatus();
   }, []);
 
@@ -42,7 +39,7 @@ export const useTestAuth = () => {
   const login = async (email: string, password: string) => {
     try {
       const testUser = authenticateTestUser(email, password);
-
+      
       if (testUser) {
         const userData: User = {
           id: testUser.id,
@@ -51,11 +48,10 @@ export const useTestAuth = () => {
           name: testUser.name,
           agencyName: testUser.company
         };
-
+        
         localStorage.setItem('currentUser', JSON.stringify(userData));
         setUser(userData);
 
-        // 📍 Navigér afhængigt af brugerrolle
         setTimeout(() => {
           switch (testUser.role) {
             case 'admin':
