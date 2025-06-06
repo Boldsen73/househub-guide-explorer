@@ -1,7 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authenticateTestUser, initializeTestEnvironment, TestUser } from '@/utils/testData';
+import {
+  authenticateTestUser,
+  initializeMockUsers,
+  TestUser
+} from '@/utils/testData';
 
 interface User {
   id: string;
@@ -17,8 +20,8 @@ export const useTestAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Initialize the clean environment
-    initializeTestEnvironment();
+    // 💡 Initialiser mock-brugere ved første indlæsning
+    initializeMockUsers();
     checkAuthStatus();
   }, []);
 
@@ -39,7 +42,7 @@ export const useTestAuth = () => {
   const login = async (email: string, password: string) => {
     try {
       const testUser = authenticateTestUser(email, password);
-      
+
       if (testUser) {
         const userData: User = {
           id: testUser.id,
@@ -48,30 +51,28 @@ export const useTestAuth = () => {
           name: testUser.name,
           agencyName: testUser.company
         };
-        
+
         localStorage.setItem('currentUser', JSON.stringify(userData));
         setUser(userData);
-        
-        // Navigate based on role with a small delay to ensure state is set
+
+        // 📍 Navigér afhængigt af brugerrolle
         setTimeout(() => {
           switch (testUser.role) {
             case 'admin':
               navigate('/admin/dashboard');
               break;
             case 'seller':
-              // Check if seller has existing case, if so go to Min sag, otherwise dashboard
               const hasCase = localStorage.getItem('seller_has_active_case') === 'true';
               navigate(hasCase ? '/seller/my-case' : '/seller/dashboard');
               break;
             case 'agent':
-              // Agents go to browse cases (Åbne sager)
               navigate('/agent/browse-cases');
               break;
             default:
               navigate('/');
           }
         }, 100);
-        
+
         return { success: true };
       } else {
         return { success: false, error: 'Ugyldige loginoplysninger' };
