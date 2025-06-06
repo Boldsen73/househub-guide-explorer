@@ -21,10 +21,10 @@ const HeroSection = () => {
           alt={heroImageAltText} 
           className="w-full h-full object-cover"
           <img 
-  src={heroImageUrl} 
-  alt={heroImageAltText} 
-  className="w-full h-full object-cover"
-/>
+          src={heroImageUrl} 
+          alt={heroImageAltText} 
+          className="w-full h-full object-cover"
+          />
 
         />
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/60 to-transparent"></div>
