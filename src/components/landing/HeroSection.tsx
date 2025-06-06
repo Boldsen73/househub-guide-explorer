@@ -5,7 +5,7 @@ import { Info, ArrowRight, Home } from 'lucide-react';
 
 const HeroSection = () => {
   // Using the optimized (compressed) Danish house image
-  const heroImageUrl = "/lovable-uploads/740bb115-c6df-43f4-8530-311fa442d6a9 2.png";
+  const heroImageUrl = "/lovable-uploads/househero.png";
   const heroImageAltText = "Dansk villa til salg med TIL SALG skilt";
 
   // Check if seller is logged in
