@@ -1,14 +1,12 @@
-  import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, ArrowRight, Home } from 'lucide-react';
 
 const HeroSection = () => {
-  // Using the optimized (compressed) Danish house image
   const heroImageUrl = "/lovable-uploads/HouseHero.webp";
   const heroImageAltText = "Dansk villa til salg med TIL SALG skilt";
 
-  // Check if seller is logged in
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const isSellerLoggedIn = currentUser && currentUser.id && currentUser.type === 'seller';
 
@@ -16,20 +14,15 @@ const HeroSection = () => {
     <section className="relative text-white py-32 md:py-40 overflow-hidden">
       {/* Background image container with overlay */}
       <div className="absolute inset-0">
-      <img 
-        src={heroImageUrl} 
-        alt={heroImageAltText} 
-        className="w-full h-full object-cover"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/60 to-transparent"></div>
-    </div>
-
-
+        <img 
+          src={heroImageUrl} 
+          alt={heroImageAltText} 
+          className="w-full h-full object-cover"
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 via-blue-800/60 to-transparent"></div>
       </div>
-      
+
       {/* Container for content - positioned to the left */}
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl">
