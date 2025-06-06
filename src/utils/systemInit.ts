@@ -1,8 +1,12 @@
 import { getTestUsers, addTestUser, seedTestUsers } from './testData';
 import { getUsers } from './userManagement';
+import { cleanupDuplicateUsers } from './cleanupDuplicateUsers';
 
 export const initializeSystem = () => {
   console.log('Initializing HouseHub system...');
+
+  // Clean up any duplicate users first
+  cleanupDuplicateUsers();
 
   // Initialize test users if not already done
   const testUsers = getTestUsers();

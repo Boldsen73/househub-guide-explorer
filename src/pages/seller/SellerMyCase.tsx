@@ -16,6 +16,7 @@ import CaseOverviewCard from '../../components/seller/CaseOverviewCard';
 import QuickActionsCard from '../../components/seller/QuickActionsCard';
 import CaseInfoCard from '../../components/seller/CaseInfoCard';
 import AgentRegistrationsCard from '../../components/seller/AgentRegistrationsCard';
+import CompactWithdrawalWarning from '../../components/seller/CompactWithdrawalWarning';
 import { ROUTES } from '@/constants/routes';
 import { useSellerCase } from '@/hooks/useSellerCase';
 
@@ -209,6 +210,19 @@ const SellerMyCase: React.FC = () => {
                             />
 
                             <CaseInfoCard caseDetails={caseDetails} />
+
+                            {/* Case Withdrawal Option */}
+                            <CompactWithdrawalWarning
+                                caseId={parseInt(caseDetails.id.toString())}
+                                onWithdraw={() => {
+                                    toast({
+                                        title: "Sag annulleret",
+                                        description: "Din sag er blevet annulleret.",
+                                        variant: "destructive"
+                                    });
+                                    navigate('/seller/dashboard');
+                                }}
+                            />
                         </div>
                     </div>
 

@@ -305,8 +305,15 @@ export const authenticateTestUser = (email: string, password: string): TestUser 
 
 export const addTestUser = (user: TestUser): void => {
   const existing = getTestUsers();
+  // Check if user already exists to prevent duplicates
+  const userExists = existing.find(u => u.email.toLowerCase() === user.email.toLowerCase());
+  if (userExists) {
+    console.log('User already exists, skipping:', user.email);
+    return;
+  }
   const updated = [...existing, user];
   localStorage.setItem('test_users', JSON.stringify(updated));
+  console.log('Added test user:', user.email);
 };
 
 export const updateTestUser = (id: string, updates: Partial<TestUser>): void => {

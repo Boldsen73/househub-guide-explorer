@@ -109,7 +109,8 @@ const PriceInfo = () => {
       window.dispatchEvent(new CustomEvent('caseUpdated', { detail: newCase }));
       window.dispatchEvent(new CustomEvent('casesChanged', { detail: { case: newCase } }));
 
-      navigate(ROUTES.SELLER_MY_CASE);
+      // Navigate to thank you page first, then user can go to my-case
+      navigate(ROUTES.SELLER_THANK_YOU);
     } catch (error) {
       console.error('Error creating case:', error);
       toast({

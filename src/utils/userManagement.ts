@@ -65,12 +65,15 @@ export const getUsers = (): User[] => {
 
 // Add user to both storage systems to ensure availability
 export const addUser = (user: User): void => {
-  // Add to regular users storage
+  // Check for duplicates in regular users storage
   const regularUsers = JSON.parse(localStorage.getItem('users') || '[]');
-  regularUsers.push(user);
-  localStorage.setItem('users', JSON.stringify(regularUsers));
+  const userExists = regularUsers.find((u: User) => u.email.toLowerCase() === user.email.toLowerCase());
+  if (!userExists) {
+    regularUsers.push(user);
+    localStorage.setItem('users', JSON.stringify(regularUsers));
+  }
   
-  // Also add to test users storage for consistency
+  // Also add to test users storage for consistency (addTestUser now checks for duplicates)
   addTestUserToTestData(user);
   
   console.log('User added to both storage systems:', user.email);
