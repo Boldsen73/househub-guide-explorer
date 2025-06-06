@@ -7,7 +7,7 @@ interface FormData {
   email: string;
   phone: string;
   address: string;
-  postalCode: string;
+  postnummer: string;
   city: string;
   password: string;
   confirmPassword: string;
@@ -17,14 +17,14 @@ interface FormData {
 export const validateSellerSignupForm = (
   formData: FormData,
   checkEmailExists: (email: string) => boolean,
-  lookupCity: (postalCode: string) => string
+  lookupCity: (postnummer: string) => string
 ) => {
   const newErrors = {
     name: '',
     email: '',
     phone: '',
     address: '',
-    postalCode: '',
+    postnummer: '',
     city: '',
     password: '',
     confirmPassword: '',
@@ -32,8 +32,7 @@ export const validateSellerSignupForm = (
   };
 
   newErrors.name = formData.name.trim() ? '' : 'Navn skal udfyldes.';
-  
-  // Email validation with duplicate check
+
   if (!formData.email.trim()) {
     newErrors.email = 'Email skal udfyldes.';
   } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
@@ -43,22 +42,27 @@ export const validateSellerSignupForm = (
   } else {
     newErrors.email = '';
   }
-  
+
   newErrors.phone = formData.phone.trim() ? '' : 'Telefonnummer skal udfyldes.';
   newErrors.address = formData.address.trim() ? '' : 'Adresse skal udfyldes.';
-  newErrors.postalCode =
-    formData.postalCode.trim() && lookupCity(formData.postalCode)
+
+  newErrors.postnummer =
+    formData.postnummer.trim() && lookupCity(formData.postnummer)
       ? ''
       : 'Postnummer skal udfyldes og være gyldigt.';
+
   newErrors.city = formData.city.trim() ? '' : 'By skal udfyldes.';
+
   newErrors.password =
     formData.password.trim().length >= 8
       ? ''
       : 'Kodeord skal udfyldes og være mindst 8 tegn.';
+
   newErrors.confirmPassword =
     formData.confirmPassword.trim() && formData.confirmPassword === formData.password
       ? ''
       : 'Kodeordene matcher ikke.';
+
   newErrors.acceptTerms = formData.acceptTerms ? '' : 'Du skal acceptere vilkår og betingelser.';
 
   return newErrors;
