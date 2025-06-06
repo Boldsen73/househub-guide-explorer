@@ -70,7 +70,7 @@ const PriceInfo = () => {
         postalCode: propertyData?.postalCode || '',
         type: propertyData?.propertyType || 'villa',
         size: propertyData?.size?.toString() || '0',
-        constructionYear: propertyData?.buildYear || 0,
+        buildYear: propertyData?.buildYear || 0,
         rooms: propertyData?.rooms || 0,
         price: salePreferences?.expectedPrice ? `${(salePreferences.expectedPrice[0] / 1000000).toFixed(1)} mio. kr` : 'Ikke angivet',
         priceValue: salePreferences?.expectedPrice?.[0] || 0,
@@ -84,7 +84,6 @@ const PriceInfo = () => {
         flexiblePrice: salePreferences?.flexiblePrice || false,
         marketingBudget: salePreferences?.marketingBudget || 0,
         freeIfNotSold: salePreferences?.freeIfNotSold || false,
-        buildYear: propertyData?.buildYear || 0,
         
       };
 
