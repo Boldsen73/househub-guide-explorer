@@ -14,8 +14,8 @@ export const enrichCaseWithFormData = (caseId: string, basicCaseData: any): Case
   
   basicCaseData.id = caseId;
   
-  const propertyData = localStorage.getItem('propertyForm');
-  const salesPreferences = localStorage.getItem('salePreferences');
+  const propertyData = localStorage.getItem('propertyData');
+  const salesPreferences = localStorage.getItem('salePreferencesForm');
   
   console.log('Property form data:', propertyData);
   console.log('Sales preferences data:', salesPreferences);

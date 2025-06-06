@@ -18,8 +18,8 @@ export const getAllCases = (): Case[] => {
             const caseId = key.replace('seller_case_', '');
             
             // Enrich with form data for complete case information
-            const propertyForm = localStorage.getItem('propertyForm') || localStorage.getItem(`propertyForm_${caseId}`);
-            const salePreferences = localStorage.getItem('salePreferences') || localStorage.getItem(`salePreferences_${caseId}`);
+            const propertyForm = localStorage.getItem('propertyData') || localStorage.getItem(`propertyData_${caseId}`);
+            const salePreferences = localStorage.getItem('salePreferencesForm') || localStorage.getItem(`salePreferencesForm_${caseId}`);
             
             let enrichedCase = { ...caseData };
             

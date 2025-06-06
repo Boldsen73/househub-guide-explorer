@@ -70,6 +70,19 @@
 - Bruger konsistent case.id for storage
 - Sikrer korrekt data-visning på SellerMyCase
 
+### KRITISK FIX: Storage-nøgle mismatch fundet og rettet
+**Problem**: 
+- Data gemmes som: `propertyData` og `salePreferencesForm`
+- Data søges som: `propertyForm` og `salePreferences`
+**Løsning**:
+- Opdaterede alle data-enricher filer til at bruge korrekte nøgler
+- Nu læses data fra samme storage som det gemmes i
+
+### Ændrede filer for storage-nøgle fix:
+- `src/utils/caseStorageManager/caseDataEnricher.ts`
+- `src/hooks/useSellerCase.ts` 
+- `src/utils/caseStorageManager/caseStorageUtils.ts`
+
 ## ✅ ALLE FEJL RETTET:
 
 1. **✅ Sælger ser korrekte data på My-Case** 
@@ -77,3 +90,4 @@
 3. **✅ Sager nu synlige på admin/agent dashboards**  
 4. **✅ Real-time opdateringer mellem alle brugere**
 5. **✅ Konsistent dataflow på tværs af hele systemet**
+6. **✅ Storage-nøgle mismatch rettet - data vises nu korrekt**
