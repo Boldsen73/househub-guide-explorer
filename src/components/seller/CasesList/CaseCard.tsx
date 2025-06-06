@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Home, MapPin, TrendingUp, MessageSquare } from 'lucide-react';
+import { Home, MapPin, TrendingUp, MessageSquare, Calendar as CalendarIcon } from 'lucide-react';
 import CaseBasicInfo from './CaseBasicInfo';
 import CaseEnhancedInfo from './CaseEnhancedInfo';
 
@@ -94,16 +94,22 @@ const CaseCard: React.FC<CaseCardProps> = ({ case_ }) => {
         <CaseBasicInfo case_={case_} />
         <CaseEnhancedInfo case_={case_} />
 
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Link to={`/seller/my-case`} className="flex-1">
-            <Button className="w-full" variant="default">
-              <TrendingUp className="h-4 w-4 mr-2" />
+            <Button className="w-full" variant="default" size="sm">
+              <TrendingUp className="h-4 w-4 mr-1" />
               Se tilbud
             </Button>
           </Link>
+          <Link to={`/seller/my-case`} className="flex-1">
+            <Button className="w-full" variant="outline" size="sm">
+              <CalendarIcon className="h-4 w-4 mr-1" />
+              Book fremvisning
+            </Button>
+          </Link>
           <Link to={`/seller/messages`} className="flex-1">
-            <Button className="w-full" variant="outline">
-              <MessageSquare className="h-4 w-4 mr-2" />
+            <Button className="w-full" variant="outline" size="sm">
+              <MessageSquare className="h-4 w-4 mr-1" />
               Beskeder
             </Button>
           </Link>
