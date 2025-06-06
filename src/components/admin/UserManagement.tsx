@@ -43,9 +43,6 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
   const [deactivatingUser, setDeactivatingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
 
-  const sellers = users.filter(u => u.role === 'seller');
-  const agents = users.filter(u => u.role === 'agent');
-
   const handleDeactivateUser = (user: User) => {
     setDeactivatingUser(user);
   };
@@ -60,7 +57,7 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
         });
         onUsersUpdated();
         setDeactivatingUser(null);
-      } catch (error) {
+      } catch {
         toast({
           title: "Fejl",
           description: "Der opstod en fejl ved deaktivering af brugeren.",
@@ -80,11 +77,11 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
         deleteTestUser(deletingUser.id);
         toast({
           title: "Bruger slettet",
-          description: `${deletingUser.name} og tilhørende data er blevet permanent fjernet.`
+          description: `${deletingUser.name} er blevet permanent fjernet.`
         });
         onUsersUpdated();
         setDeletingUser(null);
-      } catch (error) {
+      } catch {
         toast({
           title: "Fejl",
           description: "Der opstod en fejl ved sletning af brugeren.",
@@ -102,7 +99,7 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
         description: `${user.name} er nu aktiv igen.`
       });
       onUsersUpdated();
-    } catch (error) {
+    } catch {
       toast({
         title: "Fejl",
         description: "Kunne ikke genaktivere brugeren.",
@@ -111,34 +108,121 @@ const UserManagement = ({ users, onUsersUpdated }: UserManagementProps) => {
     }
   };
 
-  const renderUserCard = (user: User) => (
-    <div
-      key={user.id}
-      className={`flex items-center justify-between p-4 border rounded-lg ${user.isActive === false ? 'opacity-60' : ''}`}
-    >
-      <div className="flex-1">
-        <div className="flex items-center gap-2 mb-1">
-          <p className="font-medium text-lg">{user.name}</p>
-          {user.isActive === false && (
+  const renderUserCard = (user: User) => {
+    return (
+      <div
+        key={user.id}
+        className={`flex items-center justify-between p-4 border rounded-lg ${user.isActive === false ? 'opacity-60' : ''}`}
+      >
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <p className="font-medium text-lg">{user.name}</p>
+            {user.isActive === false && (
+              <>
+                <Badge variant="destructive">Deaktiveret</Badge>
+                <Lock className="h-4 w-4 text-gray-500" />
+              </>
+            )}
+          </div>
+          <div className="space-y-1 text-sm text-gray-600">
+            <p className="flex items-center gap-2"><Mail className="h-4 w-4" /> {user.email}</p>
+            {user.phone && <p className="flex items-center gap-2"><Phone className="h-4 w-4" /> {user.phone}</p>}
+            {user.address && <p className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {user.address}</p>}
+            {user.postnummer && user.city && (
+              <p className="text-sm text-gray-500">{user.postnummer} {user.city}</p>
+            )}
+            {user.company && <p className="flex items-center gap-2"><Building2 className="h-4 w-4" /> {user.company}</p>}
+            {user.primaryRegion && <p className="text-xs">Primært område: {user.primaryRegion}</p>}
+            {user.specialties && user.specialties.length > 0 && (
+              <p className="text-xs">Specialer: {user.specialties.join(', ')}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          {user.isActive === false ? (
+            <Button variant="outline" onClick={() => reactivateUser(user)}>
+              <Unlock className="w-4 h-4 mr-1" /> Genaktiver
+            </Button>
+          ) : (
             <>
-              <Badge variant="destructive">Deaktiveret</Badge>
-              <Lock className="h-4 w-4 text-gray-500" />
+              <Button variant="outline" onClick={() => setEditingUser(user)}>
+                <Edit className="w-4 h-4 mr-1" /> Rediger
+              </Button>
+              <Button variant="destructive" onClick={() => handleDeactivateUser(user)}>
+                <UserMinus className="w-4 h-4 mr-1" /> Deaktiver
+              </Button>
+              <Button variant="destructive" onClick={() => handleDeleteUser(user)}>
+                <Trash2 className="w-4 h-4 mr-1" /> Slet
+              </Button>
             </>
           )}
         </div>
-        <div className="space-y-1 text-sm text-gray-600">
-          <p className="flex items-center gap-2"><Mail className="h-4 w-4" /> {user.email}</p>
-          {user.phone && <p className="flex items-center gap-2"><Phone className="h-4 w-4" /> {user.phone}</p>}
-          {user.address && <p className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {user.address}</p>}
-          {user.postnummer && user.city && (
-            <p className="text-sm text-gray-500">{user.postnummer} {user.city}</p>
-          )}
-          {user.company && <p className="flex items-center gap-2"><Building2 className="h-4 w-4" /> {user.company}</p>}
-          {user.primaryRegion && <p className="text-xs">Primært område: {user.primaryRegion}</p>}
-          {user.specialties && user.specialties.length > 0 && (
-            <p className="text-xs">Specialer: {user.specialties.join(', ')}</p>
-          )}
-        </div>
       </div>
+    );
+  };
 
-      <div className="flex gap-2
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Sælgere</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {users.filter(u => u.role === 'seller').map(renderUserCard)}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Mæglere</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {users.filter(u => u.role === 'agent').map(renderUserCard)}
+        </CardContent>
+      </Card>
+
+      {/* Rediger dialog */}
+      {editingUser && (
+        <EditUserDialog user={editingUser} onClose={() => {
+          setEditingUser(null);
+          onUsersUpdated();
+        }} />
+      )}
+
+      {/* Deaktiveringsbekræftelse */}
+      <AlertDialog open={!!deactivatingUser} onOpenChange={() => setDeactivatingUser(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bekræft deaktivering</AlertDialogTitle>
+            <AlertDialogDescription>
+              Er du sikker på, at du vil deaktivere denne bruger?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuller</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeactivation}>Deaktiver</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Slettebekræftelse */}
+      <AlertDialog open={!!deletingUser} onOpenChange={() => setDeletingUser(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bekræft sletning</AlertDialogTitle>
+            <AlertDialogDescription>
+              Denne handling kan ikke fortrydes. Er du sikker?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuller</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeletion}>Slet</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+};
+
+export default UserManagement;
