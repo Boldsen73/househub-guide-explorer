@@ -1,0 +1,79 @@
+# Fejlrettelse Log - HouseHub Sælger & Fremvisning System
+
+## Problemer identificeret:
+
+### 1. SellerMyCase viste ikke data korrekt
+**Problem**: Brugte sin egen komplekse `loadCaseData` logik i stedet for den dedikerede `useSellerCase` hook
+**Løsning**: 
+- Refactored SellerMyCase til at bruge `useSellerCase` hook
+- Fjernede duplikeret logik og sikrede konsistens
+- Data fra form-oprettelse vises nu korrekt
+
+### 2. Fremvisning blev ikke gemt korrekt
+**Problem**: ShowingBooking brugte `currentUser.id` som storage key, men læsning søgte efter `case.id`
+**Løsning**:
+- Ændrede ShowingBooking til at finde brugerens aktive sag først
+- Bruger nu `case.id` konsistent på tværs af alle storage operationer
+- Sikrede at alle storage keys bruger samme case ID format
+
+### 3. Inkonsistent dataflow mellem sælger, agent og admin
+**Problem**: Data blev gemt på forskellige måder uden central konsistens
+**Løsning**:
+- Opdaterede ShowingBooking til at gemme i `case_${caseId}_showing` format
+- Sikrede at `cases` storage altid opdateres
+- Tilføjede event dispatching for real-time opdateringer
+
+### 4. Agent kunne ikke se fremvisninger
+**Problem**: Agent siden ledte efter `case_${caseIdString}_showing` men data blev gemt anderledes
+**Løsning**:
+- Sikrede at ShowingBooking gemmer data med korrekt case ID
+- Agent registrering opdaterer nu også central cases storage
+- Events sendes for real-time opdateringer til admin
+
+### 5. useSellerCase hook forbedringer
+**Løsning**:
+- Tilføjede event dispatching i `scheduleShowing` og `markShowingCompleted`
+- Sikrede central cases storage opdateres
+- Tilføjede konsistent status opdatering
+
+## Ændringer implementeret:
+
+### src/pages/seller/SellerMyCase.tsx
+- Refactored til at bruge `useSellerCase` hook
+- Fjernede kompleks `loadCaseData` og `enrichCaseWithFormData` logik
+- Bruger nu konsistent dataflow
+- Fixede build fejl med non-eksisterende state variables
+
+### src/components/seller/ShowingBooking.tsx
+- Finder nu brugerens aktive case for at få case ID
+- Bruger konsistent `case_${caseId}_showing` storage format
+- Opdaterer central cases storage med showing data
+- Forbedret event dispatching for real-time opdateringer
+
+### src/hooks/useSellerCase.ts
+- Tilføjede event dispatching i showing-relaterede funktioner
+- Sikrede central cases storage opdateres ved status ændringer
+- Forbedret integration med admin system
+
+### src/components/agent/ShowingRegistration.tsx
+- Sikrede at agent registreringer opdaterer central cases storage
+- Tilføjede event dispatching for real-time opdateringer
+- Forbedret konsistens mellem agent og sælger data
+
+## Forventet resultat:
+
+1. **Sælger My-Case side**: Viser nu alle indtastede data korrekt fra bolig-oprettelsen
+2. **Fremvisningsbooking**: Gemmes korrekt og vises på sælger oversigt
+3. **Agent integration**: Kan nu se fremvisninger og registrere sig
+4. **Admin integration**: Får real-time opdateringer via events
+5. **Konsistent dataflow**: Samme storage keys og ID format på tværs af systemet
+
+## Test checklist:
+- [ ] Opret ny sælger 
+- [ ] Opret bolig med alle data
+- [ ] Verificer data vises korrekt på My-Case
+- [ ] Book fremvisning
+- [ ] Verificer fremvisning vises på oversigt
+- [ ] Login som mægler og se fremvisning
+- [ ] Registrer mægler til fremvisning
+- [ ] Verificer admin kan se opdateringer

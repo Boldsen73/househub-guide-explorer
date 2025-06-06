@@ -70,23 +70,32 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked, initia
 
       console.log('Booking showing with data:', showingData);
 
-      // Store the showing data in localStorage with multiple keys for robustness
+      // Get current user and their case
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
       console.log('Current user for booking:', currentUser);
 
       if (currentUser.id) {
-        const storageKey = `showing_data_${currentUser.id}`;
+        // Find the user's active case to get the case ID
+        const cases = JSON.parse(localStorage.getItem('cases') || '[]');
+        const userCase = cases.find((c: any) => c.sellerId === currentUser.id);
+        
+        if (!userCase) {
+          console.error('No case found for user when booking showing');
+          throw new Error('Ingen aktiv sag fundet');
+        }
+
+        const caseId = userCase.id;
+        console.log('Found case ID for showing booking:', caseId);
+
+        // Store showing data with case ID (primary storage)
+        const storageKey = `showing_data_${caseId}`;
         localStorage.setItem(storageKey, JSON.stringify(showingData));
         console.log('Stored showing data with key:', storageKey);
 
-        // Also store in a general showing key
-        localStorage.setItem('current_showing_data', JSON.stringify(showingData));
-        console.log('Stored in current_showing_data as backup');
-
-        // Store for agent visibility - sync to agent system with enhanced data
+        // Store for agent visibility with case ID
         const agentShowingData = {
           sellerId: currentUser.id,
-          sellerName: currentUser.firstName + ' ' + currentUser.lastName,
+          sellerName: (currentUser.firstName || currentUser.name) + ' ' + (currentUser.lastName || ''),
           sellerEmail: currentUser.email,
           showingDate: selectedDate,
           showingTime: selectedTime,
@@ -95,14 +104,13 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked, initia
           bookedAt: new Date().toISOString()
         };
 
-        // Store in agent-accessible format
-        localStorage.setItem(`agent_showing_${currentUser.id}`, JSON.stringify(agentShowingData));
-        localStorage.setItem(`case_${currentUser.id}_showing`, JSON.stringify(agentShowingData));
+        // Store in agent-accessible format using case ID
+        localStorage.setItem(`case_${caseId}_showing`, JSON.stringify(agentShowingData));
 
-        // Update all cases for this seller with showing info and ensure complete data sync
+        // Update all cases for this seller with showing info
         const existingCases = JSON.parse(localStorage.getItem('cases') || '[]');
         const updatedCases = existingCases.map((case_: any) => {
-          if (case_.sellerId === currentUser.id) {
+          if (case_.id === caseId) {
             return {
               ...case_,
               showingDate: selectedDate,
@@ -115,9 +123,9 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked, initia
         });
 
         localStorage.setItem('cases', JSON.stringify(updatedCases));
-        console.log('Updated cases with showing data');
+        console.log('Updated cases with showing data for case:', caseId);
 
-        // Also update individual seller case data to include complete seller information
+        // Also update individual seller case data
         const sellerCaseKey = `seller_case_${currentUser.id}`;
         const existingSellerCase = JSON.parse(localStorage.getItem(sellerCaseKey) || '{}');
         const enhancedSellerCase = {
@@ -126,18 +134,17 @@ const ShowingBooking: React.FC<ShowingBookingProps> = ({ onShowingBooked, initia
           showingTime: selectedTime,
           showingNotes: notes,
           status: 'showing_booked',
-          // Ensure all seller data is preserved
           sellerId: currentUser.id,
-          sellerName: currentUser.firstName + ' ' + currentUser.lastName,
+          sellerName: (currentUser.firstName || currentUser.name) + ' ' + (currentUser.lastName || ''),
           sellerEmail: currentUser.email,
           sellerPhone: currentUser.phone || 'Ikke angivet'
         };
         localStorage.setItem(sellerCaseKey, JSON.stringify(enhancedSellerCase));
 
-        // Dispatch event to notify other components
+        // Dispatch event to notify other components with case ID
         window.dispatchEvent(new CustomEvent('showingBooked', {
           detail: {
-            caseId: currentUser.id,
+            caseId: caseId,
             showingData: agentShowingData
           }
         }));

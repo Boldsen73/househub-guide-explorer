@@ -152,6 +152,17 @@ export const useSellerCase = () => {
         status: 'showing_booked'
       }));
       
+      // Update the case status in central storage
+      const cases = JSON.parse(localStorage.getItem('cases') || '[]');
+      const updatedCases = cases.map((c: any) => 
+        c.id === sellerCase.id ? { ...c, status: 'showing_booked', showingDate: date, showingTime: time } : c
+      );
+      localStorage.setItem('cases', JSON.stringify(updatedCases));
+      
+      // Dispatch events for real-time updates
+      window.dispatchEvent(new CustomEvent('caseUpdated'));
+      window.dispatchEvent(new CustomEvent('showingBooked', { detail: { caseId: sellerCase.id } }));
+      
       loadSellerCase();
     }
   };
@@ -172,6 +183,17 @@ export const useSellerCase = () => {
         showingNotes: '',
         status: 'showing_completed'
       }));
+      
+      // Update the case status in central storage
+      const cases = JSON.parse(localStorage.getItem('cases') || '[]');
+      const updatedCases = cases.map((c: any) => 
+        c.id === sellerCase.id ? { ...c, status: 'showing_completed' } : c
+      );
+      localStorage.setItem('cases', JSON.stringify(updatedCases));
+      
+      // Dispatch events for real-time updates
+      window.dispatchEvent(new CustomEvent('caseUpdated'));
+      window.dispatchEvent(new CustomEvent('showingCompleted', { detail: { caseId: sellerCase.id } }));
       
       loadSellerCase();
     }

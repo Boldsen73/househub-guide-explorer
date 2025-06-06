@@ -68,13 +68,25 @@ const ShowingRegistration: React.FC<ShowingRegistrationProps> = ({
     console.log('Agent registered for showing:', registration);
     console.log('All registrations for case:', existingRegistrations);
     
+    // Also update the case in central storage to reflect agent registration
+    const cases = JSON.parse(localStorage.getItem('cases') || '[]');
+    const updatedCases = cases.map((c: any) => 
+      c.id === caseId ? { 
+        ...c, 
+        agentRegistrations: existingRegistrations,
+        registeredAgents: existingRegistrations.length
+      } : c
+    );
+    localStorage.setItem('cases', JSON.stringify(updatedCases));
+    
     // Also store in general registrations for broader access
     const generalRegistrations = JSON.parse(localStorage.getItem('all_showing_registrations') || '[]');
     generalRegistrations.push(registration);
     localStorage.setItem('all_showing_registrations', JSON.stringify(generalRegistrations));
     
-    // Trigger events for real-time updates
+    // Trigger events for real-time updates to admin and seller
     window.dispatchEvent(new CustomEvent('agentRegistered', { detail: registration }));
+    window.dispatchEvent(new CustomEvent('caseUpdated', { detail: { caseId } }));
     window.dispatchEvent(new Event('storage'));
     
     // Simulate registration process

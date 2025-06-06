@@ -17,217 +17,67 @@ import QuickActionsCard from '../../components/seller/QuickActionsCard';
 import CaseInfoCard from '../../components/seller/CaseInfoCard';
 import AgentRegistrationsCard from '../../components/seller/AgentRegistrationsCard';
 import { ROUTES } from '@/constants/routes';
-import { getCasesForUser, getCompleteCaseData } from '@/utils/caseManagement';
-import { getTestCasesForUser } from '@/utils/testData';
+import { useSellerCase } from '@/hooks/useSellerCase';
 
 const SellerMyCase: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { toast } = useToast();
-
-    const [caseDetails, setCaseDetails] = useState<any>(null);
+    
+    // Use the dedicated hook instead of custom logic
+    const { sellerCase, isLoading, scheduleShowing, markShowingCompleted, refreshCase } = useSellerCase();
+    
     const [showBookingForm, setShowBookingForm] = useState(false);
-    const [bookedShowingDetails, setBookedShowingDetails] = useState<any>(null);
-    const [showingCompleted, setShowingCompleted] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        loadCaseData();
-    }, [id]);
+    // Convert useSellerCase data to expected format
+    const caseDetails = sellerCase ? {
+        ...sellerCase,
+        sagsnummer: sellerCase.id.includes('HH-') ? sellerCase.id : `HH-${new Date().getFullYear()}-${sellerCase.id.slice(-6)}`,
+        createdAt: new Date().toISOString(),
+        offers: sellerCase.offers || [],
+        agentRegistrations: sellerCase.agentRegistrations || []
+    } : null;
+    
+    const bookedShowingDetails = sellerCase?.showingDate && sellerCase?.showingTime ? {
+        date: new Date(sellerCase.showingDate),
+        time: sellerCase.showingTime,
+        status: 'booked'
+    } : null;
+    
+    const showingCompleted = sellerCase?.status === 'showing_completed';
 
-    const loadCaseData = () => {
-        console.log('=== LOADING CASE DATA IN SellerMyCase ===');
-        setIsLoading(true);
-        
-        try {
-            // Get current user
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            console.log('Current user in SellerMyCase:', currentUser);
-            
-            if (!currentUser.id) {
-                console.error('No current user found');
-                setIsLoading(false);
-                return;
-            }
-
-            let userCase = null;
-
-            // If ID is provided, try to get specific case
-            if (id) {
-                console.log('Looking for case with ID:', id);
-                userCase = getCompleteCaseData(id);
-                console.log('Found case by ID:', userCase);
-            }
-
-            // If no case found by ID or no ID provided, get user's cases
-            if (!userCase) {
-                console.log('No case found by ID, looking for user cases...');
-                
-                // Try real cases first
-                const realCases = getCasesForUser(currentUser.id);
-                console.log('Real cases found:', realCases);
-                
-                // Try test cases as fallback
-                const testCases = getTestCasesForUser(currentUser.id);
-                console.log('Test cases found:', testCases);
-                
-                // Use the most recent case
-                const allUserCases = [...realCases, ...testCases];
-                if (allUserCases.length > 0) {
-                    // Sort by creation date and get the most recent
-                    allUserCases.sort((a, b) => {
-                        const dateA = new Date(a.createdAt || 0).getTime();
-                        const dateB = new Date(b.createdAt || 0).getTime();
-                        return dateB - dateA;
-                    });
-                    userCase = allUserCases[0];
-                    console.log('Using most recent case:', userCase);
-                }
-            }
-
-            if (userCase) {
-                console.log('Setting case details:', userCase);
-                
-                // Enrich case data with form data if available
-                const enrichedCase = enrichCaseWithFormData(userCase);
-                setCaseDetails(enrichedCase);
-                
-                // Load showing details
-                if (enrichedCase.bookedShowing) {
-                    setBookedShowingDetails(enrichedCase.bookedShowing);
-                    const showingDateTime = new Date(`${enrichedCase.bookedShowing.date}T${enrichedCase.bookedShowing.time}`);
-                    if (showingDateTime < new Date()) {
-                        setShowingCompleted(true);
-                    }
-                }
-            } else {
-                console.error('No case found for user');
-                toast({
-                    title: "Ingen sag fundet",
-                    description: "Der blev ikke fundet nogen sag for din bruger.",
-                    variant: "destructive"
-                });
-                navigate(ROUTES.SELLER_DASHBOARD);
-            }
-        } catch (error) {
-            console.error('Error loading case data:', error);
-            toast({
-                title: "Fejl ved indlæsning",
-                description: "Der opstod en fejl ved indlæsning af din sag.",
-                variant: "destructive"
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const enrichCaseWithFormData = (baseCase: any) => {
-        console.log('Enriching case with form data:', baseCase.id);
-        
-        try {
-            // Get property form data
-            const propertyData = localStorage.getItem('propertyForm');
-            const salesPreferences = localStorage.getItem('salePreferences');
-            
-            let enrichedCase = { ...baseCase };
-            
-            // Add property form data if available
-            if (propertyData) {
-                try {
-                    const parsed = JSON.parse(propertyData);
-                    console.log('Property form data found:', parsed);
-                    
-                    enrichedCase = {
-                        ...enrichedCase,
-                        type: parsed.propertyType || enrichedCase.type,
-                        size: parsed.size || enrichedCase.size,
-                        constructionYear: parsed.buildYear || enrichedCase.constructionYear || enrichedCase.buildYear,
-                        rooms: parsed.rooms || enrichedCase.rooms,
-                        description: parsed.notes || enrichedCase.description,
-                        
-                    };
-                } catch (error) {
-                    console.error('Error parsing property data:', error);
-                }
-            }
-            
-            // Add sales preferences if available
-            if (salesPreferences) {
-                try {
-                    const parsed = JSON.parse(salesPreferences);
-                    console.log('Sales preferences data found:', parsed);
-                    
-                    if (parsed.expectedPrice && parsed.expectedPrice[0]) {
-                        enrichedCase.price = `${(parsed.expectedPrice[0] / 1000000).toFixed(1)} mio. kr`;
-                        enrichedCase.priceValue = parsed.expectedPrice[0];
-                    }
-                    
-                    enrichedCase = {
-                        ...enrichedCase,
-                        timeframe: parsed.timeframe || enrichedCase.timeframe,
-                        timeframeType: parsed.timeframeType || enrichedCase.timeframeType,
-                        priorities: parsed.priorities || enrichedCase.priorities,
-                        flexiblePrice: parsed.flexiblePrice !== undefined ? parsed.flexiblePrice : enrichedCase.flexiblePrice,
-                        specialRequests: parsed.specialRequests || enrichedCase.specialRequests
-                    };
-                } catch (error) {
-                    console.error('Error parsing sales preferences:', error);
-                }
-            }
-            
-            // Ensure required fields have defaults
-            enrichedCase = {
-                sagsnummer: enrichedCase.sagsnummer || `HH-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`,
-                createdAt: enrichedCase.createdAt || new Date().toISOString(),
-                offers: enrichedCase.offers || [],
-                agentRegistrations: enrichedCase.agentRegistrations || [],
-                ...enrichedCase
-            };
-            
-            console.log('Enriched case result:', enrichedCase);
-            return enrichedCase;
-        } catch (error) {
-            console.error('Error enriching case data:', error);
-            return baseCase;
-        }
-    };
-
+    // Handle showing booking
     const handleShowingBooked = (showingData: any) => {
-        console.log('Showing booked with data:', showingData);
-        const newShowingDetails = { ...showingData, status: 'booked' };
-        setBookedShowingDetails(newShowingDetails);
+        console.log('Showing booked in SellerMyCase:', showingData);
         setShowBookingForm(false);
+        refreshCase(); // Refresh the case data
         
-        // Show success message
         toast({
             title: "Fremvisning booket",
-            description: "Du vender nu tilbage til dit sagsoversigt hvor du kan se den opdaterede status.",
+            description: "Din fremvisning er nu planlagt og mæglerne er blevet notificeret.",
         });
-        setCaseDetails((prevDetails: any) => ({
-            ...prevDetails,
-            bookedShowing: newShowingDetails,
-        }));
     };
+
 
     const handleChangeShowing = () => {
         setShowBookingForm(true);
     };
 
     const handleCancelShowing = () => {
-        setBookedShowingDetails(null);
-        setShowingCompleted(false);
+        // Cancel showing and refresh case data
+        if (sellerCase) {
+            localStorage.removeItem(`showing_data_${sellerCase.id}`);
+            localStorage.removeItem(`case_${sellerCase.id}_showing`);
+            refreshCase();
+        }
         toast({
             title: "Fremvisning annulleret",
             description: "Din fremvisning er blevet annulleret.",
         });
-        setCaseDetails((prevDetails: any) => ({
-            ...prevDetails,
-            bookedShowing: null,
-        }));
     };
 
     const handleMarkShowingCompleted = () => {
-        setShowingCompleted(true);
+        markShowingCompleted();
         toast({
             title: "Fremvisning markeret som afholdt",
             description: "Mæglere kan nu afgive tilbud på din bolig.",
