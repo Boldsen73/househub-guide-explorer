@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authenticateTestUser } from '@/utils/testData';
-import { seedTestUsers } from '@/data/testUsers'; // Sikrer at testbrugere findes
+import { seedTestUsers } from '@/utils/testData';
 
 interface User {
   id: string;
