@@ -1,5 +1,4 @@
-import { getTestUsers } from '@/utils/testData'; // <-- Opdateret import
-import { getUsers, addUser } from './userManagement';
+import { getTestUsers, getUsers, addUser } from './userManagement';
 
 export const initializeSystem = () => {
   console.log('Initializing HouseHub system...');
@@ -9,8 +8,7 @@ export const initializeSystem = () => {
 
   // Initialize users with test data
   const existingUsers = getUsers(); // This will now return only ADMIN_USER
-
-  const testUsers = getTestUsers(); // <-- Henter brugerlisten korrekt
+  const testUsers = getTestUsers(); // Henter alle predefinerede testbrugere
 
   testUsers.forEach(testUser => {
     try {
