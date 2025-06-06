@@ -1,7 +1,13 @@
-
-import { useState, useCallback } from 'react';
-import { User, Case } from '@/utils/userData';
-import { loadUsersData, loadCasesData, loadSellerCasesFromStorage } from '@/services/adminDataService';
+import { useState, useCallback, useEffect } from 'react';
+import { Case } from '@/utils/userData';
+import {
+  loadCasesData,
+  loadSellerCasesFromStorage
+} from '@/services/adminDataService';
+import {
+  getTestUsers,
+  TestUser as User
+} from '@/utils/testData'; // ✅ BRUG mock-brugere herfra
 import { useCaseStatusManager } from './useCaseStatusManager';
 import { useAdminDataEvents } from './useAdminDataEvents';
 import { combineAllCases, logDataBreakdown } from '@/utils/adminDataCombiner';
@@ -11,35 +17,33 @@ export const useAdminData = () => {
   const [users, setUsers] = useState<User[]>([]);
 
   const loadData = useCallback(() => {
-    console.log('Loading admin data...');
-    
-    // Load users from userData system
-    const allUsers = loadUsersData();
+    console.log('🔄 Henter admin-data...');
+
+    // ✅ Hent brugere direkte fra mock-localStorage
+    const allUsers = getTestUsers();
     setUsers(allUsers);
-    
-    // Load cases from userData system
+
+    // Hent sager fra backend eller statisk mock
     const allCases = loadCasesData();
-    
-    // Load seller cases from localStorage
+
+    // Hent lokale sager (fra sælgere) og kombiner dem
     const sellerCases = loadSellerCasesFromStorage(allUsers);
-    
-    // Combine all cases
     const combinedCases = combineAllCases(allCases, sellerCases);
     setCases(combinedCases);
-    
-    // Log final breakdown
+
+    // Log
     logDataBreakdown(allUsers, combinedCases);
   }, []);
 
   const { handleStatusChange } = useCaseStatusManager(loadData);
-  
-  // Set up event listeners and periodic reloading
+
+  // Sæt event-listere og reloads
   useAdminDataEvents(loadData);
 
-  // Initial load
-  useState(() => {
+  // Initielt load
+  useEffect(() => {
     loadData();
-  });
+  }, [loadData]);
 
   return {
     cases,
