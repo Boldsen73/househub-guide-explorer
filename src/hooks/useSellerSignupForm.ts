@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { danishPostalCodes } from '../data/postalCodes';
-import { getTestUsers, addTestUser } from '../utils/testData';
+import { getTestUsers } from '../utils/testData';
+import { addUser } from '../utils/userManagement';
 import { formatPhoneNumber, validateSellerSignupForm } from '../utils/sellerSignupValidation';
 
 interface FormData {
@@ -134,7 +135,7 @@ export const useSellerSignupForm = () => {
         createdAt: new Date().toISOString()
       };
 
-      addTestUser(newUser);
+      addUser(newUser);
 
       localStorage.removeItem('currentUser');
       localStorage.removeItem('seller_profile');

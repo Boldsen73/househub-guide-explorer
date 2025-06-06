@@ -16,8 +16,9 @@ export interface User {
   isActive?: boolean;
 }
 
-// Re-export TestUser functions to maintain compatibility
+// Import and re-export TestUser functions to maintain compatibility
 export type { TestUser } from './testData';
+import { getTestUsers as getTestUsersFromTestData, addTestUser as addTestUserToTestData } from './testData';
 export { getTestUsers, addTestUser, updateTestUser, deleteTestUser, deactivateTestUser, authenticateTestUser } from './testData';
 
 // 🎯 Standard testbrugere (admin inkluderes altid)
@@ -46,9 +47,33 @@ const seedTestUsersLegacy = () => {
   localStorage.setItem('users', JSON.stringify(merged));
 };
 
-// 📤 Hent alle brugere
+// 📤 Hent alle brugere (both from users and test_users storage)
 export const getUsers = (): User[] => {
-  return JSON.parse(localStorage.getItem('users') || '[]');
+  const regularUsers = JSON.parse(localStorage.getItem('users') || '[]');
+  const testUsers = getTestUsersFromTestData();
+  
+  // Merge and deduplicate by email
+  const allUsers = [...regularUsers];
+  testUsers.forEach(testUser => {
+    if (!allUsers.find(user => user.email.toLowerCase() === testUser.email.toLowerCase())) {
+      allUsers.push(testUser);
+    }
+  });
+  
+  return allUsers;
+};
+
+// Add user to both storage systems to ensure availability
+export const addUser = (user: User): void => {
+  // Add to regular users storage
+  const regularUsers = JSON.parse(localStorage.getItem('users') || '[]');
+  regularUsers.push(user);
+  localStorage.setItem('users', JSON.stringify(regularUsers));
+  
+  // Also add to test users storage for consistency
+  addTestUserToTestData(user);
+  
+  console.log('User added to both storage systems:', user.email);
 };
 
 // ➕ Tilføj ny bruger (legacy)

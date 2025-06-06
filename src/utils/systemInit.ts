@@ -1,15 +1,21 @@
-import { getTestUsers, addTestUser } from './testData';
+import { getTestUsers, addTestUser, seedTestUsers } from './testData';
 import { getUsers } from './userManagement';
 
 export const initializeSystem = () => {
   console.log('Initializing HouseHub system...');
 
-  // Clear existing users to ensure fresh data from test users
-  localStorage.removeItem('users');
+  // Initialize test users if not already done
+  const testUsers = getTestUsers();
+  if (testUsers.length === 0) {
+    console.log('No test users found, seeding default test users...');
+    seedTestUsers();
+  } else {
+    console.log('Test users already exist, count:', testUsers.length);
+  }
 
   // Initialize users with test data
-  const existingUsers = getUsers(); // This will now return only ADMIN_USER
-  const testUsers = getTestUsers(); // Henter alle predefinerede testbrugere
+  const existingUsers = getUsers(); // This will now return merged users
+  console.log('Total users after initialization:', existingUsers.length);
 
   testUsers.forEach(testUser => {
     try {
