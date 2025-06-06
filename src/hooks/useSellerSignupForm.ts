@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { danishPostalCodes } from '../data/postalCodes';
+import { getTestUsers, addTestUser } from '../utils/testData';
 import { formatPhoneNumber, validateSellerSignupForm } from '../utils/sellerSignupValidation';
-import { getUsers as getTestUsers, addUser as addTestUser } from '@/utils/userManagement';
+
 interface FormData {
   name: string;
   email: string;
   phone: string;
   address: string;
-  postalCode: string;
+  postnummer: string;
   city: string;
   password: string;
   confirmPassword: string;
@@ -21,7 +22,7 @@ interface FormErrors {
   email: string;
   phone: string;
   address: string;
-  postalCode: string;
+  postnummer: string;
   city: string;
   password: string;
   confirmPassword: string;
@@ -32,13 +33,13 @@ export const useSellerSignupForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     phone: '',
     address: '',
-    postalCode: '',
+    postnummer: '',
     city: '',
     password: '',
     confirmPassword: '',
@@ -50,19 +51,17 @@ export const useSellerSignupForm = () => {
     email: '',
     phone: '',
     address: '',
-    postalCode: '',
+    postnummer: '',
     city: '',
     password: '',
     confirmPassword: '',
     acceptTerms: '',
   });
 
-  // Hjælpefunktion til at finde bynavn på postnummer
-  const lookupCity = (postalCode: string) => {
-    return danishPostalCodes[postalCode] || '';
+  const lookupCity = (postnummer: string) => {
+    return danishPostalCodes[postnummer] || '';
   };
 
-  // Check if email already exists
   const checkEmailExists = (email: string) => {
     try {
       const testUsers = getTestUsers();
@@ -71,11 +70,10 @@ export const useSellerSignupForm = () => {
       return allUsers.some(user => user.email.toLowerCase() === email.toLowerCase());
     } catch (error) {
       console.error('Error checking email exists:', error);
-      return false; // Allow signup if check fails
+      return false;
     }
   };
 
-  // Feltændringer
   const handleInputChange = (field: string, value: string | boolean) => {
     if (field === 'phone' && typeof value === 'string') {
       value = formatPhoneNumber(value);
@@ -90,42 +88,35 @@ export const useSellerSignupForm = () => {
     }));
   };
 
-  // Postnummer ændring udfylder by automatisk
   const handlePostalCodeChange = (value: string) => {
     const city = lookupCity(value);
     setFormData((prev) => ({
       ...prev,
-      postalCode: value,
+      postnummer: value,
       city,
     }));
     setErrors((prev) => ({
       ...prev,
-      postalCode: '',
+      postnummer: '',
       city: '',
     }));
   };
 
-  // Validering
   const validate = () => {
     const validationErrors = validateSellerSignupForm(formData, checkEmailExists, lookupCity);
     setErrors(validationErrors);
     return Object.values(validationErrors).every((v) => v === '');
   };
 
-  // Submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    
+
     try {
-      // Simulate backend call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Create unique user ID
       const userId = `seller_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      // Create user object with proper ID and data structure
+
       const newUser = {
         id: userId,
         name: formData.name,
@@ -134,7 +125,7 @@ export const useSellerSignupForm = () => {
         email: formData.email,
         phone: formData.phone,
         address: formData.address,
-        postalCode: formData.postalCode,
+        postnummer: formData.postnummer,
         city: formData.city,
         role: 'seller' as const,
         type: 'seller',
@@ -143,25 +134,21 @@ export const useSellerSignupForm = () => {
         createdAt: new Date().toISOString()
       };
 
-      // Add user to test users database
       addTestUser(newUser);
 
-      // Clear any existing user session data to ensure clean slate
       localStorage.removeItem('currentUser');
       localStorage.removeItem('seller_profile');
-      
-      // Set new user as current user
+
       localStorage.setItem('currentUser', JSON.stringify(newUser));
       localStorage.setItem('seller_profile', JSON.stringify(newUser));
-      
-      // Clear any old cases or data that might interfere
+
       const allKeys = Object.keys(localStorage);
       allKeys.forEach(key => {
         if (key.startsWith('seller_case_') && !key.includes(userId)) {
           localStorage.removeItem(key);
         }
       });
-      
+
       toast({
         title: 'Succes',
         description: 'Din bruger er oprettet.',
@@ -178,10 +165,9 @@ export const useSellerSignupForm = () => {
     }
   };
 
-  // Form validation status
   const getValidationStatus = () => {
     const emailValid = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email);
-    const postalCodeValid = lookupCity(formData.postalCode);
+    const postalCodeValid = lookupCity(formData.postnummer);
     const passwordMatch = formData.password === formData.confirmPassword;
     const passwordLengthValid = formData.password.length >= 8;
     const emailDuplicationCheck = !checkEmailExists(formData.email);
@@ -193,7 +179,7 @@ export const useSellerSignupForm = () => {
       emailDuplicationCheck,
       phone: !!formData.phone,
       address: !!formData.address,
-      postalCode: !!formData.postalCode,
+      postnummer: !!formData.postnummer,
       postalCodeValid,
       city: !!formData.city,
       password: !!formData.password,
@@ -212,7 +198,7 @@ export const useSellerSignupForm = () => {
     validationStatus.emailDuplicationCheck &&
     validationStatus.phone &&
     validationStatus.address &&
-    validationStatus.postalCode &&
+    validationStatus.postnummer &&
     validationStatus.postalCodeValid &&
     validationStatus.city &&
     validationStatus.password &&
