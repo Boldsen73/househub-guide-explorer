@@ -9,7 +9,7 @@ export const combineAllCases = (userDataCases: Case[], sellerCases: Case[]): Cas
     sellerName: c.sellerName || 'Ukendt sælger',
     sellerEmail: c.sellerEmail || 'Ikke angivet',
     sellerPhone: c.sellerPhone || 'Ikke angivet',
-    postnummer: c.postnummer || '',
+    postalCode: c.postalCode || '',
     buildYear: c.buildYear || new Date().getFullYear()
   }));
 
@@ -17,7 +17,7 @@ export const combineAllCases = (userDataCases: Case[], sellerCases: Case[]): Cas
   const processedSellerCases: Case[] = sellerCases.map((sc: Case) => ({
     ...sc,
     id: typeof sc.id === 'string' ? sc.id : String(sc.id),
-    postnummer: sc.postnummer || '',
+    postalCode: sc.postalCode || '',
     buildYear: sc.buildYear || new Date().getFullYear()
   }));
 

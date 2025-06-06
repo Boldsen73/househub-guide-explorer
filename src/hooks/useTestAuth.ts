@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authenticateUser, seedTestUsers, User as RawUser } from '@/utils/userManagement';
+import { authenticateTestUser, getTestUsers, TestUser as RawUser } from '@/utils/testData';
 
 interface User {
   id: string;
@@ -17,7 +17,7 @@ export const useTestAuth = () => {
 
   useEffect(() => {
     // Læg testbrugere ind én gang (uden at slette eksisterende)
-    seedTestUsers();
+    getTestUsers();
     checkAuthStatus();
   }, []);
 
@@ -37,7 +37,7 @@ export const useTestAuth = () => {
 
   const login = async (email: string, password: string) => {
     try {
-      const testUser = authenticateUser(email, password);
+      const testUser = authenticateTestUser(email, password);
 
       if (testUser) {
         const userData: User = {

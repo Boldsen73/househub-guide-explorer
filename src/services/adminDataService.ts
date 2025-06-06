@@ -8,7 +8,7 @@ interface ProcessedSellerCase {
   sellerEmail: string;
   sellerPhone: string;
   address: string;
-  postnummer: string;
+  postalCode: string;
   municipality: string;
   type: string;
   size: number;
@@ -45,7 +45,7 @@ export const loadCasesData = (): Case[] => {
   const processedCases = allCases.map(caseItem => ({
     ...caseItem,
     id: typeof caseItem.id === 'string' ? caseItem.id : String(caseItem.id),
-    postnummer: (caseItem as any).postnummer || '',
+    postalCode: (caseItem as any).postalCode || (caseItem as any).postnummer || '',
     buildYear: (caseItem as any).buildYear || new Date().getFullYear()
   })) as Case[];
   
@@ -111,7 +111,7 @@ export const loadSellerCasesFromStorage = (allUsers: User[]): Case[] => {
             sellerEmail: sellerInfo.email,
             sellerPhone: sellerInfo.phone,
             address: caseData.address,
-            postnummer: caseData.postnummer || '', // Ensure this property exists
+            postalCode: caseData.postalCode || caseData.postnummer || '', // Ensure this property exists
             municipality: caseData.municipality || caseData.city || 'Ikke angivet',
             type: caseData.propertyType || caseData.type || 'Ikke angivet',
             size: typeof caseData.size === 'number' ? caseData.size : parseInt(caseData.size || '0'),
