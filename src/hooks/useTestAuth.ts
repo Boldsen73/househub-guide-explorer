@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authenticateTestUser } from '@/utils/testData';
-import { seedTestUsers } from '@/utils/testData';
+import { authenticateUser, seedTestUsers, User as RawUser } from '@/utils/userManagement';
 
 interface User {
   id: string;
@@ -38,8 +37,8 @@ export const useTestAuth = () => {
 
   const login = async (email: string, password: string) => {
     try {
-      const testUser = authenticateTestUser(email, password);
-      
+      const testUser = authenticateUser(email, password);
+
       if (testUser) {
         const userData: User = {
           id: testUser.id,
@@ -48,7 +47,7 @@ export const useTestAuth = () => {
           name: testUser.name,
           agencyName: testUser.company
         };
-        
+
         localStorage.setItem('currentUser', JSON.stringify(userData));
         setUser(userData);
 
